@@ -1,29 +1,29 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GroceryParserController } from './parser.controller';
-import { GroceryParserService } from './parser.service';
+import { ParserController } from './parse-groceries.controller';
+import { ParseGroceriesService } from './parse-groceries.service';
 import { AiAssistantService } from '../ai-assistant/ai-assistant.service';
 import { RecipeCacheService } from '../recipe-cache/recipe-cache.service';
 import { RecipeCacheRepository } from '../recipe-cache/recipe-cache.repository';
 import { PrismaService } from '../prisma.service';
 import { HashingService } from '../hashing/hashing.service';
 
-describe('GroceryParserController', () => {
-  let controller: GroceryParserController;
+describe('ParserController', () => {
+  let controller: ParserController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [GroceryParserController],
+      controllers: [ParserController],
       providers: [
         RecipeCacheRepository,
         PrismaService,
         AiAssistantService,
         RecipeCacheService,
-        GroceryParserService,
+        ParseGroceriesService,
         HashingService,
       ],
     }).compile();
 
-    controller = module.get<GroceryParserController>(GroceryParserController);
+    controller = module.get<ParserController>(ParserController);
   });
 
   it('should be defined', () => {

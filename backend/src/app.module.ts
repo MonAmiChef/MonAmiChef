@@ -18,8 +18,8 @@ import {
   Logger,
   Catch,
 } from '@nestjs/common';
-import { GroceryParserService } from './parser/parser.service';
-import { GroceryParserController } from './parser/parser.controller';
+import { ParseGroceriesService } from './parse-groceries/parse-groceries.service';
+import { ParserController } from './parse-groceries/parse-groceries.controller';
 import { AiAssistantService } from './ai-assistant/ai-assistant.service';
 import { ConfigModule } from '@nestjs/config';
 import { HashingService } from './hashing/hashing.service';
@@ -86,9 +86,9 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     RecipeCacheModule,
     HashingModule,
   ],
-  controllers: [GroceryParserController, SubstituteController],
+  controllers: [ParserController, SubstituteController],
   providers: [
-    GroceryParserService,
+    ParseGroceriesService,
     AiAssistantService,
     {
       provide: APP_PIPE,

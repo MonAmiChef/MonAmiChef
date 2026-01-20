@@ -1,8 +1,8 @@
 openapi: 3.0.0
 paths:
-  /api/parser:
+  /api/parse-groceries:
     post:
-      operationId: GroceryParserController_parseGroceries
+      operationId: ParserController_parse
       parameters: []
       requestBody:
         required: true
@@ -18,7 +18,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ParseGroceriesResponseDto_Output'
       tags:
-        - GroceryParser
+        - Parser
   /api/substitute:
     post:
       operationId: SubstituteController_subsituteIngredients

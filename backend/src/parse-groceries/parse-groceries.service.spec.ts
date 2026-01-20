@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
-import { GroceryParserService } from './parser.service';
+import { ParseGroceriesService } from './parse-groceries.service';
 import { AiAssistantService } from '../ai-assistant/ai-assistant.service';
 import { RecipeCacheService } from '../recipe-cache/recipe-cache.service';
 import { HashingService } from '../hashing/hashing.service';
 import { PrismaService } from '../prisma.service';
 import { RecipeCacheRepository } from '../recipe-cache/recipe-cache.repository';
 
-describe('GroceryParserService', () => {
-  let groceryParserService: GroceryParserService;
+describe('ParseGroceriesService', () => {
+  let parserService: ParseGroceriesService;
   let recipeCacheService: jest.Mocked<RecipeCacheService>;
 
   const mockRecipeCacheService = {
@@ -25,19 +25,19 @@ describe('GroceryParserService', () => {
       providers: [
         { provide: AiAssistantService, useValue: mockAiAssistantService },
         { provide: RecipeCacheService, useValue: mockRecipeCacheService },
-        GroceryParserService,
+        ParseGroceriesService,
         RecipeCacheRepository,
         HashingService,
         PrismaService,
       ],
     }).compile();
 
-    groceryParserService = module.get(GroceryParserService);
+    parserService = module.get(ParseGroceriesService);
     recipeCacheService = module.get(RecipeCacheService);
   });
 
   it('should be defined', () => {
-    expect(groceryParserService).toBeDefined();
+    expect(parserService).toBeDefined();
   });
 
   it('should call storeCacheRecipe when parsing groceries', async () => {
@@ -49,7 +49,7 @@ describe('GroceryParserService', () => {
 
     recipeCacheService.getCachedRecipe.mockResolvedValue(null);
 
-    await groceryParserService.parseGroceries({ text: 'Sample grocery text' });
+    await parserService.parseGroceries({ text: 'Sample grocery text' });
     expect(recipeCacheService.storeCacheRecipe).toHaveBeenCalledTimes(1);
   });
 });

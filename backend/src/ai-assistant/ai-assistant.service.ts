@@ -4,7 +4,7 @@ import {
   ParseGroceriesResponse,
   ParseGroceriesResponseJson,
   ParseGroceriesResponseSchema,
-} from '../parser/parser.dto';
+} from '../parse-groceries/parse-groceries.dto';
 import {
   SubstituteIngredientsResponse,
   SubstituteIngredientsResponseJson,
