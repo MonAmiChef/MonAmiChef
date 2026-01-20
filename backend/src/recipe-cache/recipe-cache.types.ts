@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { RecipeCacheType } from '@prisma/client';
-import { ParseGroceriesResponse } from '../parser/parser.dto';
 
 export type StoreRecipeParams = {
   inputHash: string;
-  aiResponseJson: ParseGroceriesResponse;
+  aiResponseJson: any;
   type: RecipeCacheType;
 };

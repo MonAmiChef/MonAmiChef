@@ -22,6 +22,16 @@ async function bootstrap() {
 
   app.use(helmet());
 
+  app.setGlobalPrefix('api');
+
+  const config = new DocumentBuilder()
+    .setTitle('MonAmiChef')
+    .setDescription('The MonAmiChef API documentation')
+    .addApiKey({ type: 'apiKey', name: 'x-api-key', in: 'header' }, 'X-API-KEY')
+    .addSecurityRequirements('X-API-KEY')
+    .setVersion('1.0')
+    .build();
+
   const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || '*';
 
   app.enableCors({
@@ -29,13 +39,8 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     preflightContinue: false,
     optionsSuccessStatus: 204,
+    credentals: true,
   });
-
-  const config = new DocumentBuilder()
-    .setTitle('MonAmiChef')
-    .setDescription('The MonAmiChef API documentation')
-    .setVersion('1.0')
-    .build();
 
   const document = SwaggerModule.createDocument(app, config);
 

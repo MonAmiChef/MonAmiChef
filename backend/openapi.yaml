@@ -1,6 +1,6 @@
 openapi: 3.0.0
 paths:
-  /parser:
+  /api/parser:
     post:
       operationId: GroceryParserController_parseGroceries
       parameters: []
@@ -11,10 +11,33 @@ paths:
             schema:
               $ref: '#/components/schemas/ParseGroceriesRequestDto'
       responses:
-        '201':
+        '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParseGroceriesResponseDto_Output'
       tags:
         - GroceryParser
+  /api/substitute:
+    post:
+      operationId: SubstituteController_subsituteIngredients
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubstituteIngredientsRequestDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubstituteIngredientsResponseDto_Output'
+      tags:
+        - Substitute
 info:
   title: MonAmiChef
   description: The MonAmiChef API documentation
@@ -23,6 +46,11 @@ info:
 tags: []
 servers: []
 components:
+  securitySchemes:
+    X-API-KEY:
+      type: apiKey
+      in: header
+      name: x-api-key
   schemas:
     ParseGroceriesRequestDto:
       type: object
@@ -33,3 +61,193 @@ components:
           maxLength: 5000
       required:
         - text
+    ParseGroceriesResponseDto_Output:
+      type: object
+      properties:
+        recipe_name:
+          type: string
+          description: The name of the recipe
+          x-nestjs_zod-parent-additional-properties: false
+        prep_infos:
+          type: object
+          properties:
+            prep_time_min:
+              type: number
+            servings:
+              type: number
+            difficulty:
+              type: string
+          required:
+            - prep_time_min
+            - servings
+            - difficulty
+          additionalProperties: false
+          x-nestjs_zod-self-required: true
+          x-nestjs_zod-parent-additional-properties: false
+        macros_per_servings:
+          type: object
+          properties:
+            calories:
+              type: number
+            proteins:
+              type: number
+            carbs:
+              type: number
+            fat:
+              type: number
+            fibers:
+              type: number
+          required:
+            - calories
+            - proteins
+            - carbs
+            - fat
+            - fibers
+          additionalProperties: false
+          x-nestjs_zod-self-required: true
+          x-nestjs_zod-parent-additional-properties: false
+        dietary_info:
+          type: object
+          properties:
+            vegetarian:
+              type: boolean
+            dairy_free:
+              type: boolean
+            vegan:
+              type: boolean
+            gluten_free:
+              type: boolean
+          required:
+            - vegetarian
+            - dairy_free
+            - vegan
+            - gluten_free
+          additionalProperties: false
+          x-nestjs_zod-self-required: true
+          x-nestjs_zod-parent-additional-properties: false
+        ingredients:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name of the ingredient
+              quantity:
+                type: number
+                description: The quantity of the ingredient
+              unit:
+                type: string
+                description: The unit of the quantity of an ingredient
+              category:
+                type: string
+                description: The category of an ingredient
+              raw_text:
+                type: string
+                description: The original full line of text
+            required:
+              - name
+              - quantity
+              - unit
+              - category
+              - raw_text
+            additionalProperties: false
+          description: A list of ingredient object
+          x-nestjs_zod-parent-additional-properties: false
+        substitutions:
+          type: array
+          items:
+            type: object
+            properties:
+              ingredient_name:
+                type: string
+                description: The ingredient to substitute
+              replacement:
+                type: string
+                description: The replacement of ingredient_name
+              reason:
+                type: string
+                description: 'The consequences of the replacement (eg: To make it vegan)'
+            required:
+              - ingredient_name
+              - replacement
+              - reason
+            additionalProperties: false
+          x-nestjs_zod-parent-additional-properties: false
+      required:
+        - recipe_name
+        - prep_infos
+        - macros_per_servings
+        - dietary_info
+        - ingredients
+        - substitutions
+    SubstituteIngredientsRequestDto:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 1
+          description: The user input text of ingredients to substitute + possible context
+      required:
+        - text
+    SubstituteIngredientsResponseDto_Output:
+      type: object
+      properties:
+        optional_detected_context:
+          type: string
+          description: 'Optional detected context, eg: Curry chicken'
+          x-nestjs_zod-parent-additional-properties: false
+        summary_note:
+          type: string
+          description: Summary note of the substitutions response from the ai
+          x-nestjs_zod-parent-additional-properties: false
+        substitutions:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            properties:
+              to_replace:
+                type: string
+                description: The ingredient to replace
+              replacement:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: The replacement ingredient
+                    quantity:
+                      description: The quantity of the replacement
+                      type: number
+                    quantity_unit:
+                      type: string
+                    explanation:
+                      type: string
+                      description: The reason of the replacement
+                    impact:
+                      type: string
+                      description: The impact of the replacement
+                    impact_score:
+                      type: number
+                      minimum: 1
+                      maximum: 5
+                      description: The impact score on the dish taste of the replacemant
+                  required:
+                    - name
+                    - quantity_unit
+                    - explanation
+                    - impact
+                    - impact_score
+                  additionalProperties: false
+            required:
+              - to_replace
+              - replacement
+            additionalProperties: false
+          x-nestjs_zod-parent-additional-properties: false
+      required:
+        - summary_note
+        - substitutions
+security:
+  - X-API-KEY: []
