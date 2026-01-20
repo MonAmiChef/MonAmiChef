@@ -1,0 +1,17 @@
+{
+  "buildCommand": "cd frontend && yarn build",
+  "outputDirectory": "frontend/dist",
+  "redirects": [
+    {
+      "source": "https://www.monamichef.com/(.*)",
+      "destination": "https://monamichef.com/$1",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

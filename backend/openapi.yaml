@@ -1,0 +1,35 @@
+openapi: 3.0.0
+paths:
+  /parser:
+    post:
+      operationId: GroceryParserController_parseGroceries
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParseGroceriesRequestDto'
+      responses:
+        '201':
+          description: ''
+      tags:
+        - GroceryParser
+info:
+  title: MonAmiChef
+  description: The MonAmiChef API documentation
+  version: '1.0'
+  contact: {}
+tags: []
+servers: []
+components:
+  schemas:
+    ParseGroceriesRequestDto:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 10
+          maxLength: 5000
+      required:
+        - text

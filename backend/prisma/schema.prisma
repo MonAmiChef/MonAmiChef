@@ -1,0 +1,91 @@
+generator client {
+  provider     = "prisma-client-js"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Ingredient {
+  id String @id @default(uuid())
+  name String
+  quantity Float
+  unit String
+  category String?
+  rawText String?
+
+  recipeId String
+  recipe Recipe @relation(fields: [recipeId], references: [id])
+}
+
+model Recipe {
+  id String @id @default(uuid())
+  name String
+
+  prepTimeMin Int?
+  servings Int?
+  difficulty String?
+
+  calories Float?
+  proteins Float?
+  carbs Float?
+  fat Float?
+  fibers Float?
+
+  isVegetarian Boolean @default(false)
+  isVegan Boolean @default(false)
+  isGlutenFree Boolean @default(false)
+  isDairyFree Boolean @default(false)
+
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  ingredients Ingredient[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id         String        @id @default(uuid())
+  created_at DateTime?     @default(now()) @db.Date
+  updated_at DateTime?     @db.Date
+
+  rapidApiKeyId String? @unique @map("rapid_api_key_id")
+
+  chats      ChatSession[]
+  recipes Recipe[]
+}
+
+model ChatSession {
+  id       String    @id @default(uuid())
+  userId   String
+  User     User      @relation(fields: [userId], references: [id])
+  messages Message[]
+}
+
+model Message {
+  id          String      @id @default(uuid())
+  chatId      String
+  content     String
+  role        MessageRole
+  chatSession ChatSession @relation(fields: [chatId], references: [id], onDelete: Cascade)
+}
+
+model RecipeCache {
+  id        String              @id @default(uuid())
+  createdAt DateTime            @default(now())
+  aiResponseJson      Json
+  inputHash String              @unique
+  type      RecipeCacheType
+}
+
+enum MessageRole {
+  user
+  assistant
+}
+
+enum RecipeCacheType {
+  extraction
+  substitution
+}
