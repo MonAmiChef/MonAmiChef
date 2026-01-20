@@ -18,13 +18,6 @@ export class ApikeyGuard implements CanActivate {
     const rapidApiSecret = request.headers['x-rapidapi-proxy-secret'];
     const localApiKey = request.headers['x-api-key'];
 
-    const url = request.url;
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    if (url.includes('/docs')) {
-      return true;
-    }
-
     if (rapidApiSecret === process.env.RAPIDAPI_PROXY_SECRET) {
       return true;
     }
