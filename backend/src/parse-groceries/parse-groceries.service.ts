@@ -3,11 +3,11 @@ import { AiAssistantService } from '../ai-assistant/ai-assistant.service';
 import {
   ParseGroceriesResponse,
   ParseGroceriesResponseSchema,
-} from './parser.dto';
+} from './parse-groceries.dto';
 import { RecipeCacheService } from '../recipe-cache/recipe-cache.service';
 
 @Injectable()
-export class GroceryParserService {
+export class ParseGroceriesService {
   constructor(
     private assistantService: AiAssistantService,
     private recipeCacheService: RecipeCacheService,

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { RecipeCacheRepository } from './recipe-cache.repository';
 import { RecipeCache, RecipeCacheType } from '@prisma/client';
 import { HashingService } from '../hashing/hashing.service';
-import { ParseGroceriesResponse } from '../parser/parser.dto';
+import { AiResponseJson } from './recipe-cache.types';
 
 @Injectable()
 export class RecipeCacheService {
@@ -31,7 +31,7 @@ export class RecipeCacheService {
     type,
   }: {
     text: string;
-    aiResponseJson: ParseGroceriesResponse;
+    aiResponseJson: AiResponseJson;
     type: RecipeCacheType;
   }): Promise<RecipeCache> {
     const inputHash = this.hashingService.textToHash({ text: text + type });

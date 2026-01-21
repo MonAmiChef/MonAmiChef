@@ -60,6 +60,10 @@ export const ParseGroceriesResponseSchema = z
   })
   .describe('Response schema of parsed ingredients from recipe');
 
+export class ParseGroceriesResponseDto extends createZodDto(
+  ParseGroceriesResponseSchema,
+) {}
+
 export const ParseGroceriesResponseJson = {
   type: 'object',
   properties: {

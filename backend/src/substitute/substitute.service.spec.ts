@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
-import { GroceryParserService } from './parser.service';
+import { SubstituteService } from './substitute.service';
 import { AiAssistantService } from '../ai-assistant/ai-assistant.service';
 import { RecipeCacheService } from '../recipe-cache/recipe-cache.service';
-import { HashingService } from '../hashing/hashing.service';
-import { PrismaService } from '../prisma.service';
 import { RecipeCacheRepository } from '../recipe-cache/recipe-cache.repository';
+import { PrismaService } from '../prisma.service';
+import { HashingService } from '../hashing/hashing.service';
 
-describe('GroceryParserService', () => {
-  let groceryParserService: GroceryParserService;
+describe('SubstituteService', () => {
+  let substituteService: SubstituteService;
   let recipeCacheService: jest.Mocked<RecipeCacheService>;
 
   const mockRecipeCacheService = {
@@ -16,31 +16,31 @@ describe('GroceryParserService', () => {
     storeCacheRecipe: jest.fn().mockReturnValue(undefined),
   };
 
-  const mockAiAssistantService = {
-    parseGroceries: jest.fn(),
+  const mockAiAssistanceService = {
+    substituteIngredients: jest.fn(),
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        { provide: AiAssistantService, useValue: mockAiAssistantService },
-        { provide: RecipeCacheService, useValue: mockRecipeCacheService },
-        GroceryParserService,
-        RecipeCacheRepository,
         HashingService,
+        SubstituteService,
         PrismaService,
+        RecipeCacheRepository,
+        { provide: RecipeCacheService, useValue: mockRecipeCacheService },
+        { provide: AiAssistantService, useValue: mockAiAssistanceService },
       ],
     }).compile();
 
-    groceryParserService = module.get(GroceryParserService);
+    substituteService = module.get(SubstituteService);
     recipeCacheService = module.get(RecipeCacheService);
   });
 
   it('should be defined', () => {
-    expect(groceryParserService).toBeDefined();
+    expect(substituteService).toBeDefined();
   });
 
-  it('should call storeCacheRecipe when parsing groceries', async () => {
+  it('should call storeCacheRecipe when substituting ingredients', async () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     recipeCacheService.storeCacheRecipe.mockResolvedValue({
       id: '123',
@@ -49,7 +49,7 @@ describe('GroceryParserService', () => {
 
     recipeCacheService.getCachedRecipe.mockResolvedValue(null);
 
-    await groceryParserService.parseGroceries({ text: 'Sample grocery text' });
+    await substituteService.substituteIngredients({ text: 'Sample text' });
     expect(recipeCacheService.storeCacheRecipe).toHaveBeenCalledTimes(1);
   });
 });
