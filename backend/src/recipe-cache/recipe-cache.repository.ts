@@ -22,7 +22,6 @@ export class RecipeCacheRepository {
     return this.prismaService.recipeCache.create({
       data: {
         inputHash,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         aiResponseJson,
         type,
       },
