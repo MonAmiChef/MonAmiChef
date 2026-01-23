@@ -29,6 +29,9 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { RapidapiThrottlerGuard } from './rapidapi-throttler/rapidapi-throttler.guard';
 import { SubstituteService } from './substitute/substitute.service';
 import { SubstituteController } from './substitute/substitute.controller';
+import { AskAssistantController } from './ask-assistant/ask-assistant.controller';
+import { AskAssistantService } from './ask-assistant/ask-assistant.service';
+import { GeneralAskService } from './general-ask/general-ask.service';
 
 @Catch()
 class GlobalExceptionFilter extends BaseExceptionFilter {
@@ -86,7 +89,7 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     RecipeCacheModule,
     HashingModule,
   ],
-  controllers: [ParserController, SubstituteController],
+  controllers: [ParserController, SubstituteController, AskAssistantController],
   providers: [
     ParseGroceriesService,
     AiAssistantService,
@@ -108,6 +111,8 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     },
     HashingService,
     SubstituteService,
+    AskAssistantService,
+    GeneralAskService,
   ],
 })
 export class AppModule {}

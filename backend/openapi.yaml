@@ -38,6 +38,21 @@ paths:
                 $ref: '#/components/schemas/SubstituteIngredientsResponseDto_Output'
       tags:
         - Substitute
+  /api/ask-assistant:
+    post:
+      operationId: AskAssistantController_askAssistant
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AskAssistantRequestDto'
+      responses:
+        '201':
+          description: ''
+      tags:
+        - AskAssistant
 info:
   title: MonAmiChef
   description: The MonAmiChef API documentation
@@ -249,5 +264,14 @@ components:
       required:
         - summary_note
         - substitutions
+    AskAssistantRequestDto:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 1
+          description: The user input text of ingredients to substitute + possible context
+      required:
+        - text
 security:
   - X-API-KEY: []
