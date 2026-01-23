@@ -5,75 +5,127 @@ import { GeneralAskService } from '../general-ask/general-ask.service';
 import { AiAssistantService } from '../ai-assistant/ai-assistant.service';
 import { ParseGroceriesService } from '../parse-groceries/parse-groceries.service';
 import { RecipeCacheService } from '../recipe-cache/recipe-cache.service';
+import { createFakeGroceryResponse } from '../utils/create-fake-grocery-response';
 
 describe('AskAssistantService', () => {
-  let askAssistantService: AskAssistantService;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let recipeCacheService: jest.Mocked<RecipeCacheService>;
-  let aiAssistantService: jest.Mocked<AiAssistantService>;
-
-  const mockRecipeCacheService = {
-    getCachedRecipe: jest.fn(),
-    storeCacheRecipe: jest.fn().mockReturnValue(undefined),
-  };
+  let service: AskAssistantService;
 
   const mockAiAssistantService = {
     inferIntent: jest.fn(),
+  };
+
+  const mockParseGroceriesService = {
+    parseGroceries: jest.fn(),
+  };
+
+  const mockSubstituteService = {
+    substituteIngredients: jest.fn(),
+  };
+
+  const mockGeneralAskService = {
+    generalAsk: jest.fn(),
+  };
+
+  const mockRecipeCacheService = {
+    getCachedRecipe: jest.fn(),
+    storeCacheRecipe: jest.fn(),
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AskAssistantService,
-        SubstituteService,
-        GeneralAskService,
-        ParseGroceriesService,
+        { provide: AiAssistantService, useValue: mockAiAssistantService },
+        { provide: ParseGroceriesService, useValue: mockParseGroceriesService },
+        { provide: SubstituteService, useValue: mockSubstituteService },
+        { provide: GeneralAskService, useValue: mockGeneralAskService },
         { provide: RecipeCacheService, useValue: mockRecipeCacheService },
-        {
-          provide: AiAssistantService,
-          useValue: mockAiAssistantService,
-        },
       ],
     }).compile();
 
-    recipeCacheService = module.get(RecipeCacheService);
-    askAssistantService = module.get(AskAssistantService);
-    aiAssistantService = module.get(AiAssistantService);
+    service = module.get<AskAssistantService>(AskAssistantService);
   });
 
   it('should be defined', () => {
-    expect(askAssistantService).toBeDefined();
+    expect(service).toBeDefined();
   });
 
-  it('should infer request type as PARSER', async () => {
-    mockAiAssistantService.inferIntent.mockResolvedValue({ intent: 'PARSER' });
+  describe('askAssistant', () => {
+    it('should route to parseGroceries for PARSER intent', async () => {
+      mockAiAssistantService.inferIntent.mockResolvedValue({
+        intent: 'PARSER',
+      });
+      mockParseGroceriesService.parseGroceries.mockResolvedValue(
+        createFakeGroceryResponse(),
+      );
 
-    const { intent } = await aiAssistantService.inferIntent({
-      text: 'Sample text',
+      const result = await service.askAssistant({ text: 'carrots' });
+
+      expect(result).toEqual({
+        intent: 'PARSER',
+        data: createFakeGroceryResponse(),
+      });
+      expect(mockParseGroceriesService.parseGroceries).toHaveBeenCalledWith({
+        text: 'carrots',
+      });
     });
 
-    expect(intent).toBe('PARSER');
-  });
+    it('should route to substituteIngredients for SUBSTITUTE intent', async () => {
+      mockAiAssistantService.inferIntent.mockResolvedValue({
+        intent: 'SUBSTITUTE',
+      });
+      mockSubstituteService.substituteIngredients.mockResolvedValue({
+        summary_note: 'Note',
+        substitutions: [
+          {
+            to_replace: 'milk',
+            replacement: [
+              {
+                name: 'almond milk',
+                quantity_unit: 'cup',
+                explanation: 'dairy free',
+                impact: 'neutral',
+                impact_score: 5,
+              },
+            ],
+          },
+        ],
+      });
 
-  it('should infer request type as SUBSTITUTE', async () => {
-    mockAiAssistantService.inferIntent.mockResolvedValue({
-      intent: 'SUBSTITUTE',
+      const result = await service.askAssistant({ text: 'milk' });
+
+      expect(result.intent).toBe('SUBSTITUTE');
+      expect(mockSubstituteService.substituteIngredients).toHaveBeenCalledWith({
+        text: 'milk',
+      });
     });
 
-    const { intent } = await aiAssistantService.inferIntent({
-      text: 'Sample text',
+    it('should route to generalAsk for GENERAL intent', async () => {
+      mockAiAssistantService.inferIntent.mockResolvedValue({
+        intent: 'GENERAL',
+      });
+      mockGeneralAskService.generalAsk.mockResolvedValue({ answer: 'Answer' });
+
+      const result = await service.askAssistant({ text: 'how?' });
+
+      expect(result).toEqual({ intent: 'GENERAL', data: { answer: 'Answer' } });
+      expect(mockGeneralAskService.generalAsk).toHaveBeenCalledWith({
+        text: 'how?',
+      });
     });
 
-    expect(intent).toBe('SUBSTITUTE');
-  });
+    it('should default to generalAsk for unknown intent', async () => {
+      mockAiAssistantService.inferIntent.mockResolvedValue({
+        intent: 'UNKNOWN',
+      });
+      mockGeneralAskService.generalAsk.mockResolvedValue({ answer: 'Answer' });
 
-  it('should infer request type as GENERAL', async () => {
-    mockAiAssistantService.inferIntent.mockResolvedValue({ intent: 'GENERAL' });
+      const result = await service.askAssistant({ text: 'unknown' });
 
-    const { intent } = await aiAssistantService.inferIntent({
-      text: 'Sample text',
+      expect(result).toEqual({ intent: 'GENERAL', data: { answer: 'Answer' } });
+      expect(mockGeneralAskService.generalAsk).toHaveBeenCalledWith({
+        text: 'unknown',
+      });
     });
-
-    expect(intent).toBe('GENERAL');
   });
 });
