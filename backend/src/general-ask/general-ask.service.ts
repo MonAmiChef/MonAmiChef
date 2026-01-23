@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GeneralAskResponse } from './general-ask.dto';
-import { AiAssistantService } from 'src/ai-assistant/ai-assistant.service';
+import { AiAssistantService } from '../ai-assistant/ai-assistant.service';
 
 @Injectable()
 export class GeneralAskService {

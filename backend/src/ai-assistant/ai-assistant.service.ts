@@ -17,7 +17,7 @@ import {
 import {
   GeneralAskResponseJson,
   GeneralAskResponseSchema,
-} from 'src/general-ask/general-ask.dto';
+} from '../general-ask/general-ask.dto';
 
 const DEFAULT_GEMINI_MODEL = 'gemini-3-flash-preview';
 
