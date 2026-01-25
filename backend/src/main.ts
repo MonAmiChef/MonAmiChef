@@ -47,6 +47,11 @@ async function bootstrap() {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const yamlString = dump(document, { skipInvalid: true });
   fs.writeFileSync('./openapi.yaml', yamlString);
-  await app.listen(process.env.PORT ?? 3000);
+
+  const port = process.env.PORT || 8888;
+
+  await app.listen(port);
+
+  console.log(`Application is running on port: ${port}`);
 }
 bootstrap();
