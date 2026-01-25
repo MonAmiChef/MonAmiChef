@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 
 @ApiTags('MonAmiChef')
@@ -7,6 +7,7 @@ import { SkipThrottle } from '@nestjs/throttler';
 @Controller('health')
 export class HealthController {
   @Get()
+  @ApiOperation({ operationId: 'health' })
   checkHealth() {
     return {
       status: 'ok',

@@ -2,7 +2,7 @@ openapi: 3.0.0
 paths:
   /parse-groceries:
     post:
-      operationId: ParserController_parse
+      operationId: parse-groceries
       parameters: []
       requestBody:
         required: true
@@ -17,11 +17,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParseGroceriesResponseDto_Output'
+      summary: ''
       tags:
         - MonAmiChef
   /substitute:
     post:
-      operationId: SubstituteController_subsituteIngredients
+      operationId: substitute
       parameters: []
       requestBody:
         required: true
@@ -36,11 +37,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubstituteIngredientsResponseDto_Output'
+      summary: ''
       tags:
         - MonAmiChef
   /ask-assistant:
     post:
-      operationId: AskAssistantController_askAssistant
+      operationId: ask-assistant
       parameters: []
       requestBody:
         required: true
@@ -51,15 +53,17 @@ paths:
       responses:
         '201':
           description: ''
+      summary: ''
       tags:
         - MonAmiChef
   /health:
     get:
-      operationId: HealthController_checkHealth
+      operationId: health
       parameters: []
       responses:
         '200':
           description: ''
+      summary: ''
       tags:
         - MonAmiChef
 info:
