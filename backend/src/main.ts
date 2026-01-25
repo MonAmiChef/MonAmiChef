@@ -22,8 +22,6 @@ async function bootstrap() {
 
   app.use(helmet());
 
-  app.setGlobalPrefix('api');
-
   const config = new DocumentBuilder()
     .setTitle('MonAmiChef')
     .setDescription('The MonAmiChef API documentation')
@@ -39,7 +37,7 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     preflightContinue: false,
     optionsSuccessStatus: 204,
-    credentals: true,
+    credentials: true,
   });
 
   const document = SwaggerModule.createDocument(app, config);
