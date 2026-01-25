@@ -32,6 +32,7 @@ import { SubstituteController } from './substitute/substitute.controller';
 import { AskAssistantController } from './ask-assistant/ask-assistant.controller';
 import { AskAssistantService } from './ask-assistant/ask-assistant.service';
 import { GeneralAskService } from './general-ask/general-ask.service';
+import { HealthController } from './health/health.controller';
 
 @Catch()
 class GlobalExceptionFilter extends BaseExceptionFilter {
@@ -89,7 +90,12 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     RecipeCacheModule,
     HashingModule,
   ],
-  controllers: [ParserController, SubstituteController, AskAssistantController],
+  controllers: [
+    ParserController,
+    SubstituteController,
+    AskAssistantController,
+    HealthController,
+  ],
   providers: [
     ParseGroceriesService,
     AiAssistantService,
