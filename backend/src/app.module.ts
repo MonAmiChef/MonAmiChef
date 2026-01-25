@@ -18,8 +18,8 @@ import {
   Logger,
   Catch,
 } from '@nestjs/common';
-import { GroceryParserService } from './parser/parser.service';
-import { GroceryParserController } from './parser/parser.controller';
+import { ParseGroceriesService } from './parse-groceries/parse-groceries.service';
+import { ParserController } from './parse-groceries/parse-groceries.controller';
 import { AiAssistantService } from './ai-assistant/ai-assistant.service';
 import { ConfigModule } from '@nestjs/config';
 import { HashingService } from './hashing/hashing.service';
@@ -27,6 +27,11 @@ import { RecipeCacheModule } from './recipe-cache/recipe-cache.module';
 import { HashingModule } from './hashing/hashing.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { RapidapiThrottlerGuard } from './rapidapi-throttler/rapidapi-throttler.guard';
+import { SubstituteService } from './substitute/substitute.service';
+import { SubstituteController } from './substitute/substitute.controller';
+import { AskAssistantController } from './ask-assistant/ask-assistant.controller';
+import { AskAssistantService } from './ask-assistant/ask-assistant.service';
+import { GeneralAskService } from './general-ask/general-ask.service';
 
 @Catch()
 class GlobalExceptionFilter extends BaseExceptionFilter {
@@ -84,9 +89,9 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     RecipeCacheModule,
     HashingModule,
   ],
-  controllers: [GroceryParserController],
+  controllers: [ParserController, SubstituteController, AskAssistantController],
   providers: [
-    GroceryParserService,
+    ParseGroceriesService,
     AiAssistantService,
     {
       provide: APP_PIPE,
@@ -105,6 +110,9 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
       useClass: RapidapiThrottlerGuard,
     },
     HashingService,
+    SubstituteService,
+    AskAssistantService,
+    GeneralAskService,
   ],
 })
 export class AppModule {}

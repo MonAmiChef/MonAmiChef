@@ -1,4 +1,4 @@
-import { ParseGroceriesResponse } from '../parser/parser.dto';
+import { ParseGroceriesResponse } from '../parse-groceries/parse-groceries.dto';
 
 export const createFakeGroceryResponse = (
   overrides: Partial<ParseGroceriesResponse> = {},
