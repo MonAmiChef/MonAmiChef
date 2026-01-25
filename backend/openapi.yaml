@@ -18,7 +18,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ParseGroceriesResponseDto_Output'
       tags:
-        - Parser
+        - MonAmiChef
   /substitute:
     post:
       operationId: SubstituteController_subsituteIngredients
@@ -37,7 +37,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SubstituteIngredientsResponseDto_Output'
       tags:
-        - Substitute
+        - MonAmiChef
   /ask-assistant:
     post:
       operationId: AskAssistantController_askAssistant
@@ -52,7 +52,7 @@ paths:
         '201':
           description: ''
       tags:
-        - AskAssistant
+        - MonAmiChef
   /health:
     get:
       operationId: HealthController_checkHealth
@@ -61,7 +61,7 @@ paths:
         '200':
           description: ''
       tags:
-        - Health
+        - MonAmiChef
 info:
   title: MonAmiChef
   description: The MonAmiChef API documentation
