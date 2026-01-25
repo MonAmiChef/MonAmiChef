@@ -5,7 +5,9 @@ import {
   SubstituteIngredientsRequestDto,
   SubstituteIngredientsResponseDto,
 } from './substitute.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('MonAmiChef')
 @Controller('substitute')
 export class SubstituteController {
   constructor(private substituteService: SubstituteService) {}

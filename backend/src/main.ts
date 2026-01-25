@@ -22,13 +22,21 @@ async function bootstrap() {
 
   app.use(helmet());
 
-  const config = new DocumentBuilder()
+  const configBuilder = new DocumentBuilder()
     .setTitle('MonAmiChef')
     .setDescription('The MonAmiChef API documentation')
-    .addApiKey({ type: 'apiKey', name: 'x-api-key', in: 'header' }, 'X-API-KEY')
-    .addSecurityRequirements('X-API-KEY')
-    .setVersion('1.0')
-    .build();
+    .setVersion('1.0');
+
+  if (process.env.NODE_ENV === 'development') {
+    configBuilder
+      .addApiKey(
+        { type: 'apiKey', name: 'x-api-key', in: 'header' },
+        'X-API-KEY',
+      )
+      .addSecurityRequirements('X-API-KEY');
+  }
+
+  const config = configBuilder.build();
 
   const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || '*';
 

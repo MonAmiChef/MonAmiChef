@@ -22,7 +22,14 @@ export class ApikeyGuard implements CanActivate {
       return true;
     }
 
-    if (rapidApiSecret === process.env.RAPIDAPI_PROXY_SECRET) {
+    if (
+      rapidApiSecret &&
+      rapidApiSecret === process.env.RAPIDAPI_PROXY_SECRET
+    ) {
+      return true;
+    }
+
+    if (localApiKey && localApiKey === process.env.INTERNAL_API_KEY) {
       return true;
     }
 
