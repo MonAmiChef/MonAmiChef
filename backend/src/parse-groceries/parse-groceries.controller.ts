@@ -13,7 +13,12 @@ export class ParserController {
   constructor(private parserService: ParseGroceriesService) {}
 
   @Post()
-  @ApiOperation({ operationId: 'parse-groceries' })
+  @ApiOperation({
+    summary: 'Extract structured ingredient data from unstructured text',
+    description:
+      'An advanced AI-driven parser that transforms unstructured grocery lists or recipe ingredients into high-quality structured data. It automatically detects quantities, standardized units, and organizes items into logical supermarket categories like Produce, Dairy, or Pantry.',
+    operationId: 'parse-groceries',
+  })
   @ZodResponse({
     status: 200,
     type: ParseGroceriesResponseDto,

@@ -2,6 +2,12 @@ openapi: 3.0.0
 paths:
   /parse-groceries:
     post:
+      description: >-
+        An advanced AI-driven parser that transforms unstructured grocery lists
+        or recipe ingredients into high-quality structured data. It
+        automatically detects quantities, standardized units, and organizes
+        items into logical supermarket categories like Produce, Dairy, or
+        Pantry.
       operationId: parse-groceries
       parameters: []
       requestBody:
@@ -17,11 +23,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParseGroceriesResponseDto_Output'
-      summary: ''
+      summary: Extract structured ingredient data from unstructured text
       tags:
         - MonAmiChef
   /substitute:
     post:
+      description: >-
+        Provides intelligent, context-aware ingredient alternatives based on the
+        specific dish being prepared. Each suggestion includes adjusted
+        quantities, a detailed explanation of why the substitute works, and an
+        impact score reflecting how much it might change the final flavor or
+        texture.
       operationId: substitute
       parameters: []
       requestBody:
@@ -37,7 +49,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubstituteIngredientsResponseDto_Output'
-      summary: ''
+      summary: Get AI-powered ingredient alternatives based on dish context
       tags:
         - MonAmiChef
   /ask-assistant:
@@ -58,12 +70,16 @@ paths:
         - MonAmiChef
   /health:
     get:
+      description: >-
+        Validates the API's operational status and connectivity to backend
+        services. This endpoint is ideal for monitoring uptime and ensuring the
+        MonAmiChef engine is ready to process requests.
       operationId: health
       parameters: []
       responses:
         '200':
           description: ''
-      summary: ''
+      summary: Verify API operational status and system uptime
       tags:
         - MonAmiChef
 info:

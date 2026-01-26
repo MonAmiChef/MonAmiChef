@@ -7,7 +7,12 @@ import { SkipThrottle } from '@nestjs/throttler';
 @Controller('health')
 export class HealthController {
   @Get()
-  @ApiOperation({ operationId: 'health' })
+  @ApiOperation({
+    summary: 'Verify API operational status and system uptime',
+    description:
+      "Validates the API's operational status and connectivity to backend services. This endpoint is ideal for monitoring uptime and ensuring the MonAmiChef engine is ready to process requests.",
+    operationId: 'health',
+  })
   checkHealth() {
     return {
       status: 'ok',

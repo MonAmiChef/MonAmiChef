@@ -12,7 +12,12 @@ export class AskAssistantController {
   constructor(private askAssistantService: AskAssistantService) {}
 
   @Post()
-  @ApiOperation({ operationId: 'ask-assistant' })
+  @ApiOperation({
+    summary: 'Expert culinary advice for recipes and techniques',
+    description:
+      'A direct line to a specialized culinary AI expert. Use this endpoint to generate complex cooking instructions, ask for professional wine pairings, or get advice on how to fix a recipe. It understands culinary techniques and flavor profiles at a professional level.',
+    operationId: 'ask-assistant',
+  })
   async askAssistant(
     @Body() body: AskAssistantRequestDto,
   ): Promise<AskAssistantResponse> {
