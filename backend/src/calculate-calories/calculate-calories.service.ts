@@ -4,96 +4,87 @@ import {
   CalculateCaloriesResponse,
 } from './calculate-calories.dto';
 
+const ACTIVITY_MULTIPLIERS = {
+  sedentary: 1.2,
+  light: 1.375,
+  moderate: 1.55,
+  active: 1.725,
+  'very active': 1.8,
+  'extra active': 1.9,
+};
+
 @Injectable()
 export class CalculateCaloriesService {
   calculateCalories(
     userInfos: CalculateCaloriesRequestDto,
   ): CalculateCaloriesResponse {
+    const { weight, height, age, gender, physical_activity } = userInfos;
+
     const weightInKg =
-      userInfos.weight.unit === 'lbs'
-        ? userInfos.weight.value * 0.453592
-        : userInfos.weight.value;
+      weight.unit === 'lbs' ? weight.value * 0.453592 : weight.value;
     const heightInCm =
-      userInfos.height.unit === 'inch'
-        ? userInfos.height.value * 2.54
-        : userInfos.height.value;
+      height.unit === 'inch' ? height.value * 2.54 : height.value;
 
-    const genderOffset = userInfos.gender === 'male' ? 5 : -161;
-    const bmr =
-      10 * weightInKg + 6.25 * heightInCm - 5 * userInfos.age + genderOffset;
+    const genderOffset = gender === 'male' ? 5 : -161;
+    const bmr = 10 * weightInKg + 6.25 * heightInCm - 5 * age + genderOffset;
+    const tdee = bmr * ACTIVITY_MULTIPLIERS[physical_activity];
 
-    const activityMultipliers = {
-      sedentary: 1.2,
-      light: 1.375,
-      moderate: 1.55,
-      active: 1.725,
-      'very active': 1.8,
-      'extra active': 1.9,
-    };
-    const tdee = bmr * activityMultipliers[userInfos.physical_activity];
-
-    const generatePlan = (calories: number, weight: number) => {
-      const daily_calories = Math.round(calories);
-      const daily_proteins = Math.round(weight * 2);
-      const daily_fat = Math.round((calories * 0.25) / 9);
-      const daily_carbs = Math.round(
-        (calories - daily_proteins * 4 - daily_fat * 9) / 4,
-      );
-      const daily_fiber = Math.round((calories / 1000) * 14);
-
-      return {
-        daily_calories,
-        daily_proteins,
-        daily_carbs,
-        daily_fat,
-        daily_fiber,
-      };
-    };
+    const createPlan = (
+      targetCalories: number,
+      impactText: string,
+      impactValue: number,
+    ) => ({
+      daily_macros: this.generateMacros(targetCalories, weightInKg),
+      weight_impact: {
+        text: impactText,
+        value: impactValue,
+        unit: weight.unit,
+      },
+    });
 
     return {
       bmr: Math.round(bmr),
       tdee: Math.round(tdee),
       unit: 'kcal/day',
       fluctuation: {
-        extreme_weight_loss: {
-          macros: generatePlan(tdee - 1000, weightInKg),
-          weight_impact:
-            userInfos.weight.unit === 'lbs'
-              ? { text: '-2.2 lbs per week', unit: 'lbs' }
-              : { text: '-1kg per week', unit: 'kgs' },
-        },
-        moderate_weight_loss: {
-          macros: generatePlan(tdee - 500, weightInKg),
-          weight_impact:
-            userInfos.weight.unit === 'lbs'
-              ? { text: '-1.1 lbs per week', unit: 'lbs' }
-              : {
-                  text: '-0.5kg per week',
-                  unit: 'kgs',
-                },
-        },
-        maintain_weight: {
-          macros: generatePlan(tdee, weightInKg),
-          weight_impact:
-            userInfos.weight.unit === 'lbs'
-              ? { text: 'Maintain weight', unit: 'lbs' }
-              : { text: 'Maintain weight', unit: 'kgs' },
-        },
-        moderate_weight_gain: {
-          macros: generatePlan(tdee + 300, weightInKg),
-          weight_impact:
-            userInfos.weight.unit === 'lbs'
-              ? { text: '+1.1 lbs per week', unit: 'lbs' }
-              : { text: '+0.5kg per week', unit: 'kgs' },
-        },
-        extreme_weight_gain: {
-          macros: generatePlan(tdee + 700, weightInKg),
-          weight_impact:
-            userInfos.weight.unit === 'lbs'
-              ? { text: '+2.2 lbs per week', unit: 'lbs' }
-              : { text: '+1kg per week', unit: 'kgs' },
-        },
+        extreme_weight_loss: createPlan(
+          tdee - 1000,
+          weight.unit === 'lbs' ? '-2.2 lbs/week' : '-1kg/week',
+          1,
+        ),
+        moderate_weight_loss: createPlan(
+          tdee - 500,
+          weight.unit === 'lbs' ? '-1.1 lbs/week' : '-0.5kg/week',
+          0.5,
+        ),
+        maintain_weight: createPlan(tdee, 'Maintain weight', 0),
+        moderate_weight_gain: createPlan(
+          tdee + 300,
+          weight.unit === 'lbs' ? '+1.1 lbs/week' : '+0.5kg/week',
+          0.5,
+        ),
+        extreme_weight_gain: createPlan(
+          tdee + 700,
+          weight.unit === 'lbs' ? '+2.2 lbs/week' : '+1kg/week',
+          1,
+        ),
       },
+    };
+  }
+
+  private generateMacros(targetCalories: number, weightInKg: number) {
+    const calories = Math.round(targetCalories);
+    const proteins = Math.round(weightInKg * 2);
+    const fat = Math.round((calories * 0.25) / 9);
+    const carbs = Math.round((calories - proteins * 4 - fat * 9) / 4);
+    const fiber = Math.round((calories / 1000) * 14);
+
+    return {
+      calories,
+      proteins,
+      carbs,
+      fat,
+      fiber,
     };
   }
 }

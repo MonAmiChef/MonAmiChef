@@ -5,13 +5,13 @@ const CalculateCaloriesRequestSchema = z.object({
   age: z.number().min(15).max(80),
   height: z
     .object({
-      value: z.number(),
+      value: z.number().min(50),
       unit: z.enum(['cm', 'inch']),
     })
     .describe('User height'),
   weight: z
     .object({
-      value: z.number(),
+      value: z.number().min(20),
       unit: z.enum(['kgs', 'lbs']),
     })
     .describe('User weight'),
@@ -32,15 +32,21 @@ export class CalculateCaloriesRequestDto extends createZodDto(
   CalculateCaloriesRequestSchema,
 ) {}
 
-const WeightFluctuationObject = z.object({
-  macros: z.object({
-    daily_calories: z.number(),
-    daily_proteins: z.number(),
-    daily_carbs: z.number(),
-    daily_fiber: z.number(),
-    daily_fat: z.number(),
+const MacrosSchema = z.object({
+  calories: z.number().int().positive(),
+  proteins: z.number().positive(),
+  carbs: z.number().positive(),
+  fiber: z.number().nonnegative(),
+  fat: z.number().positive(),
+});
+
+const WeightFluctuationSchema = z.object({
+  daily_macros: MacrosSchema,
+  weight_impact: z.object({
+    text: z.string(),
+    value: z.number(),
+    unit: z.enum(['kgs', 'lbs']),
   }),
-  weight_impact: z.object({ text: z.string(), unit: z.enum(['kgs', 'lbs']) }),
 });
 
 export const CalculateCaloriesResponseSchema = z.object({
@@ -48,14 +54,8 @@ export const CalculateCaloriesResponseSchema = z.object({
   tdee: z
     .number()
     .describe('Total Daily Energy Expenditure (calories burned with activity)'),
-  unit: z.string().default('kcal/day'),
-  fluctuation: z.object({
-    extreme_weight_loss: WeightFluctuationObject,
-    moderate_weight_loss: WeightFluctuationObject,
-    maintain_weight: WeightFluctuationObject,
-    moderate_weight_gain: WeightFluctuationObject,
-    extreme_weight_gain: WeightFluctuationObject,
-  }),
+  unit: z.literal('kcal/day'),
+  fluctuation: z.record(z.string(), WeightFluctuationSchema),
 });
 
 export class CalculateCaloriesResponseDto extends createZodDto(

@@ -32,7 +32,7 @@ describe('CalculateCaloriesService', () => {
       expect(result.bmr).toBeCloseTo(1760, -1);
       expect(result.tdee).toBeCloseTo(3036, -1);
 
-      expect(result.fluctuation.maintain_weight.macros.daily_proteins).toBe(
+      expect(result.fluctuation.maintain_weight.daily_macros.proteins).toBe(
         150,
       );
       expect(result.fluctuation.maintain_weight.weight_impact.text).toContain(
@@ -68,12 +68,12 @@ describe('CalculateCaloriesService', () => {
       const { fluctuation } = result;
 
       expect(
-        fluctuation.extreme_weight_loss.macros.daily_calories,
-      ).toBeLessThan(fluctuation.moderate_weight_loss.macros.daily_calories);
+        fluctuation.extreme_weight_loss.daily_macros.calories,
+      ).toBeLessThan(fluctuation.moderate_weight_loss.daily_macros.calories);
 
       expect(
-        fluctuation.extreme_weight_gain.macros.daily_calories,
-      ).toBeGreaterThan(fluctuation.moderate_weight_gain.macros.daily_calories);
+        fluctuation.extreme_weight_gain.daily_macros.calories,
+      ).toBeGreaterThan(fluctuation.moderate_weight_gain.daily_macros.calories);
     });
 
     it('should calculate fiber based on calorie intake', () => {
@@ -86,9 +86,9 @@ describe('CalculateCaloriesService', () => {
       };
 
       const result = service.calculateCalories(mockUser);
-      const calories = result.fluctuation.maintain_weight.macros.daily_calories;
+      const calories = result.fluctuation.maintain_weight.daily_macros.calories;
       const expectedFiber = Math.round((calories / 1000) * 14);
-      expect(result.fluctuation.maintain_weight.macros.daily_fiber).toBe(
+      expect(result.fluctuation.maintain_weight.daily_macros.fiber).toBe(
         expectedFiber,
       );
     });

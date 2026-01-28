@@ -342,6 +342,7 @@ components:
           properties:
             value:
               type: number
+              minimum: 50
             unit:
               type: string
               enum:
@@ -357,6 +358,7 @@ components:
           properties:
             value:
               type: number
+              minimum: 20
             unit:
               type: string
               enum:
@@ -395,230 +397,73 @@ components:
         bmr:
           type: number
           description: Basal Metabolic Rate (calories burned at rest)
+          x-nestjs_zod-has-const: true
           x-nestjs_zod-parent-additional-properties: false
         tdee:
           type: number
           description: Total Daily Energy Expenditure (calories burned with activity)
+          x-nestjs_zod-has-const: true
           x-nestjs_zod-parent-additional-properties: false
         unit:
           type: string
-          default: kcal/day
+          const: kcal/day
+          x-nestjs_zod-has-const: true
           x-nestjs_zod-parent-additional-properties: false
         fluctuation:
           type: object
-          properties:
-            extreme_weight_loss:
-              type: object
-              properties:
-                macros:
-                  type: object
-                  properties:
-                    daily_calories:
-                      type: number
-                    daily_proteins:
-                      type: number
-                    daily_carbs:
-                      type: number
-                    daily_fiber:
-                      type: number
-                    daily_fat:
-                      type: number
-                  required:
-                    - daily_calories
-                    - daily_proteins
-                    - daily_carbs
-                    - daily_fiber
-                    - daily_fat
-                  additionalProperties: false
-                weight_impact:
-                  type: object
-                  properties:
-                    text:
-                      type: string
-                    unit:
-                      type: string
-                      enum:
-                        - kgs
-                        - lbs
-                  required:
-                    - text
-                    - unit
-                  additionalProperties: false
-              required:
-                - macros
-                - weight_impact
-              additionalProperties: false
-            moderate_weight_loss:
-              type: object
-              properties:
-                macros:
-                  type: object
-                  properties:
-                    daily_calories:
-                      type: number
-                    daily_proteins:
-                      type: number
-                    daily_carbs:
-                      type: number
-                    daily_fiber:
-                      type: number
-                    daily_fat:
-                      type: number
-                  required:
-                    - daily_calories
-                    - daily_proteins
-                    - daily_carbs
-                    - daily_fiber
-                    - daily_fat
-                  additionalProperties: false
-                weight_impact:
-                  type: object
-                  properties:
-                    text:
-                      type: string
-                    unit:
-                      type: string
-                      enum:
-                        - kgs
-                        - lbs
-                  required:
-                    - text
-                    - unit
-                  additionalProperties: false
-              required:
-                - macros
-                - weight_impact
-              additionalProperties: false
-            maintain_weight:
-              type: object
-              properties:
-                macros:
-                  type: object
-                  properties:
-                    daily_calories:
-                      type: number
-                    daily_proteins:
-                      type: number
-                    daily_carbs:
-                      type: number
-                    daily_fiber:
-                      type: number
-                    daily_fat:
-                      type: number
-                  required:
-                    - daily_calories
-                    - daily_proteins
-                    - daily_carbs
-                    - daily_fiber
-                    - daily_fat
-                  additionalProperties: false
-                weight_impact:
-                  type: object
-                  properties:
-                    text:
-                      type: string
-                    unit:
-                      type: string
-                      enum:
-                        - kgs
-                        - lbs
-                  required:
-                    - text
-                    - unit
-                  additionalProperties: false
-              required:
-                - macros
-                - weight_impact
-              additionalProperties: false
-            moderate_weight_gain:
-              type: object
-              properties:
-                macros:
-                  type: object
-                  properties:
-                    daily_calories:
-                      type: number
-                    daily_proteins:
-                      type: number
-                    daily_carbs:
-                      type: number
-                    daily_fiber:
-                      type: number
-                    daily_fat:
-                      type: number
-                  required:
-                    - daily_calories
-                    - daily_proteins
-                    - daily_carbs
-                    - daily_fiber
-                    - daily_fat
-                  additionalProperties: false
-                weight_impact:
-                  type: object
-                  properties:
-                    text:
-                      type: string
-                    unit:
-                      type: string
-                      enum:
-                        - kgs
-                        - lbs
-                  required:
-                    - text
-                    - unit
-                  additionalProperties: false
-              required:
-                - macros
-                - weight_impact
-              additionalProperties: false
-            extreme_weight_gain:
-              type: object
-              properties:
-                macros:
-                  type: object
-                  properties:
-                    daily_calories:
-                      type: number
-                    daily_proteins:
-                      type: number
-                    daily_carbs:
-                      type: number
-                    daily_fiber:
-                      type: number
-                    daily_fat:
-                      type: number
-                  required:
-                    - daily_calories
-                    - daily_proteins
-                    - daily_carbs
-                    - daily_fiber
-                    - daily_fat
-                  additionalProperties: false
-                weight_impact:
-                  type: object
-                  properties:
-                    text:
-                      type: string
-                    unit:
-                      type: string
-                      enum:
-                        - kgs
-                        - lbs
-                  required:
-                    - text
-                    - unit
-                  additionalProperties: false
-              required:
-                - macros
-                - weight_impact
-              additionalProperties: false
-          required:
-            - extreme_weight_loss
-            - moderate_weight_loss
-            - maintain_weight
-            - moderate_weight_gain
-            - extreme_weight_gain
-          additionalProperties: false
+          propertyNames:
+            type: string
+          additionalProperties:
+            type: object
+            properties:
+              daily_macros:
+                type: object
+                properties:
+                  calories:
+                    type: integer
+                    exclusiveMinimum: 0
+                    maximum: 9007199254740991
+                  proteins:
+                    type: number
+                    exclusiveMinimum: 0
+                  carbs:
+                    type: number
+                    exclusiveMinimum: 0
+                  fiber:
+                    type: number
+                    minimum: 0
+                  fat:
+                    type: number
+                    exclusiveMinimum: 0
+                required:
+                  - calories
+                  - proteins
+                  - carbs
+                  - fiber
+                  - fat
+                additionalProperties: false
+              weight_impact:
+                type: object
+                properties:
+                  text:
+                    type: string
+                  value:
+                    type: number
+                  unit:
+                    type: string
+                    enum:
+                      - kgs
+                      - lbs
+                required:
+                  - text
+                  - value
+                  - unit
+                additionalProperties: false
+            required:
+              - daily_macros
+              - weight_impact
+            additionalProperties: false
+          x-nestjs_zod-has-const: true
           x-nestjs_zod-self-required: true
           x-nestjs_zod-parent-additional-properties: false
       required:
