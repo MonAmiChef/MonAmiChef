@@ -54,6 +54,11 @@ paths:
         - MonAmiChef
   /ask-assistant:
     post:
+      description: >-
+        A direct line to a specialized culinary AI expert. Use this endpoint to
+        generate complex cooking instructions, ask for professional wine
+        pairings, or get advice on how to fix a recipe. It understands culinary
+        techniques and flavor profiles at a professional level.
       operationId: ask-assistant
       parameters: []
       requestBody:
@@ -65,7 +70,7 @@ paths:
       responses:
         '201':
           description: ''
-      summary: ''
+      summary: Expert culinary advice for recipes and techniques
       tags:
         - MonAmiChef
   /health:
@@ -88,7 +93,11 @@ info:
   version: '1.0'
   contact: {}
 tags: []
-servers: []
+servers:
+  - url: https://api.monamichef.com
+    description: Production server
+  - url: http://localhost:8888
+    description: Local dev
 components:
   securitySchemes:
     X-API-KEY:
