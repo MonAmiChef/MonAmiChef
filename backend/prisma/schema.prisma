@@ -51,7 +51,8 @@ model User {
   created_at DateTime?     @default(now()) @db.Date
   updated_at DateTime?     @db.Date
 
-  rapidApiKeyId String? @unique @map("rapid_api_key_id")
+  username  String @unique
+  password  String
 
   chats      ChatSession[]
   recipes Recipe[]

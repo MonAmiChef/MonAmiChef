@@ -35,6 +35,8 @@ import { GeneralAskService } from './general-ask/general-ask.service';
 import { HealthController } from './health/health.controller';
 import { CalculateCaloriesController } from './calculate-calories/calculate-calories.controller';
 import { CalculateCaloriesService } from './calculate-calories/calculate-calories.service';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Catch()
 class GlobalExceptionFilter extends BaseExceptionFilter {
@@ -91,6 +93,8 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     ConfigModule.forRoot({ isGlobal: true }),
     RecipeCacheModule,
     HashingModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [
     ParserController,
