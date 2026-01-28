@@ -25,6 +25,8 @@ async function bootstrap() {
   const configBuilder = new DocumentBuilder()
     .setTitle('MonAmiChef')
     .setDescription('The MonAmiChef API documentation')
+    .addServer('https://api.monamichef.com', 'Production server')
+    .addServer('http://localhost:8888', 'Local dev')
     .setVersion('1.0');
 
   if (process.env.NODE_ENV === 'development') {

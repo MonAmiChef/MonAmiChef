@@ -116,7 +116,11 @@ info:
   version: '1.0'
   contact: {}
 tags: []
-servers: []
+servers:
+  - url: https://api.monamichef.com
+    description: Production server
+  - url: http://localhost:8888
+    description: Local dev
 components:
   securitySchemes:
     X-API-KEY:
