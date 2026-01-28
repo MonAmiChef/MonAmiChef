@@ -127,6 +127,14 @@ paths:
         '201':
           description: ''
       tags: *ref_0
+  /app/profile:
+    get:
+      operationId: AppController_getProfile
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
 info:
   title: MonAmiChef
   description: The MonAmiChef API documentation
