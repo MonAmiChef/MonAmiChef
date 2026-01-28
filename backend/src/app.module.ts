@@ -33,6 +33,8 @@ import { AskAssistantController } from './ask-assistant/ask-assistant.controller
 import { AskAssistantService } from './ask-assistant/ask-assistant.service';
 import { GeneralAskService } from './general-ask/general-ask.service';
 import { HealthController } from './health/health.controller';
+import { CalculateCaloriesController } from './calculate-calories/calculate-calories.controller';
+import { CalculateCaloriesService } from './calculate-calories/calculate-calories.service';
 
 @Catch()
 class GlobalExceptionFilter extends BaseExceptionFilter {
@@ -95,6 +97,7 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     SubstituteController,
     AskAssistantController,
     HealthController,
+    CalculateCaloriesController,
   ],
   providers: [
     ParseGroceriesService,
@@ -119,6 +122,7 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     SubstituteService,
     AskAssistantService,
     GeneralAskService,
+    CalculateCaloriesService,
   ],
 })
 export class AppModule {}
