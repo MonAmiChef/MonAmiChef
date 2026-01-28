@@ -37,6 +37,7 @@ import { CalculateCaloriesController } from './calculate-calories/calculate-calo
 import { CalculateCaloriesService } from './calculate-calories/calculate-calories.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { AppController } from './app/app.controller';
 
 @Catch()
 class GlobalExceptionFilter extends BaseExceptionFilter {
@@ -102,6 +103,7 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     AskAssistantController,
     HealthController,
     CalculateCaloriesController,
+    AppController,
   ],
   providers: [
     ParseGroceriesService,

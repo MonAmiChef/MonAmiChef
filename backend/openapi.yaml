@@ -110,6 +110,15 @@ paths:
       summary: Calculate your recommended daily nutrition intake according to your goal
       tags:
         - MonAmiChef
+  /app/auth/login:
+    post:
+      operationId: AppController_login
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - App
 info:
   title: MonAmiChef
   description: The MonAmiChef API documentation

@@ -1,26 +1,25 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { User } from '@prisma/client';
-import { UsersRepository } from './users.repository';
+import { Injectable } from '@nestjs/common';
+
+// This should be a real class/interface representing a user entity
+export type User = any;
 
 @Injectable()
 export class UsersService {
-  constructor(private usersRepository: UsersRepository) {}
+  private readonly users = [
+    {
+      userId: 1,
+      username: 'john',
+      password: 'changeme',
+    },
+    {
+      userId: 2,
+      username: 'maria',
+      password: 'guess',
+    },
+  ];
 
-  async findUserByUsername({
-    username,
-  }: {
-    username: string;
-  }): Promise<User | null> {
-    const user = await this.usersRepository.findUserByUsername({
-      username,
-    });
-
-    if (!user) {
-      throw new NotFoundException(
-        `User with user ${username} nor found, returning null`,
-      );
-    }
-
-    return user;
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+  findOne(username: string): User | undefined {
+    return this.users.find((user) => user.username === username);
   }
 }

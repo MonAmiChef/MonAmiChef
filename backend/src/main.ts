@@ -7,7 +7,6 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConsoleLogger } from '@nestjs/common';
 import { dump } from 'js-yaml';
 import * as fs from 'fs';
-import { ApikeyGuard } from './api-key/api-key.guard';
 import helmet from 'helmet';
 
 async function bootstrap() {
@@ -17,8 +16,6 @@ async function bootstrap() {
       logLevels: ['log', 'debug', 'error', 'warn'],
     }),
   });
-
-  app.useGlobalGuards(new ApikeyGuard());
 
   app.use(helmet());
 
