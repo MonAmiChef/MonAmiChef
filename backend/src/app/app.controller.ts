@@ -4,14 +4,17 @@
 import { Controller, Request, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { SkipThrottle } from '@nestjs/throttler';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('app')
 @SkipThrottle()
 export class AppController {
+  constructor(private AuthService: AuthService) {}
+
   @UseGuards(AuthGuard('local'))
   @Post('auth/login')
   login(@Request() req) {
-    return req.user;
+    return this.AuthService.login(req.user);
   }
 
   @UseGuards(AuthGuard('local'))

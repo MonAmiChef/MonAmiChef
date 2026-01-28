@@ -117,8 +117,16 @@ paths:
       responses:
         '201':
           description: ''
-      tags:
+      tags: &ref_0
         - App
+  /app/auth/logout:
+    post:
+      operationId: AppController_logout
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags: *ref_0
 info:
   title: MonAmiChef
   description: The MonAmiChef API documentation
