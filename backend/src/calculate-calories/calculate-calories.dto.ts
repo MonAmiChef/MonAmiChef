@@ -44,7 +44,7 @@ const WeightFluctuationSchema = z.object({
   daily_macros: MacrosSchema,
   weight_impact: z.object({
     text: z.string(),
-    value: z.number(),
+    variation: z.number(),
     unit: z.enum(['kgs', 'lbs']),
   }),
 });

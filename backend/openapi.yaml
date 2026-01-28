@@ -447,7 +447,7 @@ components:
                 properties:
                   text:
                     type: string
-                  value:
+                  variation:
                     type: number
                   unit:
                     type: string
@@ -456,7 +456,7 @@ components:
                       - lbs
                 required:
                   - text
-                  - value
+                  - variation
                   - unit
                 additionalProperties: false
             required:

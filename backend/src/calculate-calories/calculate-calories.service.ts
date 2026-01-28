@@ -37,7 +37,7 @@ export class CalculateCaloriesService {
       daily_macros: this.generateMacros(targetCalories, weightInKg),
       weight_impact: {
         text: impactText,
-        value: impactValue,
+        variation: impactValue,
         unit: weight.unit,
       },
     });
@@ -50,23 +50,23 @@ export class CalculateCaloriesService {
         extreme_weight_loss: createPlan(
           tdee - 1000,
           weight.unit === 'lbs' ? '-2.2 lbs/week' : '-1kg/week',
-          1,
+          weight.unit === 'lbs' ? -2.2 : -1,
         ),
         moderate_weight_loss: createPlan(
           tdee - 500,
           weight.unit === 'lbs' ? '-1.1 lbs/week' : '-0.5kg/week',
-          0.5,
+          weight.unit === 'lbs' ? -1.1 : -0.5,
         ),
         maintain_weight: createPlan(tdee, 'Maintain weight', 0),
         moderate_weight_gain: createPlan(
           tdee + 300,
           weight.unit === 'lbs' ? '+1.1 lbs/week' : '+0.5kg/week',
-          0.5,
+          weight.unit === 'lbs' ? 1.1 : 0.5,
         ),
         extreme_weight_gain: createPlan(
           tdee + 700,
           weight.unit === 'lbs' ? '+2.2 lbs/week' : '+1kg/week',
-          1,
+          weight.unit === 'lbs' ? 2.2 : 1,
         ),
       },
     };
