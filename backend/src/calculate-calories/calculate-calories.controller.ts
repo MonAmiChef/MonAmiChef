@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   CalculateCaloriesRequestDto,
   CalculateCaloriesResponseDto,
@@ -7,6 +7,7 @@ import {
 import { CalculateCaloriesService } from './calculate-calories.service';
 import { ZodResponse } from 'nestjs-zod';
 
+@ApiTags('MonAmiChef')
 @Controller('calculate-calories')
 export class CalculateCaloriesController {
   constructor(private calculateCaloriesService: CalculateCaloriesService) {}

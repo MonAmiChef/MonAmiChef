@@ -109,7 +109,7 @@ paths:
                 $ref: '#/components/schemas/CalculateCaloriesResponseDto_Output'
       summary: Calculate your recommended daily nutrition intake according to your goal
       tags:
-        - CalculateCalories
+        - MonAmiChef
 info:
   title: MonAmiChef
   description: The MonAmiChef API documentation
