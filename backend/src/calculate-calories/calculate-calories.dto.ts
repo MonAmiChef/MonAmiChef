@@ -33,11 +33,11 @@ export class CalculateCaloriesRequestDto extends createZodDto(
 ) {}
 
 const MacrosSchema = z.object({
-  calories: z.number().int().positive(),
-  proteins: z.number().positive(),
-  carbs: z.number().positive(),
-  fiber: z.number().nonnegative(),
-  fat: z.number().positive(),
+  calories: z.number().min(0),
+  proteins: z.number().min(0),
+  carbs: z.number().min(0),
+  fiber: z.number().min(0),
+  fat: z.number().min(0),
 });
 
 const WeightFluctuationSchema = z.object({
