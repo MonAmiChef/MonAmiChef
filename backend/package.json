@@ -30,6 +30,7 @@
     "@nestjs/throttler": "^6.5.0",
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
+    "@supabase/supabase-js": "^2.93.3",
     "helmet": "^8.1.0",
     "js-yaml": "^4.1.1",
     "nestjs-zod": "^5.1.1",
@@ -71,7 +72,10 @@
       "json",
       "ts"
     ],
-    "modulePathIgnorePatterns": ["main.ts", ".module."],
+    "modulePathIgnorePatterns": [
+      "main.ts",
+      ".module."
+    ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {

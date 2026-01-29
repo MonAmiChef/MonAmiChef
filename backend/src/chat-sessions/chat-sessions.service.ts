@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ChatSessionsRepository } from './chat-sessions.repository';
 import { MessageRole } from '@prisma/client';
-import { AiAssistantService } from 'src/ai-assistant/ai-assistant.service';
+import { AiAssistantService } from '../ai-assistant/ai-assistant.service';
 import {
   CreateChatSessionResponse,
   GetAllChatsSessionResponse,

@@ -5,7 +5,7 @@ import {
   AskAssistantResponse,
 } from './ask-assistant.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ApikeyGuard } from 'src/api-key/api-key.guard';
+import { ApikeyGuard } from '../api-key/api-key.guard';
 
 @ApiTags('MonAmiChef')
 @UseGuards(ApikeyGuard)

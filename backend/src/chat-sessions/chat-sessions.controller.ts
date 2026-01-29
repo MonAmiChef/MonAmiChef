@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ChatSessionsService } from './chat-sessions.service';
 import {
   CreateChatSessionRequestDto,
@@ -9,8 +17,13 @@ import {
   UpdateChatSessionResponseDto,
 } from './chat-sessions.dto';
 import { ZodResponse } from 'nestjs-zod';
+import {
+  type AuthenticatedRequest,
+  SupabaseGuard,
+} from '../supabase-guard/supabase.guard';
 
 @Controller('chat-sessions')
+@UseGuards(SupabaseGuard)
 export class ChatSessionsController {
   constructor(private chatSessionsService: ChatSessionsService) {}
 
@@ -28,9 +41,9 @@ export class ChatSessionsController {
     status: 200,
     type: GetAllChatsSessionResponseDto,
   })
-  async getAllUserChats() {
+  async getAllUserChats(@Req() req: AuthenticatedRequest) {
     return this.chatSessionsService.getAllUserChats({
-      userId: '475ce6c1-38b2-4956-87aa-68aa76958640',
+      userId: req.user.id,
     });
   }
 
@@ -39,9 +52,12 @@ export class ChatSessionsController {
     status: 200,
     type: CreateChatSessionResponseDto,
   })
-  async createChat(@Body() body: CreateChatSessionRequestDto) {
+  async createChat(
+    @Body() body: CreateChatSessionRequestDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
     return this.chatSessionsService.createChat({
-      userId: '475ce6c1-38b2-4956-87aa-68aa76958640',
+      userId: req.user.id,
       message: body.firstMessage,
     });
   }
