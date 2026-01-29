@@ -17,7 +17,12 @@ async function bootstrap() {
     }),
   });
 
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy:
+        process.env.NODE_ENV === 'production' ? undefined : false,
+    }),
+  );
 
   const configBuilder = new DocumentBuilder()
     .setTitle('MonAmiChef')
@@ -37,7 +42,10 @@ async function bootstrap() {
 
   const config = configBuilder.build();
 
-  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || '*';
+  const allowedOrigins =
+    process.env.NODE_ENV === 'development'
+      ? '*'
+      : process.env.ALLOWED_ORIGINS?.split(',') || [];
 
   app.enableCors({
     origin: allowedOrigins,
@@ -57,7 +65,7 @@ async function bootstrap() {
 
   const port = process.env.PORT || 8888;
 
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
 
   console.log(`Application is running on port: ${port}`);
 }
