@@ -20,8 +20,8 @@ export class SupabaseGuard implements CanActivate {
 
   constructor() {
     this.supabase = createClient(
-      process.env.DATABASE_URL ?? '',
-      process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE ?? '',
+      process.env.SUPABASE_URL ?? '',
+      process.env.SUPABASE_API_KEY ?? '',
     );
   }
 
