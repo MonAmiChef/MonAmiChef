@@ -6,6 +6,18 @@ import { PrismaService } from 'src/prisma.service';
 export class ChatSessionsRepository {
   constructor(private prismaService: PrismaService) {}
 
+  async getAllUserChats({
+    userId,
+  }: {
+    userId: string;
+  }): Promise<ChatSession[]> {
+    return this.prismaService.chatSession.findMany({
+      where: {
+        userId,
+      },
+    });
+  }
+
   async getChat({
     chatId,
   }: {

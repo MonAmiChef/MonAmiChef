@@ -3,6 +3,7 @@ import { ChatSessionsService } from './chat-sessions.service';
 import {
   CreateChatSessionRequestDto,
   CreateChatSessionResponseDto,
+  GetAllChatsSessionResponseDto,
   GetChatSessionResponseDto,
   UpdateChatSessionRequestDto,
   UpdateChatSessionResponseDto,
@@ -20,6 +21,17 @@ export class ChatSessionsController {
   })
   async getChat(@Param('id') chatId: string) {
     return this.chatSessionsService.getChat({ chatId });
+  }
+
+  @Get()
+  @ZodResponse({
+    status: 200,
+    type: GetAllChatsSessionResponseDto,
+  })
+  async getAllUserChats() {
+    return this.chatSessionsService.getAllUserChats({
+      userId: '475ce6c1-38b2-4956-87aa-68aa76958640',
+    });
   }
 
   @Post()

@@ -55,6 +55,7 @@ model ChatSession {
   createdAt DateTime  @default(now()) @db.Timestamp(6)
   updatedAt DateTime  @default(now()) @updatedAt
   userId    String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title     String    @default("Chat")
   User      User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   messages  Message[]
 }

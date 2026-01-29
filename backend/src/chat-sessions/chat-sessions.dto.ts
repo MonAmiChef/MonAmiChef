@@ -60,7 +60,7 @@ export class UpdateChatSessionResponseDto extends createZodDto(
   UpdateChatSessionResponseSchema,
 ) {}
 
-// GET
+// GET SINGLE CHAT
 
 const GetChatSessionResponseSchema = z.object({
   id: z.uuid(),
@@ -76,4 +76,23 @@ export type GetChatSessionResponse = z.output<
 
 export class GetChatSessionResponseDto extends createZodDto(
   GetChatSessionResponseSchema,
+) {}
+
+// GET ALL USERS CHAT
+
+const GetAllChatsSessionResponseSchema = z.array(
+  z.object({
+    id: z.uuid(),
+    title: z.string(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+  }),
+);
+
+export type GetAllChatsSessionResponse = z.output<
+  typeof GetAllChatsSessionResponseSchema
+>;
+
+export class GetAllChatsSessionResponseDto extends createZodDto(
+  GetAllChatsSessionResponseSchema,
 ) {}

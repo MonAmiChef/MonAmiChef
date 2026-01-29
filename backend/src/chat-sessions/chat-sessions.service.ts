@@ -4,6 +4,7 @@ import { MessageRole } from '@prisma/client';
 import { AiAssistantService } from 'src/ai-assistant/ai-assistant.service';
 import {
   CreateChatSessionResponse,
+  GetAllChatsSessionResponse,
   GetChatSessionResponse,
   UpdateChatSessionResponse,
 } from './chat-sessions.dto';
@@ -14,6 +15,21 @@ export class ChatSessionsService {
     private chatSessionsRepository: ChatSessionsRepository,
     private aiAssistantService: AiAssistantService,
   ) {}
+
+  async getAllUserChats({
+    userId,
+  }: {
+    userId: string;
+  }): Promise<GetAllChatsSessionResponse> {
+    const chats = await this.chatSessionsRepository.getAllUserChats({ userId });
+
+    return chats.map((chat) => ({
+      id: chat.id,
+      title: chat.title,
+      createdAt: chat.createdAt.toISOString(),
+      updatedAt: chat.updatedAt.toISOString(),
+    }));
+  }
 
   async getChat({
     chatId,
