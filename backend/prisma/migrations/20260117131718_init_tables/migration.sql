@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "MessageRole" AS ENUM ('user', 'assistant');
+CREATE TYPE "MessageRole" AS ENUM ('user', 'model');
 
 -- CreateEnum
 CREATE TYPE "RecipeCacheType" AS ENUM ('extraction', 'substitution');

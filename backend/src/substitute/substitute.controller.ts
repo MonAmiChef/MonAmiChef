@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { SubstituteService } from './substitute.service';
 import { ZodResponse } from 'nestjs-zod';
 import {
@@ -6,8 +6,10 @@ import {
   SubstituteIngredientsResponseDto,
 } from './substitute.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApikeyGuard } from 'src/api-key/api-key.guard';
 
 @ApiTags('MonAmiChef')
+@UseGuards(ApikeyGuard)
 @Controller('substitute')
 export class SubstituteController {
   constructor(private substituteService: SubstituteService) {}

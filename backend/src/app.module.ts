@@ -35,6 +35,11 @@ import { GeneralAskService } from './general-ask/general-ask.service';
 import { HealthController } from './health/health.controller';
 import { CalculateCaloriesController } from './calculate-calories/calculate-calories.controller';
 import { CalculateCaloriesService } from './calculate-calories/calculate-calories.service';
+import { ChatSessionsController } from './chat-sessions/chat-sessions.controller';
+import { ChatSessionsService } from './chat-sessions/chat-sessions.service';
+import { ChatSessionsModule } from './chat-sessions/chat-sessions.module';
+import { ChatSessionsRepository } from './chat-sessions/chat-sessions.repository';
+import { PrismaService } from './prisma.service';
 
 @Catch()
 class GlobalExceptionFilter extends BaseExceptionFilter {
@@ -90,6 +95,7 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     ]),
     ConfigModule.forRoot({ isGlobal: true }),
     RecipeCacheModule,
+    ChatSessionsModule,
     HashingModule,
   ],
   controllers: [
@@ -98,9 +104,12 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     AskAssistantController,
     HealthController,
     CalculateCaloriesController,
+    ChatSessionsController,
   ],
   providers: [
     ParseGroceriesService,
+    PrismaService,
+    ChatSessionsRepository,
     AiAssistantService,
     {
       provide: APP_PIPE,
@@ -123,6 +132,7 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     AskAssistantService,
     GeneralAskService,
     CalculateCaloriesService,
+    ChatSessionsService,
   ],
 })
 export class AppModule {}
