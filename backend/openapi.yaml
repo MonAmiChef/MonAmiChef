@@ -110,6 +110,76 @@ paths:
       summary: Calculate your recommended daily nutrition intake according to your goal
       tags:
         - MonAmiChef
+  /chat-sessions/{id}:
+    get:
+      operationId: ChatSessionsController_getChat
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetChatSessionResponseDto_Output'
+      tags: &ref_0
+        - ChatSessions
+  /chat-sessions:
+    get:
+      operationId: ChatSessionsController_getAllUserChats
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllChatsSessionResponseDto_Output'
+      tags: *ref_0
+    post:
+      operationId: ChatSessionsController_createChat
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChatSessionRequestDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateChatSessionResponseDto_Output'
+      tags: *ref_0
+  /chat-sessions/{id}/messages:
+    post:
+      operationId: ChatSessionsController_updateChat
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateChatSessionRequestDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateChatSessionResponseDto_Output'
+      tags: *ref_0
 info:
   title: MonAmiChef
   description: The MonAmiChef API documentation
@@ -474,5 +544,186 @@ components:
         - tdee
         - unit
         - fluctuation
+    GetChatSessionResponseDto_Output:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: >-
+            ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          x-nestjs_zod-parent-additional-properties: false
+        name:
+          type: string
+          x-nestjs_zod-parent-additional-properties: false
+        messages:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              chatId:
+                type: string
+              role:
+                type: string
+                enum:
+                  - user
+                  - model
+              content:
+                type: string
+            required:
+              - id
+              - chatId
+              - role
+              - content
+            additionalProperties: false
+          x-nestjs_zod-parent-additional-properties: false
+        createdAt:
+          type: string
+          x-nestjs_zod-parent-additional-properties: false
+        updatedAt:
+          type: string
+          x-nestjs_zod-parent-additional-properties: false
+      required:
+        - id
+        - name
+        - messages
+        - createdAt
+        - updatedAt
+    GetAllChatsSessionResponseDto_Output:
+      type: object
+      properties:
+        root:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                pattern: >-
+                  ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+              title:
+                type: string
+              createdAt:
+                type: string
+              updatedAt:
+                type: string
+            required:
+              - id
+              - title
+              - createdAt
+              - updatedAt
+            additionalProperties: false
+          x-nestjs_zod-unwrap-root: true
+    CreateChatSessionRequestDto:
+      type: object
+      properties:
+        firstMessage:
+          type: string
+      required:
+        - firstMessage
+    CreateChatSessionResponseDto_Output:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: >-
+            ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          x-nestjs_zod-parent-additional-properties: false
+        name:
+          type: string
+          x-nestjs_zod-parent-additional-properties: false
+        messages:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              chatId:
+                type: string
+              role:
+                type: string
+                enum:
+                  - user
+                  - model
+              content:
+                type: string
+            required:
+              - id
+              - chatId
+              - role
+              - content
+            additionalProperties: false
+          x-nestjs_zod-parent-additional-properties: false
+        createdAt:
+          type: string
+          x-nestjs_zod-parent-additional-properties: false
+        updatedAt:
+          type: string
+          x-nestjs_zod-parent-additional-properties: false
+      required:
+        - id
+        - name
+        - messages
+        - createdAt
+        - updatedAt
+    UpdateChatSessionRequestDto:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+    UpdateChatSessionResponseDto_Output:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: >-
+            ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          x-nestjs_zod-parent-additional-properties: false
+        name:
+          type: string
+          x-nestjs_zod-parent-additional-properties: false
+        messages:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              chatId:
+                type: string
+              role:
+                type: string
+                enum:
+                  - user
+                  - model
+              content:
+                type: string
+            required:
+              - id
+              - chatId
+              - role
+              - content
+            additionalProperties: false
+          x-nestjs_zod-parent-additional-properties: false
+        createdAt:
+          type: string
+          x-nestjs_zod-parent-additional-properties: false
+        updatedAt:
+          type: string
+          x-nestjs_zod-parent-additional-properties: false
+      required:
+        - id
+        - name
+        - messages
+        - createdAt
+        - updatedAt
 security:
   - X-API-KEY: []

@@ -18,12 +18,50 @@ import {
   GeneralAskResponseJson,
   GeneralAskResponseSchema,
 } from '../general-ask/general-ask.dto';
+import { Message } from '@prisma/client';
 
 const DEFAULT_GEMINI_MODEL = 'gemini-3-flash-preview';
 
 @Injectable()
 export class AiAssistantService {
   private ai = new GoogleGenAI({});
+
+  async chat({
+    messages,
+    newMessage,
+  }: {
+    messages: Message[];
+    newMessage: string;
+  }) {
+    const userMessages: { text: string }[] = [];
+    const modelMessages: { text: string }[] = [];
+
+    messages.forEach((message) =>
+      message.role === 'user'
+        ? userMessages.push({ text: message.content })
+        : modelMessages.push({ text: message.content }),
+    );
+
+    const chat = this.ai.chats.create({
+      model: process.env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL,
+      history: [
+        {
+          role: 'user',
+          parts: userMessages,
+        },
+        {
+          role: 'model',
+          parts: modelMessages,
+        },
+      ],
+    });
+
+    const response = await chat.sendMessage({
+      message: newMessage,
+    });
+
+    return response.text;
+  }
 
   async parseGroceries({
     text,

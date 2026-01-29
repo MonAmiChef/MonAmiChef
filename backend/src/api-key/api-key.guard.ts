@@ -18,10 +18,6 @@ export class ApikeyGuard implements CanActivate {
     const rapidApiSecret = request.headers['x-rapidapi-proxy-secret'];
     const localApiKey = request.headers['x-api-key'];
 
-    if (request.path === '/health') {
-      return true;
-    }
-
     if (
       rapidApiSecret &&
       rapidApiSecret === process.env.RAPIDAPI_PROXY_SECRET

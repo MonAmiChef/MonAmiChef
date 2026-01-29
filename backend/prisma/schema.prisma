@@ -8,60 +8,56 @@ datasource db {
 }
 
 model Ingredient {
-  id String @id @default(uuid())
-  name String
+  id       String  @id @default(uuid())
+  name     String
   quantity Float
-  unit String
+  unit     String
   category String?
-  rawText String?
-
+  rawText  String?
   recipeId String
-  recipe Recipe @relation(fields: [recipeId], references: [id])
+  recipe   Recipe  @relation(fields: [recipeId], references: [id])
 }
 
 model Recipe {
-  id String @id @default(uuid())
-  name String
-
-  prepTimeMin Int?
-  servings Int?
-  difficulty String?
-
-  calories Float?
-  proteins Float?
-  carbs Float?
-  fat Float?
-  fibers Float?
-
-  isVegetarian Boolean @default(false)
-  isVegan Boolean @default(false)
-  isGlutenFree Boolean @default(false)
-  isDairyFree Boolean @default(false)
-
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  ingredients Ingredient[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String       @id @default(uuid())
+  name         String
+  prepTimeMin  Int?
+  servings     Int?
+  difficulty   String?
+  calories     Float?
+  proteins     Float?
+  carbs        Float?
+  fat          Float?
+  fibers       Float?
+  isVegetarian Boolean      @default(false)
+  isVegan      Boolean      @default(false)
+  isGlutenFree Boolean      @default(false)
+  isDairyFree  Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  userId       String       @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ingredients  Ingredient[]
+  user         User         @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model User {
-  id         String        @id @default(uuid())
-  created_at DateTime?     @default(now()) @db.Date
-  updated_at DateTime?     @db.Date
-
-  rapidApiKeyId String? @unique @map("rapid_api_key_id")
-
-  chats      ChatSession[]
-  recipes Recipe[]
+  createdAt DateTime?     @default(now()) @db.Date
+  password  String
+  updatedAt DateTime?     @db.Date
+  username  String        @unique
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  chats     ChatSession[]
+  recipes   Recipe[]
 }
 
 model ChatSession {
-  id       String    @id @default(uuid())
-  userId   String
-  User     User      @relation(fields: [userId], references: [id])
-  messages Message[]
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @default(now()) @updatedAt
+  userId    String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title     String    @default("Chat")
+  User      User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  messages  Message[]
 }
 
 model Message {
@@ -73,16 +69,16 @@ model Message {
 }
 
 model RecipeCache {
-  id        String              @id @default(uuid())
-  createdAt DateTime            @default(now())
-  aiResponseJson      Json
-  inputHash String              @unique
-  type      RecipeCacheType
+  id             String          @id @default(uuid())
+  createdAt      DateTime        @default(now())
+  aiResponseJson Json
+  inputHash      String          @unique
+  type           RecipeCacheType
 }
 
 enum MessageRole {
   user
-  assistant
+  model
 }
 
 enum RecipeCacheType {
