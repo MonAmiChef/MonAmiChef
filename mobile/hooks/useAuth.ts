@@ -15,10 +15,15 @@ export const useAuth = () => {
       password,
     });
     if (error) {
-      Alert.alert('Erreur de connexion', error.message);
+      Toast.show({
+        type: 'error',
+        text1: 'Erreur de connexion',
+        text2: error.message,
+      });
+    } else {
+      router.replace('/(main)');
     }
     setLoading(false);
-    router.replace('/(main)');
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
