@@ -42,7 +42,6 @@ model Recipe {
 
 model User {
   createdAt DateTime?     @default(now()) @db.Date
-  password  String
   updatedAt DateTime?     @db.Date
   username  String        @unique
   id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid

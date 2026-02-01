@@ -594,7 +594,7 @@ components:
     GetAllChatsSessionResponseDto_Output:
       type: object
       properties:
-        root:
+        chats:
           type: array
           items:
             type: object
@@ -616,7 +616,9 @@ components:
               - createdAt
               - updatedAt
             additionalProperties: false
-          x-nestjs_zod-unwrap-root: true
+          x-nestjs_zod-parent-additional-properties: false
+      required:
+        - chats
     CreateChatSessionRequestDto:
       type: object
       properties:
