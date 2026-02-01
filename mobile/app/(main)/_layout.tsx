@@ -13,9 +13,25 @@ import { useAuth } from '@/hooks/useAuth';
 import React from 'react';
 import { User, Menu } from 'lucide-react-native';
 import { DrawerActions } from '@react-navigation/native';
+import { chatApi } from '@/services/api';
+import { useQuery } from '@tanstack/react-query';
+import { ActivityIndicator } from 'react-native';
 
 function CustomDrawerContent(props: any) {
   const router = useRouter();
+  const { session } = useAuth();
+
+  const { data: sessions, isLoading } = useQuery({
+    queryKey: ['chat-sessions'],
+    queryFn: async () => {
+      if (!session) throw new Error('Session not found');
+      const chats = await chatApi.getAllUserSessions(session);
+      console.log('chasts', chats);
+      return chats;
+    },
+    enabled: !!session,
+    staleTime: 1000 * 60 * 5,
+  });
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -24,25 +40,31 @@ function CustomDrawerContent(props: any) {
 
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
-      <Box className="p-5 border-b border-background-200">
-        <Text className="text-xl font-inter-bold">MonAmiChef</Text>
-        <Text className="text-xs text-gray-500">Assistant Culinaire IA</Text>
+      <Box className="p-5 border-b border-slate-100">
+        <Text className="text-xl font-bold">Mes Conversations</Text>
       </Box>
 
-      {/* ICI : Affiche les écrans définis dans le Drawer (Nouveau Chat) */}
-      <Box className="flex-1 mt-4">
-        <DrawerItemList {...props} />
-      </Box>
-
-      <Box className="p-5 border-t border-background-200">
-        <Button
-          size="sm"
-          variant="outline"
-          action="negative"
-          onPress={() => void handleLogout()}
-        >
-          <ButtonText>Déconnexion</ButtonText>
-        </Button>
+      <Box className="flex-1 mt-2">
+        {isLoading ? (
+          <ActivityIndicator className="mt-4" />
+        ) : sessions && sessions.root ? (
+          sessions.root.map((chat) => (
+            <Pressable
+              key={chat.id}
+              onPress={() =>
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+                props.navigation.navigate('chat/[id]', { id: chat.id })
+              }
+              className="px-5 py-3 active:bg-slate-100"
+            >
+              <Text numberOfLines={1} className="text-slate-700">
+                {chat.title || 'Nouvelle discussion'}
+              </Text>
+            </Pressable>
+          ))
+        ) : (
+          <Text>Failed to retrieve sessions</Text>
+        )}
       </Box>
     </DrawerContentScrollView>
   );
@@ -55,6 +77,7 @@ export default function MainLayout() {
       screenOptions={({ navigation }) => ({
         headerShown: true,
         headerTitle: 'MonAmiChef',
+        overlayColor: 'rgba(0,0,0,0.5)',
         headerTitleStyle: {
           fontFamily: 'Inter_600SemiBold',
         },
@@ -80,7 +103,6 @@ export default function MainLayout() {
         headerStyle: {
           backgroundColor: 'transparent',
         },
-        headerStatusBarHeight: 70,
         headerTintColor: '#000',
       })}
     >

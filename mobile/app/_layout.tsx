@@ -18,6 +18,7 @@ import {
   useFonts,
 } from '@expo-google-fonts/inter';
 import '../global.css';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 SplashScreen.preventAutoHideAsync();
@@ -43,7 +44,9 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
-        <RootLayoutNav />
+        <KeyboardProvider>
+          <RootLayoutNav />
+        </KeyboardProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
   );
@@ -53,8 +56,8 @@ function RootLayoutNav() {
   const [colorMode] = useState<'light' | 'dark'>('light');
 
   return (
-    <GluestackUIProvider mode={colorMode}>
-      <ThemeProvider value={colorMode === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorMode === 'dark' ? DarkTheme : DefaultTheme}>
+      <GluestackUIProvider mode={colorMode}>
         <Stack>
           <Stack.Screen
             name="(auth)"
@@ -65,8 +68,8 @@ function RootLayoutNav() {
             options={{ animation: 'fade', headerShown: false }}
           />
         </Stack>
-      </ThemeProvider>
-      <Toast />
-    </GluestackUIProvider>
+        <Toast />
+      </GluestackUIProvider>
+    </ThemeProvider>
   );
 }
