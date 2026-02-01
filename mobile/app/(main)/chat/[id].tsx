@@ -1,8 +1,7 @@
 import { useAuth } from '@/hooks/useAuth';
 import { chatApi } from '@/services/api';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, Text, View } from 'react-native';
 
 export default function ChatScreen() {
@@ -12,17 +11,14 @@ export default function ChatScreen() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['chat-session', id],
     queryFn: async () => {
-      // console.log('se', session, id);
       if (!session?.access_token) throw new Error('Session manquante');
       const queryData = await chatApi.getSession(id, session);
-      // console.log('querysData', queryData);
+      console.log('querysData', queryData);
       return queryData;
     },
-    // IMPORTANT : La requête ne part que si on a l'ID et la SESSION
     enabled: !!id && !!session,
   });
 
-  // 1. On gère l'attente de l'auth ou du chargement API
   if (isAuthLoading || (isLoading && !!session)) {
     return (
       <View className="flex-1 justify-center items-center bg-white">
@@ -34,7 +30,6 @@ export default function ChatScreen() {
     );
   }
 
-  // 2. On gère l'absence de session (redirection ou message)
   if (!session && !isAuthLoading) {
     return (
       <View className="flex-1 justify-center items-center">
@@ -44,7 +39,7 @@ export default function ChatScreen() {
   }
 
   if (error) {
-    return <Text>Erreur : {(error as Error).message}</Text>;
+    return <Text>Erreur : {error.message}</Text>;
   }
 
   return (

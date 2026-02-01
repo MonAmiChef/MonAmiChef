@@ -9,11 +9,11 @@ type CreateChatResponse =
 type GetChatResponse =
   components['schemas']['GetChatSessionResponseDto_Output'];
 
-type ChatListItem =
-  components['schemas']['GetAllChatsSessionResponseDto_Output'][number];
+type ChatAllChatsItem =
+  components['schemas']['GetAllChatsSessionResponseDto_Output'];
 
 export const chatApi = {
-  getAllUserSessions: async (session: Session): Promise<ChatListItem[]> => {
+  getAllUserSessions: async (session: Session): Promise<ChatAllChatsItem> => {
     const response = await fetch(`${API_URL}/chat-sessions`, {
       method: 'GET',
       headers: {
@@ -23,7 +23,7 @@ export const chatApi = {
     });
 
     if (!response.ok) throw new Error('Failed to get user sessions');
-    const data = (await response.json()) as ChatListItem[];
+    const data = (await response.json()) as ChatAllChatsItem;
     return data;
   },
 

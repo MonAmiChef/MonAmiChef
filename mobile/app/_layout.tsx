@@ -15,7 +15,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import {
   Inter_400Regular,
   Inter_700Bold,
+  Inter_600SemiBold,
   useFonts,
+  Inter_500Medium,
 } from '@expo-google-fonts/inter';
 import '../global.css';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -28,6 +30,8 @@ const queryClient = new QueryClient();
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
     Inter_700Bold,
   });
 

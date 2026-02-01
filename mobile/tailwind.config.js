@@ -180,6 +180,8 @@ module.exports = {
         code: ['var(--font-source-code-pro)'],
         inter: ['Inter_400Regular'],
         'inter-bold': ['Inter_700Bold'],
+        'inter-medium': ['Inter_500Medium'],
+        'inter-semibold': ['Inter_600SemiBold'],
         'space-mono': ['var(--font-space-mono)'],
       },
       fontWeight: {

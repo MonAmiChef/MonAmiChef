@@ -48,7 +48,7 @@ export default function NewChat() {
 
   return (
     // On utilise flex-1 ici pour que l'écran occupe tout l'espace
-    <View className="flex-1 bg-white">
+    <View className="flex-1">
       {/* 1. Zone de contenu (Messages) - Elle doit être en dehors du KeyboardAvoidingView ou en flex-1 dedans */}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View className="flex-1 justify-center items-center p-6">
@@ -69,7 +69,7 @@ export default function NewChat() {
       >
         <View
           style={{ paddingBottom: insets.bottom || 20 }}
-          className="px-4 py-3 bg-white border-t border-slate-100"
+          className="px-4 py-3 border-t border-slate-100"
         >
           <View className="flex-row items-center bg-slate-100 rounded-3xl px-4 py-2 border border-slate-200">
             <TextInput

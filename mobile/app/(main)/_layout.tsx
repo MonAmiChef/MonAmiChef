@@ -2,53 +2,53 @@ import { Drawer } from 'expo-router/drawer';
 import { Pressable } from 'react-native-gesture-handler';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
-import { Button, ButtonText } from '@/components/ui/button';
-import {
-  DrawerContentScrollView,
-  DrawerItemList,
-} from '@react-navigation/drawer';
-import { Link, useRouter } from 'expo-router';
-import { supabase } from '@/services/supabase';
+import { DrawerContentScrollView } from '@react-navigation/drawer';
+import { Link } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import React from 'react';
-import { User, Menu } from 'lucide-react-native';
+import { User, Menu, Plus } from 'lucide-react-native';
 import { DrawerActions } from '@react-navigation/native';
 import { chatApi } from '@/services/api';
 import { useQuery } from '@tanstack/react-query';
 import { ActivityIndicator } from 'react-native';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CustomDrawerContent(props: any) {
-  const router = useRouter();
   const { session } = useAuth();
 
   const { data: sessions, isLoading } = useQuery({
     queryKey: ['chat-sessions'],
     queryFn: async () => {
       if (!session) throw new Error('Session not found');
-      const chats = await chatApi.getAllUserSessions(session);
-      console.log('chasts', chats);
+      const { chats } = await chatApi.getAllUserSessions(session);
       return chats;
     },
     enabled: !!session,
     staleTime: 1000 * 60 * 5,
   });
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.replace('/(auth)/login');
-  };
-
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
-      <Box className="p-5 border-b border-slate-100">
-        <Text className="text-xl font-bold">Mes Conversations</Text>
+      <Box className="px-4 py-3">
+        <Pressable
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+          onPress={() => props.navigation.navigate('chat/index')}
+          className="flex-row items-center justify-center bg-slate-900 p-3 rounded-xl active:opacity-80"
+        >
+          <Plus size={20} color="white" strokeWidth={2.5} />
+          <Text className="font-semibold ml-2">Nouveau Chat</Text>
+        </Pressable>
       </Box>
 
-      <Box className="flex-1 mt-2">
+      <Box className="px-5 py-2 border-slate-100">
+        <Text className="text-xl font-inter-medium text-black">Chats</Text>
+      </Box>
+
+      <Box className="flex-1 p-5 gap-y-4">
         {isLoading ? (
           <ActivityIndicator className="mt-4" />
-        ) : sessions && sessions.root ? (
-          sessions.root.map((chat) => (
+        ) : sessions ? (
+          sessions.map((chat) => (
             <Pressable
               key={chat.id}
               onPress={() =>
