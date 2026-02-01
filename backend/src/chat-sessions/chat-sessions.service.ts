@@ -23,12 +23,14 @@ export class ChatSessionsService {
   }): Promise<GetAllChatsSessionResponse> {
     const chats = await this.chatSessionsRepository.getAllUserChats({ userId });
 
-    return chats.map((chat) => ({
-      id: chat.id,
-      title: chat.title,
-      createdAt: chat.createdAt.toISOString(),
-      updatedAt: chat.updatedAt.toISOString(),
-    }));
+    return {
+      chats: chats.map((chat) => ({
+        id: chat.id,
+        title: chat.title,
+        createdAt: chat.createdAt.toISOString(),
+        updatedAt: chat.updatedAt.toISOString(),
+      })),
+    };
   }
 
   async getChat({

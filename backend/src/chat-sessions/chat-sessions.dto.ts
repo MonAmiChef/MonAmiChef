@@ -80,14 +80,16 @@ export class GetChatSessionResponseDto extends createZodDto(
 
 // GET ALL USERS CHAT
 
-const GetAllChatsSessionResponseSchema = z.array(
-  z.object({
-    id: z.uuid(),
-    title: z.string(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-  }),
-);
+const GetAllChatsSessionResponseSchema = z.object({
+  chats: z.array(
+    z.object({
+      id: z.uuid(),
+      title: z.string(),
+      createdAt: z.string(),
+      updatedAt: z.string(),
+    }),
+  ),
+});
 
 export type GetAllChatsSessionResponse = z.output<
   typeof GetAllChatsSessionResponseSchema
