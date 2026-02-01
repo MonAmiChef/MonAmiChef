@@ -1,26 +1,19 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import {
   View,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ActivityIndicator,
   TouchableWithoutFeedback,
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Send } from 'lucide-react-native';
 import { Text } from '@/components/ui/text';
-import { chatApi } from '@/services/api'; // Ton service NestJS
+import { chatApi } from '@/services/api';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
+import { ChatInput } from '@/components/chat/ChatInput';
 
 export default function NewChat() {
-  const [text, setText] = useState('');
-  const insets = useSafeAreaInsets();
-  const inputRef = useRef<TextInput>(null);
   const router = useRouter();
   const queryClient = useQueryClient();
   const { session } = useAuth();
@@ -40,10 +33,9 @@ export default function NewChat() {
     },
   });
 
-  const handleSend = () => {
-    console.log('click!');
-    if (!text.trim() || mutation.isPending) return;
-    mutation.mutate(text);
+  const handleSend = (msg: string) => {
+    if (!msg.trim() || mutation.isPending) return;
+    mutation.mutate(msg);
   };
 
   return (
@@ -61,39 +53,14 @@ export default function NewChat() {
         </View>
       </TouchableWithoutFeedback>
 
-      {/* 2. KeyboardAvoidingView enveloppe UNIQUEMENT la partie basse */}
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        // keyboardVerticalOffset doit correspondre à la hauteur du header (env. 60-90)
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
-        <View
-          style={{ paddingBottom: insets.bottom || 20 }}
-          className="px-4 py-3 border-t border-slate-100"
-        >
-          <View className="flex-row items-center bg-slate-100 rounded-3xl px-4 py-2 border border-slate-200">
-            <TextInput
-              ref={inputRef}
-              className="flex-1 text-base py-2 text-slate-900"
-              style={{ minHeight: 40 }}
-              placeholder="Écris ton message..."
-              placeholderTextColor="#94a3b8"
-              value={text}
-              onChangeText={setText}
-              multiline
-            />
-
-            <Pressable
-              onPress={handleSend}
-              disabled={!text.trim()}
-              className={`ml-2 w-10 h-10 rounded-full items-center justify-center ${
-                text.trim() ? 'bg-black' : 'bg-slate-300'
-              }`}
-            >
-              <Send size={18} color="white" />
-            </Pressable>
-          </View>
-        </View>
+        <ChatInput
+          onSend={(msg) => handleSend(msg)}
+          isLoading={mutation.isPending}
+        />
       </KeyboardAvoidingView>
     </View>
   );
