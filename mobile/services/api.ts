@@ -61,4 +61,26 @@ export const chatApi = {
     const data = (await response.json()) as CreateChatResponse;
     return data;
   },
+
+  sendMessageToSession: async (
+    chatId: string,
+    message: string,
+    session: Session,
+  ): Promise<CreateChatResponse> => {
+    const response = await fetch(
+      `${API_URL}/chat-sessions/${chatId}/messages`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({ message }),
+      },
+    );
+
+    if (!response.ok) throw new Error('Failed to create session');
+    const data = (await response.json()) as CreateChatResponse;
+    return data;
+  },
 };
