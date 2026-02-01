@@ -3,31 +3,37 @@ import { useRouter } from 'expo-router';
 import { supabase } from '@/services/supabase';
 import { View, ActivityIndicator } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
+import { useAuth } from '@/hooks/useAuth';
+import Toast from 'react-native-toast-message';
 
 export default function Index() {
   const router = useRouter();
+  const { signInAnonymously } = useAuth();
 
   useEffect(() => {
-    async function checkSession() {
+    async function prepareApp() {
       try {
         const {
           data: { session },
-          error,
         } = await supabase.auth.getSession();
-        if (session) {
-          router.replace('/(main)/chat/new');
-        } else {
-          router.replace('/(auth)/login');
+
+        if (!session) {
+          await signInAnonymously();
         }
+        router.replace('/(main)');
       } catch (e) {
-        console.log('Erreur check session:', e);
+        Toast.show({
+          type: 'error',
+          text1: "Erreur de démarrage de l'application",
+          text2: (e as Error).message,
+        });
         router.replace('/(auth)/login');
       } finally {
         await SplashScreen.hideAsync();
       }
     }
 
-    checkSession();
+    void prepareApp();
   }, []);
 
   return (
