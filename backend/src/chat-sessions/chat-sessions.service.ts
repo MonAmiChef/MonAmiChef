@@ -111,7 +111,7 @@ export class ChatSessionsService {
     const updatedChat = await this.chatSessionsRepository.updateChat({
       id: chatId,
       message: text ?? '',
-      role,
+      role: 'model',
     });
 
     return {
