@@ -48,7 +48,7 @@ export class ChatSessionsService {
 
     return {
       id: chat.id,
-      name: 'Test',
+      title: chat.title,
       messages: chat.messages,
       createdAt: createdAt.toISOString(),
       updatedAt: createdAt.toISOString(),
@@ -81,7 +81,7 @@ export class ChatSessionsService {
 
     return {
       id: chat.id,
-      name: title,
+      title,
       messages: updatedChat?.messages ?? [],
       createdAt: chat.createdAt.toISOString(),
       updatedAt: chat.updatedAt?.toISOString() ?? new Date().toISOString(),
@@ -116,7 +116,7 @@ export class ChatSessionsService {
 
     return {
       id: chat.id,
-      name: chat.name,
+      title: chat.title,
       messages: updatedChat?.messages ?? [],
       createdAt:
         updatedChat?.createdAt?.toISOString() ?? new Date().toISOString(),
