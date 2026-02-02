@@ -20,7 +20,7 @@ export type ChatMessage = z.output<typeof ChatMessageSchema>;
 
 const CreateChatSessionResponseSchema = z.object({
   id: z.uuid(),
-  name: z.string(),
+  title: z.string(),
   messages: z.array(ChatMessageSchema),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -46,7 +46,7 @@ export class UpdateChatSessionRequestDto extends createZodDto(
 
 const UpdateChatSessionResponseSchema = z.object({
   id: z.uuid(),
-  name: z.string(),
+  title: z.string(),
   messages: z.array(ChatMessageSchema),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -64,7 +64,7 @@ export class UpdateChatSessionResponseDto extends createZodDto(
 
 const GetChatSessionResponseSchema = z.object({
   id: z.uuid(),
-  name: z.string(),
+  title: z.string(),
   messages: z.array(ChatMessageSchema),
   createdAt: z.string(),
   updatedAt: z.string(),

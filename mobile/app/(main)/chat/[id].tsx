@@ -16,6 +16,7 @@ import { markdownStyles } from '@/constants/MarkdownStyles';
 import { ChatInput } from '@/components/chat/ChatInput';
 import { useRef } from 'react';
 import { components } from '@/types/api';
+import Drawer from 'expo-router/drawer';
 
 type ChatSession = components['schemas']['GetChatSessionResponseDto_Output'];
 type ChatMessage = ChatSession['messages'][number];
@@ -59,20 +60,29 @@ export default function ChatScreen() {
   }
 
   return (
-    <View className="flex-1 bg-slate-50">
+    <View className="flex-1 bg-base-bg">
+      <Drawer.Screen
+        options={{
+          headerTitle: data?.title || 'MonAmiChef',
+        }}
+      />
       <FlashList
         ref={flashListRef}
+        showsVerticalScrollIndicator={false}
         data={data?.messages}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 20 }}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingVertical: 20,
+          backgroundColor: '#fffdfb',
+        }}
         renderItem={({ item }) => {
           const isModel = item.role === 'model';
           const formattedContent = item.content.replace(/\n/g, '\n\n');
 
           if (isModel) {
-            // Rendu style Gemini : Pas de bulle, pleine largeur
             return (
-              <Box className="w-full py-6 border-b border-slate-100">
+              <Box className="w-full py-6 border-slate-100">
                 <Markdown mergeStyle={true} style={markdownStyles}>
                   {formattedContent}
                 </Markdown>
@@ -80,7 +90,6 @@ export default function ChatScreen() {
             );
           }
 
-          // Message Utilisateur : Garde sa petite bulle orange à droite
           return (
             <Box className="bg-orange-500 self-end p-4 rounded-2xl rounded-tr-none mb-2 max-w-[80%]">
               <Text className="text-white text-[15px] font-medium">
@@ -89,7 +98,6 @@ export default function ChatScreen() {
             </Box>
           );
         }}
-        // Optionnel : Scroll automatique vers le bas au chargement
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onContentSizeChange={(w, h) => {}}
       />

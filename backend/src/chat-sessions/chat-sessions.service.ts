@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ChatSessionsRepository } from './chat-sessions.repository';
-import { MessageRole } from '@prisma/client';
+import { Message, MessageRole } from '@prisma/client';
 import { AiAssistantService } from '../ai-assistant/ai-assistant.service';
 import {
   CreateChatSessionResponse,
@@ -28,7 +28,7 @@ export class ChatSessionsService {
         id: chat.id,
         title: chat.title,
         createdAt: chat.createdAt.toISOString(),
-        updatedAt: chat.updatedAt.toISOString(),
+        updatedAt: chat.updatedAt?.toISOString() ?? new Date().toISOString(),
       })),
     };
   }
@@ -48,7 +48,7 @@ export class ChatSessionsService {
 
     return {
       id: chat.id,
-      name: 'Test',
+      title: chat.title,
       messages: chat.messages,
       createdAt: createdAt.toISOString(),
       updatedAt: createdAt.toISOString(),
@@ -62,28 +62,29 @@ export class ChatSessionsService {
     userId: string;
     message: string;
   }): Promise<CreateChatSessionResponse> {
-    const modelResponse = await this.aiAssistantService.chat({
+    const { text, title } = await this.aiAssistantService.chat({
       messages: [],
       newMessage: message,
     });
 
     const chat = await this.chatSessionsRepository.createChat({
+      title,
       userId,
       message,
     });
 
     const updatedChat = await this.chatSessionsRepository.updateChat({
       id: chat.id,
-      message: modelResponse ?? '',
+      message: text ?? '',
       role: 'model',
     });
 
     return {
       id: chat.id,
-      name: 'Test',
+      title,
       messages: updatedChat?.messages ?? [],
       createdAt: chat.createdAt.toISOString(),
-      updatedAt: chat.updatedAt.toISOString(),
+      updatedAt: chat.updatedAt?.toISOString() ?? new Date().toISOString(),
     };
   }
 
@@ -97,8 +98,8 @@ export class ChatSessionsService {
     role: MessageRole;
   }): Promise<UpdateChatSessionResponse> {
     const chat = await this.getChat({ chatId });
-    const modelResponse = await this.aiAssistantService.chat({
-      messages: chat?.messages ?? [],
+    const { text } = await this.aiAssistantService.chat({
+      messages: (chat?.messages as Message[]) ?? [],
       newMessage: message,
     });
 
@@ -109,16 +110,18 @@ export class ChatSessionsService {
     });
     const updatedChat = await this.chatSessionsRepository.updateChat({
       id: chatId,
-      message: modelResponse ?? '',
+      message: text ?? '',
       role,
     });
 
     return {
       id: chat.id,
-      name: 'Test',
+      title: chat.title,
       messages: updatedChat?.messages ?? [],
-      createdAt: updatedChat?.createdAt.toISOString() ?? '',
-      updatedAt: updatedChat?.updatedAt.toISOString() ?? '',
+      createdAt:
+        updatedChat?.createdAt?.toISOString() ?? new Date().toISOString(),
+      updatedAt:
+        updatedChat?.updatedAt?.toISOString() ?? new Date().toISOString(),
     };
   }
 }

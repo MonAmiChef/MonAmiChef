@@ -26,41 +26,48 @@ const DEFAULT_GEMINI_MODEL = 'gemini-3-flash-preview';
 export class AiAssistantService {
   private ai = new GoogleGenAI({});
 
+  private async generateTitle(userPrompt: string): Promise<string> {
+    const result = await this.ai.models.generateContent({
+      model: process.env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL,
+      config: {
+        systemInstruction: process.env.SUBSTITUTE_GENERATE_TITLE_PROMPT!,
+      },
+      contents: userPrompt,
+    });
+    return result.text?.trim() ?? 'Nouvelle discussion';
+  }
+
   async chat({
     messages,
     newMessage,
   }: {
-    messages: Message[];
+    messages: Pick<Message, 'role' | 'content'>[];
     newMessage: string;
   }) {
-    const userMessages: { text: string }[] = [];
-    const modelMessages: { text: string }[] = [];
-
-    messages.forEach((message) =>
-      message.role === 'user'
-        ? userMessages.push({ text: message.content })
-        : modelMessages.push({ text: message.content }),
-    );
+    const history = messages.map((m) => ({
+      role: m.role === 'user' ? 'user' : 'model',
+      parts: [{ text: m.content }],
+    }));
 
     const chat = this.ai.chats.create({
       model: process.env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL,
-      history: [
-        {
-          role: 'user',
-          parts: userMessages,
-        },
-        {
-          role: 'model',
-          parts: modelMessages,
-        },
-      ],
+      history,
     });
 
     const response = await chat.sendMessage({
       message: newMessage,
     });
 
-    return response.text;
+    let generatedTitle: string = '';
+
+    if (messages.length === 0) {
+      generatedTitle = await this.generateTitle(newMessage);
+    }
+
+    return {
+      title: generatedTitle,
+      text: response.text,
+    };
   }
 
   async parseGroceries({

@@ -28,21 +28,28 @@ export class ChatSessionsRepository {
         id: chatId,
       },
       include: {
-        messages: true,
+        messages: {
+          orderBy: {
+            createdAt: 'asc',
+          },
+        },
       },
     });
   }
 
   async createChat({
+    title,
     userId,
     message,
   }: {
+    title: string;
     userId: string;
     message: string;
   }): Promise<ChatSession> {
     const chat = await this.prismaService.chatSession.create({
       data: {
         userId,
+        title,
         messages: {
           create: [{ content: message, role: 'user' }],
         },

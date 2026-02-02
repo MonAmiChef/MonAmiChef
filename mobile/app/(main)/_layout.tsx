@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Drawer } from 'expo-router/drawer';
 import { Pressable } from 'react-native-gesture-handler';
 import { Box } from '@/components/ui/box';
@@ -5,8 +8,8 @@ import { Text } from '@/components/ui/text';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { Link } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
-import React from 'react';
-import { User, Menu, Plus } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { User, Menu, MessageCirclePlus } from 'lucide-react-native';
 import { DrawerActions } from '@react-navigation/native';
 import { chatApi } from '@/services/api';
 import { useQuery } from '@tanstack/react-query';
@@ -15,12 +18,14 @@ import { ActivityIndicator } from 'react-native';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CustomDrawerContent(props: any) {
   const { session } = useAuth();
+  const [selectedChat, setSelectedChat] = useState<string | undefined>(
+    undefined,
+  );
 
   const { data: sessions, isLoading } = useQuery({
     queryKey: ['chat-sessions'],
     queryFn: async () => {
-      if (!session) throw new Error('Session not found');
-      const { chats } = await chatApi.getAllUserSessions(session);
+      const { chats } = await chatApi.getAllUserSessions(session!);
       return chats;
     },
     enabled: !!session,
@@ -29,39 +34,60 @@ function CustomDrawerContent(props: any) {
 
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
-      <Box className="px-4 py-3">
+      <Box className="flex px-4 py-3 mb-2">
         <Pressable
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-          onPress={() => props.navigation.navigate('chat/index')}
-          className="flex-row items-center justify-center bg-slate-900 p-3 rounded-xl active:opacity-80"
+          onPress={() => {
+            setSelectedChat(undefined);
+            props.navigation.navigate('chat/index');
+          }}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 5,
+            paddingVertical: 8,
+            borderRadius: 38,
+            borderColor: '#ff6900',
+            borderWidth: 2,
+            borderStyle: 'dashed',
+          }}
         >
-          <Plus size={20} color="white" strokeWidth={2.5} />
-          <Text className="font-semibold ml-2">Nouveau Chat</Text>
+          <MessageCirclePlus size={20} color="#ff6900" strokeWidth={2.5} />
+          <Text className="text-lg text-orange-500 font-inter-bold ml-2">
+            Nouveau Chat
+          </Text>
         </Pressable>
       </Box>
 
       <Box className="px-5 py-2 border-slate-100">
-        <Text className="text-xl font-inter-medium text-black">Chats</Text>
+        <Text className="text-lg font-inter-medium text-black">Chats</Text>
       </Box>
 
-      <Box className="flex-1 p-5 gap-y-4">
+      <Box className="flex-1 py-1">
         {isLoading ? (
           <ActivityIndicator className="mt-4" />
         ) : sessions ? (
-          sessions.map((chat) => (
-            <Pressable
-              key={chat.id}
-              onPress={() =>
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-                props.navigation.navigate('chat/[id]', { id: chat.id })
-              }
-              className="px-5 py-3 active:bg-slate-100"
-            >
-              <Text numberOfLines={1} className="text-slate-700">
-                {chat.title || 'Nouvelle discussion'}
-              </Text>
-            </Pressable>
-          ))
+          sessions.map((chat) => {
+            const isActive = selectedChat === chat.id;
+
+            return (
+              <Pressable
+                key={chat.id}
+                onPress={() => {
+                  setSelectedChat(chat.id);
+                  props.navigation.navigate('chat/[id]', { id: chat.id });
+                }}
+                className={`px-5 py-3`}
+              >
+                <Text
+                  numberOfLines={1}
+                  className={`${isActive ? 'bg-orange-600 rounded-full text-white' : 'text-slate-700'} px-5 py-3 font-inter-medium`}
+                >
+                  {chat.title || 'Nouvelle discussion'}
+                </Text>
+              </Pressable>
+            );
+          })
         ) : (
           <Text>Failed to retrieve sessions</Text>
         )}
@@ -76,8 +102,6 @@ export default function MainLayout() {
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={({ navigation }) => ({
         headerShown: true,
-        headerTitle: 'MonAmiChef',
-        overlayColor: 'rgba(0,0,0,0.5)',
         headerTitleStyle: {
           fontFamily: 'Inter_600SemiBold',
         },
@@ -98,12 +122,16 @@ export default function MainLayout() {
         ),
         drawerStyle: {
           width: '80%',
-          backgroundColor: '#fff',
+          backgroundColor: '#fffdfb',
         },
         headerStyle: {
-          backgroundColor: 'transparent',
+          elevation: 0,
+          shadowOpacity: 0,
+          backgroundColor: '#fffdfb',
+          borderWidth: 0,
+          boxShadow: 'none',
+          height: 120,
         },
-        headerTintColor: '#000',
       })}
     >
       <Drawer.Screen

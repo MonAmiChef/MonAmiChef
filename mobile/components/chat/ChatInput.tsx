@@ -18,7 +18,10 @@ export function ChatInput({
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={{ paddingBottom: insets.bottom || 20 }} className="px-4 py-3">
+    <View
+      style={{ paddingBottom: insets.bottom || 20, backgroundColor: '#fffdfb' }}
+      className="px-4 py-3"
+    >
       <View className="flex-row items-center rounded-full px-4 py-2 border border-orange-200 bg-white">
         <TextInput
           className="flex-1 text-base py-2 text-slate-900"
