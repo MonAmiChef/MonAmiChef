@@ -8,20 +8,22 @@ import { Heading } from '@/components/ui/heading';
 import { useAuth } from '@/hooks/useAuth';
 import { HStack } from '@/components/ui/hstack';
 import { Link } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { loading, signUpWithEmail } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <Box className="flex-1 bg-background-0 justify-center p-6">
       <VStack space="xl" className="w-full max-w-[400px] self-center">
         <Box className="items-center">
           <Heading size="3xl" className="text-primary-500">
-            MonAmiChef
+            {t('auth.title')}
           </Heading>
-          <Text className="text-typography-500">Ton assistant cuisine IA</Text>
+          <Text className="text-typography-500">{t('auth.subtitle')}</Text>
         </Box>
 
         <VStack space="md">
@@ -55,21 +57,23 @@ export default function LoginScreen() {
             {loading ? (
               <ButtonSpinner />
             ) : (
-              <ButtonText>Créer un compte</ButtonText>
+              <ButtonText>{t('register.create_account')}</ButtonText>
             )}
           </Button>
         </VStack>
 
         <HStack className="flex gap-x-2 justify-center align-middle">
-          <Text className="text-typography-500">Déjà inscrit?</Text>
+          <Text className="text-typography-500">
+            {t('register.already_signed')}
+          </Text>
           <Link href="/(auth)/login" className="text-typography-500 underline">
-            Se connecter
+            {t('auth.login')}
           </Link>
         </HStack>
 
-        <Text className="text-center text-xs text-typography-400 mt-4">
+        {/* <Text className="text-center text-xs text-typography-400 mt-4">
           En continuant, tu acceptes de cuisiner des trucs incroyables.
-        </Text>
+        </Text> */}
       </VStack>
     </Box>
   );

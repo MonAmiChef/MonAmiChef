@@ -1,15 +1,9 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from '@react-navigation/native';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import * as SplashScreen from 'expo-splash-screen';
 import {
@@ -21,6 +15,8 @@ import {
 } from '@expo-google-fonts/inter';
 import '../global.css';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { StatusBar } from 'expo-status-bar';
+import '../i18n';
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 SplashScreen.preventAutoHideAsync();
@@ -60,7 +56,8 @@ function RootLayoutNav() {
   const [colorMode] = useState<'light' | 'dark'>('light');
 
   return (
-    <ThemeProvider value={colorMode === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={DefaultTheme}>
+      <StatusBar style="dark" />
       <GluestackUIProvider mode={colorMode}>
         <Stack>
           <Stack.Screen
