@@ -5,9 +5,9 @@ import { Pressable } from 'react-native-gesture-handler';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
-import { Link } from 'expo-router';
+import { Link, usePathname } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
-import React, { useState } from 'react';
+import React from 'react';
 import { User, Menu, MessageCirclePlus } from 'lucide-react-native';
 import { DrawerActions } from '@react-navigation/native';
 import { chatApi } from '@/services/api';
@@ -17,9 +17,7 @@ import { ActivityIndicator } from 'react-native';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CustomDrawerContent(props: any) {
   const { session } = useAuth();
-  const [selectedChat, setSelectedChat] = useState<string | undefined>(
-    undefined,
-  );
+  const pathname = usePathname();
 
   const { data: sessions, isLoading } = useQuery({
     queryKey: ['chat-sessions'],
@@ -36,7 +34,6 @@ function CustomDrawerContent(props: any) {
       <Box className="flex px-4 py-3 mb-2">
         <Pressable
           onPress={() => {
-            setSelectedChat(undefined);
             props.navigation.navigate('chat/index');
           }}
           style={{
@@ -67,20 +64,17 @@ function CustomDrawerContent(props: any) {
           <ActivityIndicator className="mt-4" />
         ) : sessions ? (
           sessions.map((chat) => {
-            const isActive = selectedChat === chat.id;
-
             return (
               <Pressable
                 key={chat.id}
                 onPress={() => {
-                  setSelectedChat(chat.id);
                   props.navigation.navigate('chat/[id]', { id: chat.id });
                 }}
                 className={`px-5 py-3`}
               >
                 <Text
                   numberOfLines={1}
-                  className={`${isActive ? 'bg-orange-600 rounded-full text-white' : 'text-slate-700'} px-5 py-3 font-inter-medium`}
+                  className={`${pathname.split('/')[2] === chat.id ? 'bg-orange-600 rounded-full text-white' : 'text-slate-700'} px-5 py-3 font-inter-medium`}
                 >
                   {chat.title || 'Nouvelle discussion'}
                 </Text>

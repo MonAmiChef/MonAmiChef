@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 import {
   ActivityIndicator,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -17,9 +18,15 @@ import { ChatInput } from '@/components/chat/ChatInput';
 import { useRef } from 'react';
 import { components } from '@/types/api';
 import Drawer from 'expo-router/drawer';
+import { WaveText } from '@/components/chat/WaveText';
+import { HStack } from '@/components/ui/hstack';
 
 type ChatSession = components['schemas']['GetChatSessionResponseDto_Output'];
 type ChatMessage = ChatSession['messages'][number];
+
+interface MutationContext {
+  previousData?: ChatSession;
+}
 
 export default function ChatScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -33,21 +40,66 @@ export default function ChatScreen() {
     enabled: !!id && !!session,
   });
 
-  const mutation = useMutation({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mutation = useMutation<any, Error, string, MutationContext>({
     mutationFn: (message: string) =>
       chatApi.sendMessageToSession(id, message, session!),
-    onSuccess: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['chat-sessions'] }),
-        queryClient.invalidateQueries({ queryKey: ['chat-session', id] }),
+
+    onMutate: async (newMessage: string): Promise<MutationContext> => {
+      await queryClient.cancelQueries({ queryKey: ['chat-session', id] });
+
+      const previousData = queryClient.getQueryData<ChatSession>([
+        'chat-session',
+        id,
       ]);
 
-      flashListRef.current?.scrollToEnd({ animated: true });
+      const userMessage: ChatMessage = {
+        id: `temp-user-${Date.now()}`,
+        content: newMessage,
+        role: 'user',
+        createdAt: new Date().toISOString(),
+        chatId: id,
+      };
+
+      const loadingMessage: ChatMessage = {
+        id: 'temp-loading-id',
+        content: 'Le chef prépare sa réponse...',
+        role: 'model',
+        createdAt: new Date().toISOString(),
+        chatId: id,
+      };
+
+      queryClient.setQueryData<ChatSession>(['chat-session', id], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          messages: [...old.messages, userMessage, loadingMessage],
+        };
+      });
+
+      setTimeout(
+        () => flashListRef.current?.scrollToEnd({ animated: true }),
+        50,
+      );
+
+      return { previousData };
+    },
+
+    onError: (err, newMessage, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(['chat-session', id], context.previousData);
+      }
+    },
+
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['chat-session', id] });
+      await queryClient.invalidateQueries({ queryKey: ['chat-sessions'] });
     },
   });
 
   const handleSend = (msg: string) => {
     if (!msg.trim() || mutation.isPending) return;
+    Keyboard.dismiss();
     mutation.mutate(msg);
   };
 
@@ -79,6 +131,20 @@ export default function ChatScreen() {
         renderItem={({ item }) => {
           const isModel = item.role === 'model';
           const formattedContent = item.content.replace(/\n/g, '\n\n');
+          const messageDate = new Date(item.createdAt);
+
+          if (item.id === 'temp-loading-id') {
+            return (
+              <Box className="w-full py-6 flex-row gap-3 items-center">
+                <ActivityIndicator size="small" color="#ff6900" />
+                <WaveText
+                  text="Le chef prépare sa réponse..."
+                  color="#FF9800"
+                  fontSize={14}
+                />
+              </Box>
+            );
+          }
 
           if (isModel) {
             return (
@@ -91,10 +157,21 @@ export default function ChatScreen() {
           }
 
           return (
-            <Box className="bg-orange-500 self-end p-4 rounded-2xl rounded-tr-none mb-2 max-w-[80%]">
+            <Box className="bg-orange-500 self-end gap-1 px-4 py-3 rounded-2xl rounded-tr-none mb-2 max-w-[80%]">
               <Text className="text-white text-[15px] font-medium">
                 {item.content}
               </Text>
+              <HStack className="self-end gap-1">
+                <Text className="text-orange-200 self-end text-xs font-medium">
+                  {messageDate.toLocaleDateString('fr-FR')}
+                </Text>
+                <Text className="text-orange-200 self-end text-xs font-medium">
+                  {messageDate.toLocaleTimeString('fr-FR', {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                  })}
+                </Text>
+              </HStack>
             </Box>
           );
         }}
@@ -104,7 +181,7 @@ export default function ChatScreen() {
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
         <ChatInput
           onSend={(msg) => handleSend(msg)}

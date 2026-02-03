@@ -4,13 +4,19 @@ export const markdownStyles = {
     fontSize: 16,
     lineHeight: 24,
   },
+  hr: {
+    height: 0,
+    marginVertical: 5,
+  },
   strong: {
     color: '#000',
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: 'Inter_500Medium',
   },
   paragraph: {
-    marginTop: 0,
-    marginBottom: 12,
+    marginBottom: 10,
+    fontSize: 15,
+    lineHeight: 22,
+    color: '#334155',
   },
   bullet_list: {
     marginBottom: 10,
@@ -23,6 +29,12 @@ export const markdownStyles = {
     marginBottom: 10,
     color: '#000',
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: 'Inter_700Bold',
+  },
+  heading3: {
+    marginVertical: 5,
+    color: '#000',
+    fontSize: 18,
+    fontFamily: 'Inter_600SemiBold',
   },
 };
