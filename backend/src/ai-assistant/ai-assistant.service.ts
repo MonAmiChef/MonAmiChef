@@ -19,6 +19,11 @@ import {
   GeneralAskResponseSchema,
 } from '../general-ask/general-ask.dto';
 import { Message } from '@prisma/client';
+import {
+  CreateChatSessionResponseJson,
+  CreateChatWithTitleServiceResponse,
+  CreateChatWithTitleServiceResponseSchema,
+} from 'src/chat-sessions/chat-sessions.dto';
 
 const DEFAULT_GEMINI_MODEL = 'gemini-3-flash-preview';
 
@@ -26,24 +31,33 @@ const DEFAULT_GEMINI_MODEL = 'gemini-3-flash-preview';
 export class AiAssistantService {
   private ai = new GoogleGenAI({});
 
-  private async generateTitle(userPrompt: string): Promise<string> {
+  async createChatWithTitle({
+    message,
+  }: {
+    message: string;
+  }): Promise<CreateChatWithTitleServiceResponse> {
     const result = await this.ai.models.generateContent({
       model: process.env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL,
+      contents: message,
       config: {
-        systemInstruction: process.env.SUBSTITUTE_GENERATE_TITLE_PROMPT!,
+        responseMimeType: 'application/json',
+        systemInstruction: process.env.GENERATE_CHAT_WITH_TITLE_PROMPT,
+        responseJsonSchema: CreateChatSessionResponseJson,
       },
-      contents: userPrompt,
     });
-    return result.text?.trim() ?? 'Nouvelle discussion';
+
+    return CreateChatWithTitleServiceResponseSchema.parse(
+      JSON.parse(result.text ?? ''),
+    );
   }
 
-  async chat({
+  async updateChat({
     messages,
     newMessage,
   }: {
     messages: Pick<Message, 'role' | 'content'>[];
     newMessage: string;
-  }) {
+  }): Promise<{ text: string }> {
     const history = messages.map((m) => ({
       role: m.role === 'user' ? 'user' : 'model',
       parts: [{ text: m.content }],
@@ -58,15 +72,8 @@ export class AiAssistantService {
       message: newMessage,
     });
 
-    let generatedTitle: string = '';
-
-    if (messages.length === 0) {
-      generatedTitle = await this.generateTitle(newMessage);
-    }
-
     return {
-      title: generatedTitle,
-      text: response.text,
+      text: response.text ?? 'Undefined response from AI model',
     };
   }
 

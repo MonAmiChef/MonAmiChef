@@ -1,9 +1,26 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 
+// SERVICE
+
+export const CreateChatWithTitleServiceResponseSchema = z.object({
+  title: z.string(),
+  text: z.string(),
+});
+
+export type CreateChatWithTitleServiceResponse = z.output<
+  typeof CreateChatWithTitleServiceResponseSchema
+>;
+
+// ----------------------------------------------------------
+
 const CreateChatSessionRequestSchema = z.object({
   firstMessage: z.string(),
 });
+
+export type CreateChatSessionRequest = z.output<
+  typeof CreateChatSessionRequestSchema
+>;
 
 export class CreateChatSessionRequestDto extends createZodDto(
   CreateChatSessionRequestSchema,
@@ -14,6 +31,7 @@ const ChatMessageSchema = z.object({
   chatId: z.string(),
   role: z.enum(['user', 'model']),
   content: z.string(),
+  createdAt: z.string(),
 });
 
 export type ChatMessage = z.output<typeof ChatMessageSchema>;
@@ -25,6 +43,15 @@ const CreateChatSessionResponseSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
 });
+
+export const CreateChatSessionResponseJson = {
+  type: 'object',
+  properties: {
+    title: { type: 'string' },
+    text: { type: 'string' },
+  },
+  required: ['title', 'text'],
+};
 
 export type CreateChatSessionResponse = z.output<
   typeof CreateChatSessionResponseSchema

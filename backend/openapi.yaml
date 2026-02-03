@@ -572,11 +572,14 @@ components:
                   - model
               content:
                 type: string
+              createdAt:
+                type: string
             required:
               - id
               - chatId
               - role
               - content
+              - createdAt
             additionalProperties: false
           x-nestjs_zod-parent-additional-properties: false
         createdAt:
@@ -654,11 +657,14 @@ components:
                   - model
               content:
                 type: string
+              createdAt:
+                type: string
             required:
               - id
               - chatId
               - role
               - content
+              - createdAt
             additionalProperties: false
           x-nestjs_zod-parent-additional-properties: false
         createdAt:
@@ -708,11 +714,14 @@ components:
                   - model
               content:
                 type: string
+              createdAt:
+                type: string
             required:
               - id
               - chatId
               - role
               - content
+              - createdAt
             additionalProperties: false
           x-nestjs_zod-parent-additional-properties: false
         createdAt:

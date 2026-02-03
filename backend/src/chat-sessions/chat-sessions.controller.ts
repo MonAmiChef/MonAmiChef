@@ -74,7 +74,6 @@ export class ChatSessionsController {
     return this.chatSessionsService.updateChat({
       chatId,
       message: body.message,
-      role: 'user',
     });
   }
 }

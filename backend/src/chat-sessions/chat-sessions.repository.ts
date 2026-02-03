@@ -40,41 +40,50 @@ export class ChatSessionsRepository {
   async createChat({
     title,
     userId,
-    message,
+    userMessage,
+    modelResponse,
   }: {
     title: string;
     userId: string;
-    message: string;
-  }): Promise<ChatSession> {
-    const chat = await this.prismaService.chatSession.create({
+    userMessage: string;
+    modelResponse: string;
+  }) {
+    return this.prismaService.chatSession.create({
       data: {
         userId,
         title,
         messages: {
-          create: [{ content: message, role: 'user' }],
+          create: [
+            { content: userMessage, role: 'user' },
+            { content: modelResponse, role: 'model' },
+          ],
         },
       },
+      include: {
+        messages: true,
+      },
     });
-    return chat;
   }
 
   async updateChat({
-    id,
-    message,
-    role,
+    chatId,
+    messages,
   }: {
-    id: string;
-    message: string;
-    role: MessageRole;
-  }): Promise<(ChatSession & { messages: Message[] }) | null> {
-    await this.prismaService.message.create({
-      data: {
-        chatId: id,
-        content: message,
-        role,
-      },
+    chatId: string;
+    messages: { content: string; role: MessageRole }[];
+  }): Promise<{ messages: Message[] }> {
+    const formatedMessages = messages.map((msg) => ({
+      chatId: chatId,
+      content: msg.content,
+      role: msg.role,
+    }));
+
+    const result = await this.prismaService.message.createManyAndReturn({
+      data: formatedMessages,
     });
 
-    return this.getChat({ chatId: id });
+    return {
+      messages: result,
+    };
   }
 }

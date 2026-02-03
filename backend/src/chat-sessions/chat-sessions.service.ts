@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ChatSessionsRepository } from './chat-sessions.repository';
-import { Message, MessageRole } from '@prisma/client';
 import { AiAssistantService } from '../ai-assistant/ai-assistant.service';
 import {
   CreateChatSessionResponse,
@@ -44,14 +43,15 @@ export class ChatSessionsService {
       throw new NotFoundException(`Failed to retrieve chat with id ${chatId}`);
     }
 
-    const createdAt = new Date();
-
     return {
       id: chat.id,
       title: chat.title,
-      messages: chat.messages,
-      createdAt: createdAt.toISOString(),
-      updatedAt: createdAt.toISOString(),
+      messages: chat.messages.map((msg) => ({
+        ...msg,
+        createdAt: msg.createdAt?.toISOString() ?? new Date().toISOString(),
+      })),
+      createdAt: chat.createdAt.toISOString(),
+      updatedAt: chat.updatedAt?.toISOString() ?? chat.createdAt.toISOString(),
     };
   }
 
@@ -62,66 +62,69 @@ export class ChatSessionsService {
     userId: string;
     message: string;
   }): Promise<CreateChatSessionResponse> {
-    const { text, title } = await this.aiAssistantService.chat({
-      messages: [],
-      newMessage: message,
+    const { text, title } = await this.aiAssistantService.createChatWithTitle({
+      message,
     });
 
     const chat = await this.chatSessionsRepository.createChat({
       title,
       userId,
-      message,
-    });
-
-    const updatedChat = await this.chatSessionsRepository.updateChat({
-      id: chat.id,
-      message: text ?? '',
-      role: 'model',
+      userMessage: message,
+      modelResponse: text,
     });
 
     return {
       id: chat.id,
-      title,
-      messages: updatedChat?.messages ?? [],
+      title: chat.title,
       createdAt: chat.createdAt.toISOString(),
-      updatedAt: chat.updatedAt?.toISOString() ?? new Date().toISOString(),
+      updatedAt: chat.updatedAt?.toISOString() ?? chat.createdAt.toISOString(),
+
+      messages: chat.messages.map((msg) => ({
+        id: msg.id,
+        chatId: msg.chatId,
+        content: msg.content,
+        role: msg.role.toLowerCase() as 'user' | 'model',
+        createdAt: msg.createdAt?.toISOString() ?? new Date().toISOString(),
+      })),
     };
   }
 
   async updateChat({
     chatId,
     message,
-    role,
   }: {
     chatId: string;
     message: string;
-    role: MessageRole;
   }): Promise<UpdateChatSessionResponse> {
     const chat = await this.getChat({ chatId });
-    const { text } = await this.aiAssistantService.chat({
-      messages: (chat?.messages as Message[]) ?? [],
+
+    if (!chat) {
+      throw new NotFoundException(`Chat ${chatId} non trouvé`);
+    }
+
+    const { text } = await this.aiAssistantService.updateChat({
+      messages: chat.messages,
       newMessage: message,
     });
 
-    await this.chatSessionsRepository.updateChat({
-      id: chatId,
-      message,
-      role,
-    });
-    const updatedChat = await this.chatSessionsRepository.updateChat({
-      id: chatId,
-      message: text ?? '',
-      role: 'model',
+    const result = await this.chatSessionsRepository.updateChat({
+      chatId,
+      messages: [
+        { content: message, role: 'user' },
+        { content: text, role: 'model' },
+      ],
     });
 
     return {
       id: chat.id,
       title: chat.title,
-      messages: updatedChat?.messages ?? [],
-      createdAt:
-        updatedChat?.createdAt?.toISOString() ?? new Date().toISOString(),
-      updatedAt:
-        updatedChat?.updatedAt?.toISOString() ?? new Date().toISOString(),
+      messages: (result?.messages ?? []).map((msg) => ({
+        ...msg,
+        createdAt: msg.createdAt?.toISOString() ?? new Date().toISOString(),
+        role: msg.role as 'user' | 'model',
+      })),
+      createdAt: chat?.createdAt ?? new Date().toISOString(),
+      updatedAt: chat?.updatedAt ?? new Date().toISOString(),
     };
   }
 }
