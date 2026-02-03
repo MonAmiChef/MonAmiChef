@@ -1,0 +1,23 @@
+{
+  "monamichef": "MonAmiChef",
+  "auth": {
+    "title": "MonAmiChef",
+    "subtitle": "Ton assistant cuisine IA",
+    "login": "Se connecter",
+    "register": "Créer un compte",
+    "no_account_yet": "Pas encore de compte?",
+    "already_signed": "Déjà inscrit?"
+  },
+  "drawer": {
+    "new_chat": "Nouveau Chat",
+    "chats": "Conversations",
+    "failed_retrieving_sessions": "Échec de récupération des conversations"
+  },
+  "chat": {
+    "chef_typing": "Le chef prépare sa réponse..."
+  },
+  "not_found": {
+    "screen": "Cet écran n'existe pas.",
+    "go_to_home": "Retourner a la page d'accueil"
+  }
+}

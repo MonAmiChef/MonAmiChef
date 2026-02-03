@@ -13,11 +13,13 @@ import { DrawerActions } from '@react-navigation/native';
 import { chatApi } from '@/services/api';
 import { useQuery } from '@tanstack/react-query';
 import { ActivityIndicator } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CustomDrawerContent(props: any) {
   const { session } = useAuth();
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   const { data: sessions, isLoading } = useQuery({
     queryKey: ['chat-sessions'],
@@ -50,13 +52,15 @@ function CustomDrawerContent(props: any) {
         >
           <MessageCirclePlus size={20} color="#ff6900" strokeWidth={2.5} />
           <Text className="text-lg text-orange-500 font-inter-bold ml-2">
-            Nouveau Chat
+            {t('drawer.new_chat')}
           </Text>
         </Pressable>
       </Box>
 
       <Box className="px-5 py-2 border-slate-100">
-        <Text className="text-lg font-inter-medium text-black">Chats</Text>
+        <Text className="text-lg font-inter-medium text-black">
+          {t('drawer.chats')}
+        </Text>
       </Box>
 
       <Box className="flex-1 py-1">
@@ -82,7 +86,7 @@ function CustomDrawerContent(props: any) {
             );
           })
         ) : (
-          <Text>Failed to retrieve sessions</Text>
+          <Text>{t('drawer.failed_retrieving_sessions')}</Text>
         )}
       </Box>
     </DrawerContentScrollView>
