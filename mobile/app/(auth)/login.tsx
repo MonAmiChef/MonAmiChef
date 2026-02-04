@@ -68,7 +68,7 @@ export default function LoginScreen() {
             href="/(auth)/register"
             className="text-typography-500 underline"
           >
-            {t('login.create_account')}
+            {t('auth.register')}
           </Link>
         </HStack>
 

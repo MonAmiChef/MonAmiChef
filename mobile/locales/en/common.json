@@ -1,12 +1,14 @@
 {
   "monamichef": "MonAmiChef",
+  "language": "Language",
   "auth": {
     "title": "MonAmiChef",
     "subtitle": "Your culinary AI assistant",
     "login": "Log in",
     "no_account_yet": "No account yet?",
     "already_signed": "Déjà inscrit?",
-    "register": "Create an account"
+    "register": "Create an account",
+    "logout": "Log out"
   },
   "drawer": {
     "new_chat": "New Chat",
@@ -19,5 +21,8 @@
   "not_found": {
     "screen": "This screen doesn't exist.",
     "go_to_home": "Go to home screen"
+  },
+  "profile_action_sheet": {
+    "guest": "Guest"
   }
 }

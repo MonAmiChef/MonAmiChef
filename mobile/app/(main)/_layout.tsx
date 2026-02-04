@@ -7,13 +7,14 @@ import { Text } from '@/components/ui/text';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { Link, usePathname } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
-import React from 'react';
+import React, { useState } from 'react';
 import { User, Menu, MessageCirclePlus } from 'lucide-react-native';
 import { DrawerActions } from '@react-navigation/native';
 import { chatApi } from '@/services/api';
 import { useQuery } from '@tanstack/react-query';
 import { ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { ProfileActionSheet } from '@/components/profile/ProfileActionSheet';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CustomDrawerContent(props: any) {
@@ -94,57 +95,77 @@ function CustomDrawerContent(props: any) {
 }
 
 export default function MainLayout() {
+  const [showProfile, setShowProfile] = useState(false);
+  const { session } = useAuth();
+
   return (
-    <Drawer
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={({ navigation }) => ({
-        headerShown: true,
-        headerTitleStyle: {
-          fontFamily: 'Inter_600SemiBold',
-        },
-        headerLeft: () => (
-          <Pressable
-            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-            style={{ marginLeft: 15 }}
-          >
-            <Menu size={26} color="#000" strokeWidth={2} />
-          </Pressable>
-        ),
-        headerRight: () => (
-          <Link href="/(main)" asChild>
-            <Pressable style={{ marginRight: 15 }}>
-              <User size={26} strokeWidth={2} />
+    <>
+      <Drawer
+        drawerContent={(props) => <CustomDrawerContent {...props} />}
+        screenOptions={({ navigation }) => ({
+          headerShown: true,
+          headerTitleStyle: {
+            fontFamily: 'Inter_600SemiBold',
+          },
+          headerLeft: () => (
+            <Pressable
+              onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+              style={{ marginLeft: 15 }}
+            >
+              <Menu size={26} color="#000" strokeWidth={2} />
             </Pressable>
-          </Link>
-        ),
-        drawerStyle: {
-          width: '80%',
-          backgroundColor: '#fffdfb',
-        },
-        headerStyle: {
-          elevation: 0,
-          shadowOpacity: 0,
-          backgroundColor: '#fffdfb',
-          borderWidth: 0,
-          boxShadow: 'none',
-          height: 120,
-        },
-      })}
-    >
-      <Drawer.Screen
-        name="chat/index"
-        options={{
-          drawerLabel: 'Nouveau Chat',
-          title: 'MonAmiChef',
-        }}
+          ),
+          headerRight: () => (
+            <Link href="/(main)" asChild>
+              <Pressable
+                onPress={() => setShowProfile(true)}
+                style={{ marginRight: 15 }}
+              >
+                <Box className="bg-slate-500 h-10 w-10 items-center justify-center rounded-full">
+                  {session?.user.is_anonymous ? (
+                    <User size={15} color="white" />
+                  ) : (
+                    <Text className="text-white font-inter-bold">
+                      {session?.user.email?.at(0)?.toLocaleUpperCase()}
+                    </Text>
+                  )}
+                </Box>
+              </Pressable>
+            </Link>
+          ),
+          drawerStyle: {
+            width: '80%',
+            backgroundColor: '#fffdfb',
+          },
+          headerStyle: {
+            elevation: 0,
+            shadowOpacity: 0,
+            backgroundColor: '#fffdfb',
+            borderWidth: 0,
+            boxShadow: 'none',
+            height: 120,
+          },
+        })}
+      >
+        <Drawer.Screen
+          name="chat/index"
+          options={{
+            drawerLabel: 'Nouveau Chat',
+            title: 'MonAmiChef',
+          }}
+        />
+        <Drawer.Screen
+          name="chat/[id]"
+          options={{
+            drawerLabel: 'Conversation',
+            title: 'Chat',
+          }}
+        />
+      </Drawer>
+      <ProfileActionSheet
+        isOpen={showProfile}
+        onClose={() => setShowProfile(false)}
       />
-      <Drawer.Screen
-        name="chat/[id]"
-        options={{
-          drawerLabel: 'Conversation',
-          title: 'Chat',
-        }}
-      />
-    </Drawer>
+    </>
   );
 }
