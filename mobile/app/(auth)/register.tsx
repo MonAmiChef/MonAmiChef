@@ -57,14 +57,14 @@ export default function LoginScreen() {
             {loading ? (
               <ButtonSpinner />
             ) : (
-              <ButtonText>{t('register.create_account')}</ButtonText>
+              <ButtonText>{t('auth.create_account')}</ButtonText>
             )}
           </Button>
         </VStack>
 
         <HStack className="flex gap-x-2 justify-center align-middle">
           <Text className="text-typography-500">
-            {t('register.already_signed')}
+            {t('auth.already_signed')}
           </Text>
           <Link href="/(auth)/login" className="text-typography-500 underline">
             {t('auth.login')}

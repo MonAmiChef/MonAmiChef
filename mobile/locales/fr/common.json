@@ -1,12 +1,14 @@
 {
   "monamichef": "MonAmiChef",
+  "language": "Langage",
   "auth": {
     "title": "MonAmiChef",
     "subtitle": "Ton assistant cuisine IA",
     "login": "Se connecter",
     "register": "Créer un compte",
     "no_account_yet": "Pas encore de compte?",
-    "already_signed": "Déjà inscrit?"
+    "already_signed": "Déjà inscrit?",
+    "logout": "Se déconnecter"
   },
   "drawer": {
     "new_chat": "Nouveau Chat",
@@ -19,5 +21,8 @@
   "not_found": {
     "screen": "Cet écran n'existe pas.",
     "go_to_home": "Retourner a la page d'accueil"
+  },
+  "profile_action_sheet": {
+    "guest": "Invité"
   }
 }
