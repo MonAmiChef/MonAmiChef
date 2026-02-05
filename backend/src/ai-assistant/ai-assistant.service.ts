@@ -18,7 +18,7 @@ import {
   GeneralAskResponseJson,
   GeneralAskResponseSchema,
 } from '../general-ask/general-ask.dto';
-import { Message } from '@prisma/client';
+import { Message, PreferenceTag } from '@prisma/client';
 import {
   CreateChatSessionResponseJson,
   CreateChatWithTitleServiceResponse,
@@ -33,15 +33,32 @@ export class AiAssistantService {
 
   async createChatWithTitle({
     message,
+    preferences,
+    exclude,
+    language,
   }: {
     message: string;
+    preferences: PreferenceTag[];
+    exclude: PreferenceTag[];
+    language: string;
   }): Promise<CreateChatWithTitleServiceResponse> {
+    const userQuery =
+      message.trim().length > 0
+        ? message
+        : `Please suggest a recipe or cooking advice based on my preferences in the language: ${language}.`;
+
+    const prefContext = `
+      TARGET_LANGUAGE: ${language}
+      PREFERENCES: ${preferences?.join(', ') ?? 'None'}
+      EXCLUDE: ${exclude?.join(', ') ?? 'None'}
+    `;
+
     const result = await this.ai.models.generateContent({
       model: process.env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL,
-      contents: message,
+      contents: userQuery,
       config: {
         responseMimeType: 'application/json',
-        systemInstruction: process.env.GENERATE_CHAT_WITH_TITLE_PROMPT,
+        systemInstruction: `${process.env.GENERATE_CHAT_WITH_TITLE_PROMPT}\n\nUser Context:${prefContext}`,
         responseJsonSchema: CreateChatSessionResponseJson,
       },
     });
@@ -54,26 +71,38 @@ export class AiAssistantService {
   async updateChat({
     messages,
     newMessage,
+    preferences,
+    exclude,
+    language = 'francais',
   }: {
     messages: Pick<Message, 'role' | 'content'>[];
     newMessage: string;
+    preferences: PreferenceTag[];
+    exclude: PreferenceTag[];
+    language?: string;
   }): Promise<{ text: string }> {
-    const history = messages.map((m) => ({
-      role: m.role === 'user' ? 'user' : 'model',
-      parts: [{ text: m.content }],
-    }));
+    const prefContext = `
+    TARGET_LANGUAGE: ${language}
+    PREFERENCES: ${preferences?.join(', ') || 'None'}
+    EXCLUDE: ${exclude?.join(', ') || 'None'}
+  `;
 
-    const chat = this.ai.chats.create({
+    const result = await this.ai.models.generateContent({
       model: process.env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL,
-      history,
-    });
-
-    const response = await chat.sendMessage({
-      message: newMessage,
+      contents: [
+        ...messages.map((m) => ({
+          role: m.role.toLowerCase() === 'user' ? 'user' : 'model',
+          parts: [{ text: m.content }],
+        })),
+        { role: 'user', parts: [{ text: newMessage }] },
+      ],
+      config: {
+        systemInstruction: `${process.env.GENERATE_CHAT_RESPONSE_PROMPT}\n\nUser Context:\n${prefContext}`,
+      },
     });
 
     return {
-      text: response.text ?? 'Undefined response from AI model',
+      text: result.text ?? "Désolé, je n'ai pas pu générer de réponse.",
     };
   }
 

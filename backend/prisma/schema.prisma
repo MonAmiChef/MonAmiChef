@@ -49,6 +49,90 @@ model User {
   recipes   Recipe[]
 }
 
+enum PreferenceTag {
+  HIGH_PROTEIN
+  HIGH_FIBER
+  LOW_CARB
+  BALANCED
+  HIGH_CARB
+  LOW_FAT
+  VEGETARIAN
+  VEGAN
+
+  ITALIAN
+  MEXICAN
+  MEDITERRANEAN
+  AMERICAN
+  FRENCH
+  INDIAN
+  THAI
+  CHINESE
+  JAPANESE
+  MIDDLE_EASTERN
+  KOREAN
+  AFRICAN
+
+  BREAKFAST
+  LUNCH
+  DINNER
+  APPETIZER
+  DESSERT
+  SNACK
+  SMOOTHIE_DRINK
+
+  UNDER_15
+  UNDER_30
+  ONE_HOUR_MAX
+  SLOW_COOK
+
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  KID_FRIENDLY
+
+  FAMILY_MEAL
+  ROMANTIC_DINNER
+  KIDS_LUNCHBOX
+  SOLO_MEAL
+  MEAL_PREP
+  PRE_WORKOUT
+  POST_WORKOUT
+
+  OVEN
+  STOVE_ONLY
+  MICROWAVE
+  BLENDER
+  AIR_FRYER
+
+  NO_SPICE
+  LIGHT
+  MEDIUM
+  STRONG
+  VERY_HOT
+
+  CHICKEN
+  BEEF
+  PORK
+  FISH
+  SEAFOOD
+  LAMB
+  TURKEY
+  DUCK
+
+  TOMATOES
+  ONIONS
+  CARROTS
+  BELL_PEPPERS
+  BROCCOLI
+  SPINACH
+  MUSHROOMS
+  ZUCCHINI
+  POTATOES
+  GARLIC
+  LETTUCE
+  CUCUMBER
+}
+
 model ChatSession {
   id        String    @id @default(uuid())
   createdAt DateTime  @default(now()) @db.Timestamp(6)
@@ -57,6 +141,9 @@ model ChatSession {
   userId    String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   User      User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   messages  Message[]
+
+  preferences PreferenceTag[]
+  exclude PreferenceTag[]
 }
 
 model Message {

@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ChatSession, Message, MessageRole } from '@prisma/client';
+import {
+  ChatSession,
+  Message,
+  MessageRole,
+  PreferenceTag,
+} from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 
 @Injectable()
@@ -42,16 +47,22 @@ export class ChatSessionsRepository {
     userId,
     userMessage,
     modelResponse,
+    preferences,
+    exclude,
   }: {
     title: string;
     userId: string;
     userMessage: string;
     modelResponse: string;
+    preferences: PreferenceTag[];
+    exclude: PreferenceTag[];
   }) {
     return this.prismaService.chatSession.create({
       data: {
         userId,
         title,
+        preferences,
+        exclude,
         messages: {
           create: [
             { content: userMessage, role: 'user' },

@@ -59,6 +59,8 @@ export class ChatSessionsController {
     return this.chatSessionsService.createChat({
       userId: req.user.id,
       message: body.firstMessage,
+      preferences: body.preferences,
+      exclude: body.exclude,
     });
   }
 
@@ -74,6 +76,8 @@ export class ChatSessionsController {
     return this.chatSessionsService.updateChat({
       chatId,
       message: body.message,
+      preferences: body.preferences,
+      exclude: body.exclude,
     });
   }
 }
