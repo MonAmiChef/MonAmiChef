@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
+import { PreferenceTag } from '@prisma/client';
 
 // SERVICE
 
@@ -16,6 +17,8 @@ export type CreateChatWithTitleServiceResponse = z.output<
 
 const CreateChatSessionRequestSchema = z.object({
   firstMessage: z.string(),
+  preferences: z.array(z.enum(PreferenceTag)).default([]),
+  exclude: z.array(z.enum(PreferenceTag)).default([]),
 });
 
 export type CreateChatSessionRequest = z.output<
@@ -65,6 +68,8 @@ export class CreateChatSessionResponseDto extends createZodDto(
 
 const UpdateChatSessionRequestSchema = z.object({
   message: z.string(),
+  preferences: z.array(z.enum(PreferenceTag)).default([]),
+  exclude: z.array(z.enum(PreferenceTag)).default([]),
 });
 
 export class UpdateChatSessionRequestDto extends createZodDto(

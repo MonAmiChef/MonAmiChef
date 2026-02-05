@@ -22,6 +22,8 @@ function CustomDrawerContent(props: any) {
   const pathname = usePathname();
   const { t } = useTranslation();
 
+  console.log('sess', session);
+
   const { data: sessions, isLoading } = useQuery({
     queryKey: ['chat-sessions'],
     queryFn: async () => {
