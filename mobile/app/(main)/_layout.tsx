@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Drawer } from 'expo-router/drawer';
 import { Pressable } from 'react-native-gesture-handler';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
-import { Link, usePathname } from 'expo-router';
+import { usePathname, useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useState } from 'react';
 import { User, Menu, MessageCirclePlus } from 'lucide-react-native';
@@ -21,8 +19,7 @@ function CustomDrawerContent(props: any) {
   const { session } = useAuth();
   const pathname = usePathname();
   const { t } = useTranslation();
-
-  console.log('sess', session);
+  const router = useRouter();
 
   const { data: sessions, isLoading } = useQuery({
     queryKey: ['chat-sessions'],
@@ -39,7 +36,7 @@ function CustomDrawerContent(props: any) {
       <Box className="flex px-4 py-3 mb-2">
         <Pressable
           onPress={() => {
-            props.navigation.navigate('chat/index');
+            router.push({ pathname: '/', params: { openPreferences: 'true' } });
           }}
           style={{
             flexDirection: 'row',
@@ -75,7 +72,7 @@ function CustomDrawerContent(props: any) {
               <Pressable
                 key={chat.id}
                 onPress={() => {
-                  props.navigation.navigate('chat/[id]', { id: chat.id });
+                  router.navigate(`/chat/${chat.id}`);
                 }}
                 className={`px-5 py-3`}
               >
@@ -118,22 +115,20 @@ export default function MainLayout() {
             </Pressable>
           ),
           headerRight: () => (
-            <Link href="/(main)" asChild>
-              <Pressable
-                onPress={() => setShowProfile(true)}
-                style={{ marginRight: 15 }}
-              >
-                <Box className="bg-slate-500 h-10 w-10 items-center justify-center rounded-full">
-                  {session?.user.is_anonymous ? (
-                    <User size={15} color="white" />
-                  ) : (
-                    <Text className="text-white font-inter-bold">
-                      {session?.user.email?.at(0)?.toLocaleUpperCase()}
-                    </Text>
-                  )}
-                </Box>
-              </Pressable>
-            </Link>
+            <Pressable
+              onPress={() => setShowProfile(true)}
+              style={{ marginRight: 15 }}
+            >
+              <Box className="bg-slate-500 h-10 w-10 items-center justify-center rounded-full">
+                {session?.user.is_anonymous ? (
+                  <User size={15} color="white" />
+                ) : (
+                  <Text className="text-white font-inter-bold">
+                    {session?.user.email?.at(0)?.toLocaleUpperCase()}
+                  </Text>
+                )}
+              </Box>
+            </Pressable>
           ),
           drawerStyle: {
             width: '80%',
@@ -150,14 +145,7 @@ export default function MainLayout() {
         })}
       >
         <Drawer.Screen
-          name="chat/index"
-          options={{
-            drawerLabel: 'Nouveau Chat',
-            title: 'MonAmiChef',
-          }}
-        />
-        <Drawer.Screen
-          name="chat/[id]"
+          name="chat"
           options={{
             drawerLabel: 'Conversation',
             title: 'Chat',

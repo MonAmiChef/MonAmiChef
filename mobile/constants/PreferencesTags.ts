@@ -1,0 +1,72 @@
+export const preferencesTags: { [category: string]: string[] } = {
+  nutrition: [
+    'high_protein',
+    'high_fiber',
+    'low_carb',
+    'balanced',
+    'high_carb',
+    'low_fat',
+    'vegetarian',
+    'vegan',
+  ],
+  cuisines: [
+    'italian',
+    'mexican',
+    'mediterranean',
+    'american',
+    'french',
+    'indian',
+    'thai',
+    'chinese',
+    'japanese',
+    'middle_eastern',
+    'korean',
+    'african',
+  ],
+  occasion: [
+    'breakfast',
+    'lunch',
+    'dinner',
+    'appetizer',
+    'dessert',
+    'snack',
+    'smoothie_drink',
+  ],
+  timing: ['under_15', 'under_30', 'one_hour_max', 'slow_cook'],
+  meat: [
+    'chicken',
+    'beef',
+    'pork',
+    'fish',
+    'seafood',
+    'lamb',
+    'turkey',
+    'duck',
+  ],
+  vegetables: [
+    'tomatoes',
+    'onions',
+    'carrots',
+    'bell_peppers',
+    'broccoli',
+    'spinach',
+    'mushrooms',
+    'zucchini',
+    'potatoes',
+    'garlic',
+    'lettuce',
+    'cucumber',
+  ],
+};
+
+export type PreferenceTag =
+  (typeof preferencesTags)[keyof typeof preferencesTags][number];
+
+export const unifiedPreferencesTags = [
+  ...preferencesTags.nutrition,
+  ...preferencesTags.cuisines,
+  ...preferencesTags.occasion,
+  ...preferencesTags.timing,
+  ...preferencesTags.meat,
+  ...preferencesTags.vegetables,
+];

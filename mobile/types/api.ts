@@ -309,6 +309,10 @@ export interface components {
         };
         CreateChatSessionRequestDto: {
             firstMessage: string;
+            /** @default [] */
+            preferences: ("high_protein" | "high_fiber" | "low_carb" | "balanced" | "high_carb" | "low_fat" | "vegetarian" | "vegan" | "italian" | "mexican" | "mediterranean" | "american" | "french" | "indian" | "thai" | "chinese" | "japanese" | "middle_eastern" | "korean" | "african" | "breakfast" | "lunch" | "dinner" | "appetizer" | "dessert" | "snack" | "smoothie_drink" | "under_15" | "under_30" | "one_hour_max" | "slow_cook" | "chicken" | "beef" | "pork" | "fish" | "seafood" | "lamb" | "turkey" | "duck" | "tomatoes" | "onions" | "carrots" | "bell_peppers" | "broccoli" | "spinach" | "mushrooms" | "zucchini" | "potatoes" | "garlic" | "lettuce" | "cucumber")[];
+            /** @default [] */
+            exclude: ("high_protein" | "high_fiber" | "low_carb" | "balanced" | "high_carb" | "low_fat" | "vegetarian" | "vegan" | "italian" | "mexican" | "mediterranean" | "american" | "french" | "indian" | "thai" | "chinese" | "japanese" | "middle_eastern" | "korean" | "african" | "breakfast" | "lunch" | "dinner" | "appetizer" | "dessert" | "snack" | "smoothie_drink" | "under_15" | "under_30" | "one_hour_max" | "slow_cook" | "chicken" | "beef" | "pork" | "fish" | "seafood" | "lamb" | "turkey" | "duck" | "tomatoes" | "onions" | "carrots" | "bell_peppers" | "broccoli" | "spinach" | "mushrooms" | "zucchini" | "potatoes" | "garlic" | "lettuce" | "cucumber")[];
         };
         CreateChatSessionResponseDto_Output: {
             /** Format: uuid */
@@ -327,6 +331,10 @@ export interface components {
         };
         UpdateChatSessionRequestDto: {
             message: string;
+            /** @default [] */
+            preferences: ("high_protein" | "high_fiber" | "low_carb" | "balanced" | "high_carb" | "low_fat" | "vegetarian" | "vegan" | "italian" | "mexican" | "mediterranean" | "american" | "french" | "indian" | "thai" | "chinese" | "japanese" | "middle_eastern" | "korean" | "african" | "breakfast" | "lunch" | "dinner" | "appetizer" | "dessert" | "snack" | "smoothie_drink" | "under_15" | "under_30" | "one_hour_max" | "slow_cook" | "chicken" | "beef" | "pork" | "fish" | "seafood" | "lamb" | "turkey" | "duck" | "tomatoes" | "onions" | "carrots" | "bell_peppers" | "broccoli" | "spinach" | "mushrooms" | "zucchini" | "potatoes" | "garlic" | "lettuce" | "cucumber")[];
+            /** @default [] */
+            exclude: ("high_protein" | "high_fiber" | "low_carb" | "balanced" | "high_carb" | "low_fat" | "vegetarian" | "vegan" | "italian" | "mexican" | "mediterranean" | "american" | "french" | "indian" | "thai" | "chinese" | "japanese" | "middle_eastern" | "korean" | "african" | "breakfast" | "lunch" | "dinner" | "appetizer" | "dessert" | "snack" | "smoothie_drink" | "under_15" | "under_30" | "one_hour_max" | "slow_cook" | "chicken" | "beef" | "pork" | "fish" | "seafood" | "lamb" | "turkey" | "duck" | "tomatoes" | "onions" | "carrots" | "bell_peppers" | "broccoli" | "spinach" | "mushrooms" | "zucchini" | "potatoes" | "garlic" | "lettuce" | "cucumber")[];
         };
         UpdateChatSessionResponseDto_Output: {
             /** Format: uuid */

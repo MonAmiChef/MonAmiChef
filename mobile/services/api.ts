@@ -1,3 +1,4 @@
+import { PreferenceTag } from '@/constants/PreferencesTags';
 import { components } from '@/types/api';
 import { Session } from '@supabase/supabase-js';
 
@@ -47,14 +48,17 @@ export const chatApi = {
   createSession: async (
     firstMessage: string,
     session: Session,
+    preferences: PreferenceTag[],
+    exclude: PreferenceTag[],
   ): Promise<CreateChatResponse> => {
+    console.log('sending with', preferences, exclude);
     const response = await fetch(`${API_URL}/chat-sessions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${session?.access_token}`,
       },
-      body: JSON.stringify({ firstMessage }),
+      body: JSON.stringify({ firstMessage, preferences, exclude }),
     });
 
     if (!response.ok) throw new Error('Failed to create session');
@@ -66,7 +70,10 @@ export const chatApi = {
     chatId: string,
     message: string,
     session: Session,
+    preferences: PreferenceTag[],
+    exclude: PreferenceTag[],
   ): Promise<CreateChatResponse> => {
+    console.log('sending with tags', preferences, exclude);
     const response = await fetch(
       `${API_URL}/chat-sessions/${chatId}/messages`,
       {
@@ -75,7 +82,7 @@ export const chatApi = {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${session?.access_token}`,
         },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message, preferences, exclude }),
       },
     );
 
