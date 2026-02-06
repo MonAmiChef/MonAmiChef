@@ -21,7 +21,8 @@ import Drawer from 'expo-router/drawer';
 import { WaveText } from '@/components/chat/WaveText';
 import { HStack } from '@/components/ui/hstack';
 import { PreferenceTag } from '@/constants/PreferencesTags';
-import { TagSelector } from '@/components/chat/TagSelector';
+import { PreferencesQuickSelector } from '@/components/chat/PreferencesQuickSelector';
+import { PreferenceActionSheet } from '@/components/chat/PreferenceActionSheet';
 
 type ChatSession = components['schemas']['GetChatSessionResponseDto_Output'];
 type ChatMessage = ChatSession['messages'][number];
@@ -34,6 +35,8 @@ export default function ChatScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { session, loading: isAuthLoading } = useAuth();
   const queryClient = useQueryClient();
+  const [showPreferences, setShowPreferences] = useState(false);
+
   const [selectedPreferences, setSelectedPreferences] = useState<
     PreferenceTag[]
   >([]);
@@ -138,87 +141,97 @@ export default function ChatScreen() {
   };
 
   return (
-    <View className="flex-1 bg-base-bg">
-      <Drawer.Screen
-        options={{
-          headerTitle: data?.title || 'MonAmiChef',
-        }}
-      />
-      <FlashList
-        ref={flashListRef}
-        showsVerticalScrollIndicator={false}
-        data={data?.messages}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{
-          paddingHorizontal: 16,
-          paddingVertical: 20,
-          backgroundColor: '#fffdfb',
-        }}
-        renderItem={({ item }) => {
-          const isModel = item.role === 'model';
-          const formattedContent = item.content.replace(/\n/g, '\n\n');
-          const messageDate = new Date(item.createdAt);
+    <>
+      <View className="flex-1 bg-base-bg">
+        <Drawer.Screen
+          options={{
+            headerTitle: data?.title || 'MonAmiChef',
+          }}
+        />
+        <FlashList
+          ref={flashListRef}
+          showsVerticalScrollIndicator={false}
+          data={data?.messages}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{
+            paddingHorizontal: 16,
+            paddingVertical: 20,
+            backgroundColor: '#fffdfb',
+          }}
+          renderItem={({ item }) => {
+            const isModel = item.role === 'model';
+            const formattedContent = item.content.replace(/\n/g, '\n\n');
+            const messageDate = new Date(item.createdAt);
 
-          if (item.id === 'temp-loading-id') {
+            if (item.id === 'temp-loading-id') {
+              return (
+                <Box className="w-full py-6 flex-row gap-3 items-center">
+                  <ActivityIndicator size="small" color="#ff6900" />
+                  <WaveText
+                    text="Le chef prépare sa réponse..."
+                    color="#FF9800"
+                    fontSize={14}
+                  />
+                </Box>
+              );
+            }
+
+            if (isModel) {
+              return (
+                <Box className="w-full py-6 border-slate-100">
+                  <Markdown mergeStyle={true} style={markdownStyles}>
+                    {formattedContent}
+                  </Markdown>
+                </Box>
+              );
+            }
+
             return (
-              <Box className="w-full py-6 flex-row gap-3 items-center">
-                <ActivityIndicator size="small" color="#ff6900" />
-                <WaveText
-                  text="Le chef prépare sa réponse..."
-                  color="#FF9800"
-                  fontSize={14}
-                />
+              <Box className="bg-orange-500 self-end gap-1 px-4 py-3 rounded-2xl rounded-tr-none mb-2 max-w-[80%]">
+                <Text className="text-white text-[15px] font-medium">
+                  {item.content}
+                </Text>
+                <HStack className="self-end gap-1">
+                  <Text className="text-orange-200 self-end text-xs font-medium">
+                    {messageDate.toLocaleDateString('fr-FR')}
+                  </Text>
+                  <Text className="text-orange-200 self-end text-xs font-medium">
+                    {messageDate.toLocaleTimeString('fr-FR', {
+                      hour: 'numeric',
+                      minute: 'numeric',
+                    })}
+                  </Text>
+                </HStack>
               </Box>
             );
-          }
+          }}
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          onContentSizeChange={(w, h) => {}}
+        />
 
-          if (isModel) {
-            return (
-              <Box className="w-full py-6 border-slate-100">
-                <Markdown mergeStyle={true} style={markdownStyles}>
-                  {formattedContent}
-                </Markdown>
-              </Box>
-            );
-          }
-
-          return (
-            <Box className="bg-orange-500 self-end gap-1 px-4 py-3 rounded-2xl rounded-tr-none mb-2 max-w-[80%]">
-              <Text className="text-white text-[15px] font-medium">
-                {item.content}
-              </Text>
-              <HStack className="self-end gap-1">
-                <Text className="text-orange-200 self-end text-xs font-medium">
-                  {messageDate.toLocaleDateString('fr-FR')}
-                </Text>
-                <Text className="text-orange-200 self-end text-xs font-medium">
-                  {messageDate.toLocaleTimeString('fr-FR', {
-                    hour: 'numeric',
-                    minute: 'numeric',
-                  })}
-                </Text>
-              </HStack>
-            </Box>
-          );
-        }}
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        onContentSizeChange={(w, h) => {}}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        >
+          <PreferencesQuickSelector
+            selectedPreferences={selectedPreferences}
+            selectedExclude={selectedExclude}
+            onToggle={handleTagPress}
+            onOpenSelector={() => setShowPreferences(true)}
+          />
+          <ChatInput
+            onSend={(msg) => handleSend(msg)}
+            isLoading={mutation.isPending}
+          />
+        </KeyboardAvoidingView>
+      </View>
+      <PreferenceActionSheet
+        selectedPreferences={selectedPreferences}
+        selectedExclude={selectedExclude}
+        onToggle={handleTagPress}
+        isOpen={showPreferences}
+        onClose={() => setShowPreferences(false)}
       />
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-      >
-        <TagSelector
-          selectedPreferences={selectedPreferences}
-          selectedExclude={selectedExclude}
-          onToggle={handleTagPress}
-        />
-        <ChatInput
-          onSend={(msg) => handleSend(msg)}
-          isLoading={mutation.isPending}
-        />
-      </KeyboardAvoidingView>
-    </View>
+    </>
   );
 }

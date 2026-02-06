@@ -3,7 +3,7 @@ import { Pressable } from 'react-native-gesture-handler';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
-import { Link, usePathname, useRouter } from 'expo-router';
+import { usePathname, useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useState } from 'react';
 import { User, Menu, MessageCirclePlus } from 'lucide-react-native';
@@ -115,22 +115,20 @@ export default function MainLayout() {
             </Pressable>
           ),
           headerRight: () => (
-            <Link href="/(main)" asChild>
-              <Pressable
-                onPress={() => setShowProfile(true)}
-                style={{ marginRight: 15 }}
-              >
-                <Box className="bg-slate-500 h-10 w-10 items-center justify-center rounded-full">
-                  {session?.user.is_anonymous ? (
-                    <User size={15} color="white" />
-                  ) : (
-                    <Text className="text-white font-inter-bold">
-                      {session?.user.email?.at(0)?.toLocaleUpperCase()}
-                    </Text>
-                  )}
-                </Box>
-              </Pressable>
-            </Link>
+            <Pressable
+              onPress={() => setShowProfile(true)}
+              style={{ marginRight: 15 }}
+            >
+              <Box className="bg-slate-500 h-10 w-10 items-center justify-center rounded-full">
+                {session?.user.is_anonymous ? (
+                  <User size={15} color="white" />
+                ) : (
+                  <Text className="text-white font-inter-bold">
+                    {session?.user.email?.at(0)?.toLocaleUpperCase()}
+                  </Text>
+                )}
+              </Box>
+            </Pressable>
           ),
           drawerStyle: {
             width: '80%',

@@ -6,22 +6,25 @@ import {
   PreferenceTag,
   unifiedPreferencesTags,
 } from '@/constants/PreferencesTags';
+import { Plus } from 'lucide-react-native';
 
-interface TagSelectorProps {
+interface PreferencesQuickSelectorProps {
   selectedPreferences: PreferenceTag[];
   selectedExclude: PreferenceTag[];
   onToggle: (tag: PreferenceTag) => void;
+  onOpenSelector: () => void;
 }
 
-export const TagSelector = ({
+export const PreferencesQuickSelector = ({
   selectedPreferences,
   selectedExclude,
   onToggle,
-}: TagSelectorProps) => {
+  onOpenSelector,
+}: PreferencesQuickSelectorProps) => {
   const { t } = useTranslation();
 
   return (
-    <View className="h-12 mb-2">
+    <View className="flex flex-row gap-x-2">
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -63,6 +66,13 @@ export const TagSelector = ({
           );
         })}
       </ScrollView>
+
+      <Pressable
+        onPress={onOpenSelector}
+        className="mr-4 bg-orange-100 p-2 rounded-full active:bg-orange-200"
+      >
+        <Plus size={20} color="#ff6900" strokeWidth={2.5} />
+      </Pressable>
     </View>
   );
 };

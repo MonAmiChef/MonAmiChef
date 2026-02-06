@@ -6,128 +6,93 @@ import {
   ActionsheetContent,
   ActionsheetDragIndicator,
   ActionsheetDragIndicatorWrapper,
-  ActionsheetItem,
-  ActionsheetItemText,
 } from '@/components/ui/actionsheet';
 import { VStack } from '@/components/ui/vstack';
-import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
-import { Pressable } from 'react-native';
-import { LogOut, User } from 'lucide-react-native';
+import { preferencesTags, PreferenceTag } from '@/constants/PreferencesTags';
+import { Pressable, ScrollView } from 'react-native';
 import { Box } from '../ui/box';
-import { useAuth } from '@/hooks/useAuth';
-import { Link } from 'expo-router';
-import { supabase } from '@/services/supabase';
 
 export const PreferenceActionSheet = ({
+  selectedPreferences,
+  selectedExclude,
   isOpen,
+  onToggle,
   onClose,
 }: {
+  selectedPreferences: PreferenceTag[];
+  selectedExclude: PreferenceTag[];
+  onToggle: (tag: PreferenceTag) => void;
   isOpen: boolean;
   onClose: () => void;
 }) => {
-  const { t, i18n } = useTranslation();
-  const { session } = useAuth();
-
-  const handleLanguageChange = (lang: string) => {
-    void i18n.changeLanguage(lang);
-  };
-
-  const handleLogOut = async () => {
-    onClose();
-    await supabase.auth.signOut();
-  };
+  const { t } = useTranslation();
+  const categories = [
+    'nutrition',
+    'cuisines',
+    'occasion',
+    'timing',
+    'meat',
+    'vegetables',
+  ];
 
   return (
     <Actionsheet isOpen={isOpen} onClose={onClose}>
       <ActionsheetBackdrop />
-      <ActionsheetContent>
+      <ActionsheetContent className="max-h-[65%]">
         <ActionsheetDragIndicatorWrapper>
           <ActionsheetDragIndicator />
         </ActionsheetDragIndicatorWrapper>
 
-        <VStack className="w-full p-4 gap-4" space="md">
-          <VStack className="w-full bg items-center my-2  gap-4">
-            <VStack className="gap-2 items-center">
-              <Box className="bg-slate-500 h-16 w-16 items-center justify-center rounded-full">
-                {session?.user.is_anonymous ? (
-                  <User size={35} color="white" />
-                ) : (
-                  <Text className="text-white font-inter-bold">
-                    {session?.user.email?.at(0)?.toLocaleUpperCase()}
-                  </Text>
-                )}
-              </Box>
-              <Text className="text-xl font-inter-semibold">
-                {session?.user.is_anonymous
-                  ? t('profile_action_sheet.guest')
-                  : session?.user.email}
-              </Text>
-            </VStack>
-            {session?.user.is_anonymous && (
-              <HStack className="gap-2">
-                <Link asChild href="/(auth)/login">
-                  <Pressable
-                    onPress={onClose}
-                    className={`p-3 bg-orange-500 flex-1 items-center rounded-lg`}
-                  >
-                    <Text className={`font-inter-medium text-white`}>
-                      {t('auth.login')}
-                    </Text>
-                  </Pressable>
-                </Link>
-                <Link asChild href="/(auth)/register">
-                  <Pressable
-                    onPress={onClose}
-                    className={`p-3 bg-slate-50 border-slate-600 flex-1 border items-center rounded-lg`}
-                  >
-                    <Text className={`text-slate-600 font-inter-medium`}>
-                      {t('auth.register')}
-                    </Text>
-                  </Pressable>
-                </Link>
-              </HStack>
-            )}
-          </VStack>
+        <ScrollView
+          className="flex w-full p-2"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ gap: 20 }}
+        >
+          {categories.map((category, cIndex) => {
+            return (
+              <VStack className="gap-y-4" key={cIndex}>
+                <Text className="text-xl font-inter-semibold">
+                  {category[0].toUpperCase() + category.slice(1)}
+                </Text>
+                <Box className="flex flex-wrap flex-row max-w-[100%] gap-2">
+                  {preferencesTags[category].map((tag, index) => {
+                    const isPreference = selectedPreferences.includes(tag);
+                    const isExclude = selectedExclude.includes(tag);
 
-          <VStack className="gap-4">
-            <Text className="text-sm font-bold font-inter-medium uppercase">
-              {t('language')}
-            </Text>
+                    let bgColor = 'bg-transparent';
+                    let textColor = 'text-slate-700';
+                    let borderColor = 'border-slate-200';
 
-            <HStack className="gap-2">
-              {['fr', 'en'].map((lang) => (
-                <Pressable
-                  key={lang}
-                  onPress={() => handleLanguageChange(lang)}
-                  className={`flex-1 p-3 rounded-lg border items-center ${
-                    i18n.language === lang
-                      ? 'bg-orange-50 border border-orange-500'
-                      : 'bg-slate-50 border-outline-200'
-                  }`}
-                >
-                  <Text
-                    className={`font-inter-medium ${i18n.language === lang ? 'text-orange-500' : 'text-slate-500'}`}
-                  >
-                    {lang === 'fr' ? '🇫🇷 Français' : '🇺🇸 English'}
-                  </Text>
-                </Pressable>
-              ))}
-            </HStack>
-          </VStack>
+                    if (isPreference) {
+                      bgColor = 'bg-orange-500';
+                      textColor = 'text-white';
+                      borderColor = 'border-orange-500';
+                    } else if (isExclude) {
+                      bgColor = 'bg-red-500';
+                      textColor = 'text-white';
+                      borderColor = 'border-red-500';
+                    }
 
-          {!session?.user.is_anonymous && (
-            <ActionsheetItem
-              onPress={() => void handleLogOut()}
-              className="rounded-lg bg-red-600 mt-4 p-3"
-            >
-              <LogOut size={18} color="#fff" />
-              <ActionsheetItemText className="text-white text-md font-inter-medium">
-                {t('auth.logout')}
-              </ActionsheetItemText>
-            </ActionsheetItem>
-          )}
-        </VStack>
+                    return (
+                      <Pressable
+                        key={index}
+                        onPress={() => onToggle(tag)}
+                        className={`flex border ${borderColor} py-1.5 px-3 rounded-full ${bgColor}`}
+                      >
+                        <Text
+                          className={`font-inter-medium text-sm ${textColor}`}
+                        >
+                          {t(`preferences.tags.${tag}`)}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </Box>
+              </VStack>
+            );
+          })}
+        </ScrollView>
       </ActionsheetContent>
     </Actionsheet>
   );
