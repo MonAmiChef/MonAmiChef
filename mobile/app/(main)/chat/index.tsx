@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Keyboard,
@@ -15,12 +15,18 @@ import { useAuth } from '@/hooks/useAuth';
 import { ChatInput } from '@/components/chat/ChatInput';
 import { WaveText } from '@/components/chat/WaveText';
 import { useTranslation } from 'react-i18next';
+import { PreferenceTag } from '@/constants/PreferencesTags';
+import { TagSelector } from '@/components/chat/TagSelector';
 
 export default function NewChat() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { session } = useAuth();
   const { t } = useTranslation();
+  const [selectedPreferences, setSelectedPreferences] = useState<
+    PreferenceTag[]
+  >([]);
+  const [selectedExclude, setSelectedExclude] = useState<PreferenceTag[]>([]);
 
   // État pour stocker le message envoyé le temps de la création
   const [optimisticMessage, setOptimisticMessage] = React.useState<
@@ -30,7 +36,12 @@ export default function NewChat() {
   const mutation = useMutation({
     mutationFn: async (message: string) => {
       if (!session?.access_token) throw new Error('Pas de token');
-      return await chatApi.createSession(message, session);
+      return await chatApi.createSession(
+        message,
+        session,
+        selectedPreferences,
+        selectedExclude,
+      );
     },
     onSuccess: async (data) => {
       await queryClient.invalidateQueries({ queryKey: ['chat-sessions'] });
@@ -45,6 +56,20 @@ export default function NewChat() {
     Keyboard.dismiss();
     setOptimisticMessage(msg);
     mutation.mutate(msg);
+  };
+
+  const handleTagPress = (pref: string) => {
+    const isPref = selectedPreferences.includes(pref);
+    const isExcl = selectedExclude.includes(pref);
+
+    if (!isPref && !isExcl) {
+      setSelectedPreferences((prev) => [...prev, pref]);
+    } else if (isPref) {
+      setSelectedPreferences((prev) => prev.filter((p) => p !== pref));
+      setSelectedExclude((prev) => [...prev, pref]);
+    } else {
+      setSelectedExclude((prev) => prev.filter((e) => e !== pref));
+    }
   };
 
   return (
@@ -90,6 +115,11 @@ export default function NewChat() {
         style={{ zIndex: 1 }}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 110 : 0}
       >
+        <TagSelector
+          selectedPreferences={selectedPreferences}
+          selectedExclude={selectedExclude}
+          onToggle={handleTagPress}
+        />
         <ChatInput onSend={handleSend} isLoading={mutation.isPending} />
       </KeyboardAvoidingView>
     </View>

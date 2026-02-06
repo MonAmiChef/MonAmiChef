@@ -15,11 +15,13 @@ import { FlashList, FlashListRef } from '@shopify/flash-list';
 import Markdown from 'react-native-markdown-display';
 import { markdownStyles } from '@/constants/MarkdownStyles';
 import { ChatInput } from '@/components/chat/ChatInput';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { components } from '@/types/api';
 import Drawer from 'expo-router/drawer';
 import { WaveText } from '@/components/chat/WaveText';
 import { HStack } from '@/components/ui/hstack';
+import { PreferenceTag } from '@/constants/PreferencesTags';
+import { TagSelector } from '@/components/chat/TagSelector';
 
 type ChatSession = components['schemas']['GetChatSessionResponseDto_Output'];
 type ChatMessage = ChatSession['messages'][number];
@@ -32,6 +34,10 @@ export default function ChatScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { session, loading: isAuthLoading } = useAuth();
   const queryClient = useQueryClient();
+  const [selectedPreferences, setSelectedPreferences] = useState<
+    PreferenceTag[]
+  >([]);
+  const [selectedExclude, setSelectedExclude] = useState<PreferenceTag[]>([]);
 
   const flashListRef = useRef<FlashListRef<ChatMessage> | null>(null);
   const { data, isLoading } = useQuery({
@@ -43,7 +49,13 @@ export default function ChatScreen() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mutation = useMutation<any, Error, string, MutationContext>({
     mutationFn: (message: string) =>
-      chatApi.sendMessageToSession(id, message, session!),
+      chatApi.sendMessageToSession(
+        id,
+        message,
+        session!,
+        selectedPreferences,
+        selectedExclude,
+      ),
 
     onMutate: async (newMessage: string): Promise<MutationContext> => {
       await queryClient.cancelQueries({ queryKey: ['chat-session', id] });
@@ -110,6 +122,20 @@ export default function ChatScreen() {
       </View>
     );
   }
+
+  const handleTagPress = (pref: string) => {
+    const isPref = selectedPreferences.includes(pref);
+    const isExcl = selectedExclude.includes(pref);
+
+    if (!isPref && !isExcl) {
+      setSelectedPreferences((prev) => [...prev, pref]);
+    } else if (isPref) {
+      setSelectedPreferences((prev) => prev.filter((p) => p !== pref));
+      setSelectedExclude((prev) => [...prev, pref]);
+    } else {
+      setSelectedExclude((prev) => prev.filter((e) => e !== pref));
+    }
+  };
 
   return (
     <View className="flex-1 bg-base-bg">
@@ -183,6 +209,11 @@ export default function ChatScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
+        <TagSelector
+          selectedPreferences={selectedPreferences}
+          selectedExclude={selectedExclude}
+          onToggle={handleTagPress}
+        />
         <ChatInput
           onSend={(msg) => handleSend(msg)}
           isLoading={mutation.isPending}
