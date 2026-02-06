@@ -15,10 +15,14 @@ export type CreateChatWithTitleServiceResponse = z.output<
 
 // ----------------------------------------------------------
 
+const PreferenceTagEnum = z.enum(
+  Object.values(PreferenceTag) as [string, ...string[]],
+);
+
 const CreateChatSessionRequestSchema = z.object({
   firstMessage: z.string(),
-  preferences: z.array(z.enum(PreferenceTag)).default([]),
-  exclude: z.array(z.enum(PreferenceTag)).default([]),
+  preferences: z.array(PreferenceTagEnum).default([]),
+  exclude: z.array(PreferenceTagEnum).default([]),
 });
 
 export type CreateChatSessionRequest = z.output<

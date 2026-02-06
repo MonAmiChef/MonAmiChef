@@ -50,87 +50,62 @@ model User {
 }
 
 enum PreferenceTag {
-  HIGH_PROTEIN
-  HIGH_FIBER
-  LOW_CARB
-  BALANCED
-  HIGH_CARB
-  LOW_FAT
-  VEGETARIAN
-  VEGAN
+  high_protein
+  high_fiber
+  low_carb
+  balanced
+  high_carb
+  low_fat
+  vegetarian
+  vegan
 
-  ITALIAN
-  MEXICAN
-  MEDITERRANEAN
-  AMERICAN
-  FRENCH
-  INDIAN
-  THAI
-  CHINESE
-  JAPANESE
-  MIDDLE_EASTERN
-  KOREAN
-  AFRICAN
+  italian
+  mexican
+  mediterranean
+  american
+  french
+  indian
+  thai
+  chinese
+  japanese
+  middle_eastern
+  korean
+  african
 
-  BREAKFAST
-  LUNCH
-  DINNER
-  APPETIZER
-  DESSERT
-  SNACK
-  SMOOTHIE_DRINK
+  breakfast
+  lunch
+  dinner
+  appetizer
+  dessert
+  snack
+  smoothie_drink
 
-  UNDER_15
-  UNDER_30
-  ONE_HOUR_MAX
-  SLOW_COOK
+  under_15
+  under_30
+  one_hour_max
+  slow_cook
 
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
-  KID_FRIENDLY
+  chicken
+  beef
+  pork
+  fish
+  seafood
+  lamb
+  turkey
+  duck
 
-  FAMILY_MEAL
-  ROMANTIC_DINNER
-  KIDS_LUNCHBOX
-  SOLO_MEAL
-  MEAL_PREP
-  PRE_WORKOUT
-  POST_WORKOUT
-
-  OVEN
-  STOVE_ONLY
-  MICROWAVE
-  BLENDER
-  AIR_FRYER
-
-  NO_SPICE
-  LIGHT
-  MEDIUM
-  STRONG
-  VERY_HOT
-
-  CHICKEN
-  BEEF
-  PORK
-  FISH
-  SEAFOOD
-  LAMB
-  TURKEY
-  DUCK
-
-  TOMATOES
-  ONIONS
-  CARROTS
-  BELL_PEPPERS
-  BROCCOLI
-  SPINACH
-  MUSHROOMS
-  ZUCCHINI
-  POTATOES
-  GARLIC
-  LETTUCE
-  CUCUMBER
+  tomatoes
+  onions
+  carrots
+  bell_peppers
+  broccoli
+  spinach
+  mushrooms
+  zucchini
+  potatoes
+  garlic
+  lettuce
+  cucumber
 }
 
 model ChatSession {
