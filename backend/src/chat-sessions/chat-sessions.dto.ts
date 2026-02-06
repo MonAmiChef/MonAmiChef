@@ -38,7 +38,7 @@ const ChatMessageSchema = z.object({
   chatId: z.string(),
   role: z.enum(['user', 'model']),
   content: z.string(),
-  createdAt: z.string(),
+  createdAt: z.coerce.string(),
 });
 
 export type ChatMessage = z.output<typeof ChatMessageSchema>;
@@ -72,8 +72,8 @@ export class CreateChatSessionResponseDto extends createZodDto(
 
 const UpdateChatSessionRequestSchema = z.object({
   message: z.string(),
-  preferences: z.array(z.enum(PreferenceTag)).default([]),
-  exclude: z.array(z.enum(PreferenceTag)).default([]),
+  preferences: z.array(PreferenceTagEnum).default([]),
+  exclude: z.array(PreferenceTagEnum).default([]),
 });
 
 export class UpdateChatSessionRequestDto extends createZodDto(
