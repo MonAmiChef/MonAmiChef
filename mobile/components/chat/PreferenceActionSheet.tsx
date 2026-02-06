@@ -39,7 +39,7 @@ export const PreferenceActionSheet = ({
   return (
     <Actionsheet isOpen={isOpen} onClose={onClose}>
       <ActionsheetBackdrop />
-      <ActionsheetContent className="max-h-[65%]">
+      <ActionsheetContent className="max-h-[75%]">
         <ActionsheetDragIndicatorWrapper>
           <ActionsheetDragIndicator />
         </ActionsheetDragIndicatorWrapper>
