@@ -7,17 +7,25 @@ import { Session } from '@supabase/supabase-js';
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
+  const [isReady, setIsReady] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    void supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
+    const initializeAuth = async () => {
+      const {
+        data: { session: currentSession },
+      } = await supabase.auth.getSession();
+      setSession(currentSession);
+      setIsReady(true);
+    };
+
+    initializeAuth();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      setIsReady(true);
     });
 
     return () => subscription.unsubscribe();
@@ -88,6 +96,7 @@ export const useAuth = () => {
   return {
     session,
     loading,
+    isReady,
     signInAnonymously,
     signInWithEmail,
     signUpWithEmail,
