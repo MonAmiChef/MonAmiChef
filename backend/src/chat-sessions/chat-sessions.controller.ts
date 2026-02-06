@@ -21,6 +21,7 @@ import {
   type AuthenticatedRequest,
   SupabaseGuard,
 } from '../supabase-guard/supabase.guard';
+import { PreferenceTag } from '@prisma/client';
 
 @Controller('chat-sessions')
 @UseGuards(SupabaseGuard)
@@ -59,8 +60,8 @@ export class ChatSessionsController {
     return this.chatSessionsService.createChat({
       userId: req.user.id,
       message: body.firstMessage,
-      preferences: body.preferences,
-      exclude: body.exclude,
+      preferences: body.preferences as PreferenceTag[],
+      exclude: body.exclude as PreferenceTag[],
     });
   }
 
@@ -76,8 +77,8 @@ export class ChatSessionsController {
     return this.chatSessionsService.updateChat({
       chatId,
       message: body.message,
-      preferences: body.preferences,
-      exclude: body.exclude,
+      preferences: body.preferences as PreferenceTag[],
+      exclude: body.exclude as PreferenceTag[],
     });
   }
 }
