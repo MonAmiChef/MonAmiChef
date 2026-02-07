@@ -24,6 +24,11 @@ export const markdownStyles = {
   list_item: {
     marginBottom: 2,
   },
+  heading1: {
+    marginBottom: 5,
+    fontSize: 20,
+    fontFamily: 'Inter_700Bold',
+  },
   heading2: {
     marginTop: 5,
     marginBottom: 10,

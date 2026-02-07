@@ -51,7 +51,6 @@ export const chatApi = {
     preferences: PreferenceTag[],
     exclude: PreferenceTag[],
   ): Promise<CreateChatResponse> => {
-    console.log('sending with', preferences, exclude);
     const response = await fetch(`${API_URL}/chat-sessions`, {
       method: 'POST',
       headers: {
@@ -73,7 +72,6 @@ export const chatApi = {
     preferences: PreferenceTag[],
     exclude: PreferenceTag[],
   ): Promise<CreateChatResponse> => {
-    console.log('sending with tags', preferences, exclude);
     const response = await fetch(
       `${API_URL}/chat-sessions/${chatId}/messages`,
       {

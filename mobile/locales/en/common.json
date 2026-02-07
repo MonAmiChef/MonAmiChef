@@ -16,7 +16,8 @@
     "failed_retrieving_sessions": "Failed to retrieve sessions"
   },
   "chat": {
-    "chef_typing": "The chef is preparing..."
+    "chef_typing": "The chef is preparing...",
+    "add_to_meal_plan": "Add to meal plan"
   },
   "not_found": {
     "screen": "This screen doesn't exist.",

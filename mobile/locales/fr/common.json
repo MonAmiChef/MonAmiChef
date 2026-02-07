@@ -16,7 +16,8 @@
     "failed_retrieving_sessions": "Échec de récupération des conversations"
   },
   "chat": {
-    "chef_typing": "Le chef prépare sa réponse..."
+    "chef_typing": "Le chef prépare sa réponse...",
+    "add_to_meal_plan": "Ajouter au plan de repas"
   },
   "not_found": {
     "screen": "Cet écran n'existe pas.",

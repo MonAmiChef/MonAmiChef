@@ -8,6 +8,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   Text,
   View,
 } from 'react-native';
@@ -23,6 +24,8 @@ import { HStack } from '@/components/ui/hstack';
 import { PreferenceTag } from '@/constants/PreferencesTags';
 import { PreferencesQuickSelector } from '@/components/chat/PreferencesQuickSelector';
 import { PreferenceActionSheet } from '@/components/chat/PreferenceActionSheet';
+import { t } from 'i18next';
+import { ShoppingCart } from 'lucide-react-native';
 
 type ChatSession = components['schemas']['GetChatSessionResponseDto_Output'];
 type ChatMessage = ChatSession['messages'][number];
@@ -73,6 +76,7 @@ export default function ChatScreen() {
         content: newMessage,
         role: 'user',
         createdAt: new Date().toISOString(),
+        isRecipe: false,
         chatId: id,
       };
 
@@ -80,6 +84,7 @@ export default function ChatScreen() {
         id: 'temp-loading-id',
         content: 'Le chef prépare sa réponse...',
         role: 'model',
+        isRecipe: false,
         createdAt: new Date().toISOString(),
         chatId: id,
       };
@@ -178,10 +183,18 @@ export default function ChatScreen() {
 
             if (isModel) {
               return (
-                <Box className="w-full py-6 border-slate-100">
+                <Box className="w-full py-6">
                   <Markdown mergeStyle={true} style={markdownStyles}>
                     {formattedContent}
                   </Markdown>
+                  {item.isRecipe && (
+                    <Pressable className="mt-2 flex gap-2 flex-row w-full justify-center items-center rounded-xl border border-green-300 bg-green-100 py-2.5">
+                      <ShoppingCart size={18} color="#008236" />
+                      <Text className="font-inter-medium text-md text-green-700">
+                        {t('chat.add_to_meal_plan')}
+                      </Text>
+                    </Pressable>
+                  )}
                 </Box>
               );
             }
