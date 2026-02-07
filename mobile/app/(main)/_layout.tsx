@@ -17,6 +17,7 @@ import { ProfileActionSheet } from '@/components/profile/ProfileActionSheet';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CustomDrawerContent(props: any) {
   const { session } = useAuth();
+  console.log('ses', session);
   const pathname = usePathname();
   const { t } = useTranslation();
   const router = useRouter();

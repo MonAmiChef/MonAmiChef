@@ -58,6 +58,7 @@ export class ChatSessionsController {
     @Req() req: AuthenticatedRequest,
   ) {
     return this.chatSessionsService.createChat({
+      fallbackLanguage: body.language,
       userId: req.user.id,
       message: body.firstMessage,
       preferences: body.preferences as PreferenceTag[],

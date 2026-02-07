@@ -49,6 +49,7 @@ export class ChatSessionsRepository {
     modelResponse,
     preferences,
     exclude,
+    isResponseRecipe,
   }: {
     title: string;
     userId: string;
@@ -56,6 +57,7 @@ export class ChatSessionsRepository {
     modelResponse: string;
     preferences: PreferenceTag[];
     exclude: PreferenceTag[];
+    isResponseRecipe: boolean;
   }) {
     return this.prismaService.chatSession.create({
       data: {
@@ -65,8 +67,12 @@ export class ChatSessionsRepository {
         exclude,
         messages: {
           create: [
-            { content: userMessage, role: 'user' },
-            { content: modelResponse, role: 'model' },
+            { content: userMessage, role: 'user', isRecipe: false },
+            {
+              content: modelResponse,
+              role: 'model',
+              isRecipe: isResponseRecipe,
+            },
           ],
         },
       },

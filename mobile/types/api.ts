@@ -292,6 +292,8 @@ export interface components {
                 chatId: string;
                 /** @enum {string} */
                 role: "user" | "model";
+                /** @default false */
+                isRecipe: boolean;
                 content: string;
                 createdAt: string;
             }[];
@@ -313,6 +315,8 @@ export interface components {
             preferences: ("high_protein" | "high_fiber" | "low_carb" | "balanced" | "high_carb" | "low_fat" | "vegetarian" | "vegan" | "italian" | "mexican" | "mediterranean" | "american" | "french" | "indian" | "thai" | "chinese" | "japanese" | "middle_eastern" | "korean" | "african" | "breakfast" | "lunch" | "dinner" | "appetizer" | "dessert" | "snack" | "smoothie_drink" | "under_15" | "under_30" | "one_hour_max" | "slow_cook" | "chicken" | "beef" | "pork" | "fish" | "seafood" | "lamb" | "turkey" | "duck" | "tomatoes" | "onions" | "carrots" | "bell_peppers" | "broccoli" | "spinach" | "mushrooms" | "zucchini" | "potatoes" | "garlic" | "lettuce" | "cucumber")[];
             /** @default [] */
             exclude: ("high_protein" | "high_fiber" | "low_carb" | "balanced" | "high_carb" | "low_fat" | "vegetarian" | "vegan" | "italian" | "mexican" | "mediterranean" | "american" | "french" | "indian" | "thai" | "chinese" | "japanese" | "middle_eastern" | "korean" | "african" | "breakfast" | "lunch" | "dinner" | "appetizer" | "dessert" | "snack" | "smoothie_drink" | "under_15" | "under_30" | "one_hour_max" | "slow_cook" | "chicken" | "beef" | "pork" | "fish" | "seafood" | "lamb" | "turkey" | "duck" | "tomatoes" | "onions" | "carrots" | "bell_peppers" | "broccoli" | "spinach" | "mushrooms" | "zucchini" | "potatoes" | "garlic" | "lettuce" | "cucumber")[];
+            /** @default english */
+            language: string;
         };
         CreateChatSessionResponseDto_Output: {
             /** Format: uuid */
@@ -323,6 +327,8 @@ export interface components {
                 chatId: string;
                 /** @enum {string} */
                 role: "user" | "model";
+                /** @default false */
+                isRecipe: boolean;
                 content: string;
                 createdAt: string;
             }[];
@@ -345,6 +351,8 @@ export interface components {
                 chatId: string;
                 /** @enum {string} */
                 role: "user" | "model";
+                /** @default false */
+                isRecipe: boolean;
                 content: string;
                 createdAt: string;
             }[];
