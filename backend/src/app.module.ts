@@ -40,6 +40,7 @@ import { ChatSessionsService } from './chat-sessions/chat-sessions.service';
 import { ChatSessionsModule } from './chat-sessions/chat-sessions.module';
 import { ChatSessionsRepository } from './chat-sessions/chat-sessions.repository';
 import { PrismaService } from './prisma.service';
+import { UnsplashService } from './unsplash/unsplash.service';
 
 @Catch()
 class GlobalExceptionFilter extends BaseExceptionFilter {
@@ -133,6 +134,7 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     GeneralAskService,
     CalculateCaloriesService,
     ChatSessionsService,
+    UnsplashService,
   ],
 })
 export class AppModule {}

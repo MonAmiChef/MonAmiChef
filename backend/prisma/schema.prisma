@@ -126,6 +126,8 @@ model Message {
   chatId      String
   content     String
   role        MessageRole
+
+  isRecipe    Boolean @default(false)
   createdAt   DateTime?   @default(now()) @db.Timestamp(6)
   chatSession ChatSession @relation(fields: [chatId], references: [id], onDelete: Cascade)
 }

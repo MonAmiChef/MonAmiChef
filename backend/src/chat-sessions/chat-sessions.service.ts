@@ -61,17 +61,23 @@ export class ChatSessionsService {
     message,
     preferences,
     exclude,
+    fallbackLanguage,
   }: {
     userId: string;
     message: string;
     preferences: PreferenceTag[];
     exclude: PreferenceTag[];
+    fallbackLanguage: string;
   }): Promise<CreateChatSessionResponse> {
-    const { text, title } = await this.aiAssistantService.createChatWithTitle({
+    const {
+      text,
+      title,
+      isRecipe: isResponseRecipe,
+    } = await this.aiAssistantService.createChatWithTitle({
       message,
       preferences,
       exclude,
-      language: 'francais',
+      fallbackLanguage,
     });
 
     const chat = await this.chatSessionsRepository.createChat({
@@ -81,6 +87,7 @@ export class ChatSessionsService {
       modelResponse: text,
       preferences,
       exclude,
+      isResponseRecipe,
     });
 
     return {
@@ -93,6 +100,7 @@ export class ChatSessionsService {
         id: msg.id,
         chatId: msg.chatId,
         content: msg.content,
+        isRecipe: msg.isRecipe,
         role: msg.role.toLowerCase() as 'user' | 'model',
         createdAt: msg.createdAt?.toISOString() ?? new Date().toISOString(),
       })),

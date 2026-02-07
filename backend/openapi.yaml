@@ -570,6 +570,9 @@ components:
                 enum:
                   - user
                   - model
+              isRecipe:
+                default: false
+                type: boolean
               content:
                 type: string
               createdAt:
@@ -578,6 +581,7 @@ components:
               - id
               - chatId
               - role
+              - isRecipe
               - content
               - createdAt
             additionalProperties: false
@@ -741,6 +745,9 @@ components:
               - garlic
               - lettuce
               - cucumber
+        language:
+          default: english
+          type: string
       required:
         - firstMessage
     CreateChatSessionResponseDto_Output:
@@ -769,6 +776,9 @@ components:
                 enum:
                   - user
                   - model
+              isRecipe:
+                default: false
+                type: boolean
               content:
                 type: string
               createdAt:
@@ -777,6 +787,7 @@ components:
               - id
               - chatId
               - role
+              - isRecipe
               - content
               - createdAt
             additionalProperties: false
@@ -940,6 +951,9 @@ components:
                 enum:
                   - user
                   - model
+              isRecipe:
+                default: false
+                type: boolean
               content:
                 type: string
               createdAt:
@@ -948,6 +962,7 @@ components:
               - id
               - chatId
               - role
+              - isRecipe
               - content
               - createdAt
             additionalProperties: false

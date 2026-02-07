@@ -7,6 +7,7 @@ import { PreferenceTag } from '@prisma/client';
 export const CreateChatWithTitleServiceResponseSchema = z.object({
   title: z.string(),
   text: z.string(),
+  isRecipe: z.boolean(),
 });
 
 export type CreateChatWithTitleServiceResponse = z.output<
@@ -23,6 +24,7 @@ const CreateChatSessionRequestSchema = z.object({
   firstMessage: z.string(),
   preferences: z.array(PreferenceTagEnum).default([]),
   exclude: z.array(PreferenceTagEnum).default([]),
+  language: z.string().optional().default('english'),
 });
 
 export type CreateChatSessionRequest = z.output<
@@ -37,6 +39,7 @@ const ChatMessageSchema = z.object({
   id: z.string(),
   chatId: z.string(),
   role: z.enum(['user', 'model']),
+  isRecipe: z.boolean().default(false),
   content: z.string(),
   createdAt: z.coerce.string(),
 });
@@ -56,8 +59,10 @@ export const CreateChatSessionResponseJson = {
   properties: {
     title: { type: 'string' },
     text: { type: 'string' },
+    isRecipe: { type: 'boolean' },
+    imagePrompt: { type: 'string' },
   },
-  required: ['title', 'text'],
+  required: ['title', 'text', 'isRecipe'],
 };
 
 export type CreateChatSessionResponse = z.output<
@@ -69,6 +74,31 @@ export class CreateChatSessionResponseDto extends createZodDto(
 ) {}
 
 // UPDATE
+
+export const chatResponseSchema = z.object({
+  title: z.string().optional(),
+  text: z.string().min(1, 'Error: text is empty'),
+  isRecipe: z.boolean().default(false),
+  imagePrompt: z.string().default(''),
+});
+
+export const updateChatResponseSchema = z.object({
+  text: z.string(),
+  isRecipe: z.boolean().default(false),
+  imagePrompt: z.string().default(''),
+});
+
+export type UpdateChatResponse = z.output<typeof updateChatResponseSchema>;
+
+export const UpdateChatSessionResponseJson = {
+  type: 'object',
+  properties: {
+    text: { type: 'string' },
+    isRecipe: { type: 'boolean' },
+    imagePrompt: { type: 'string' },
+  },
+  required: ['text', 'isRecipe'],
+};
 
 const UpdateChatSessionRequestSchema = z.object({
   message: z.string(),

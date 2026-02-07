@@ -20,9 +20,12 @@ import {
 } from '../general-ask/general-ask.dto';
 import { Message, PreferenceTag } from '@prisma/client';
 import {
+  chatResponseSchema,
   CreateChatSessionResponseJson,
   CreateChatWithTitleServiceResponse,
   CreateChatWithTitleServiceResponseSchema,
+  UpdateChatResponse,
+  UpdateChatSessionResponseJson,
 } from 'src/chat-sessions/chat-sessions.dto';
 
 const DEFAULT_GEMINI_MODEL = 'gemini-3-flash-preview';
@@ -35,20 +38,19 @@ export class AiAssistantService {
     message,
     preferences,
     exclude,
-    language,
+    fallbackLanguage,
   }: {
     message: string;
     preferences: PreferenceTag[];
     exclude: PreferenceTag[];
-    language: string;
+    fallbackLanguage: string;
   }): Promise<CreateChatWithTitleServiceResponse> {
     const userQuery =
       message.trim().length > 0
         ? message
-        : `Please suggest a recipe or cooking advice based on my preferences in the language: ${language}.`;
+        : `Please suggest a recipe or cooking advice based on my preferences in the language: ${fallbackLanguage}.`;
 
     const prefContext = `
-      TARGET_LANGUAGE: ${language}
       PREFERENCES: ${preferences?.join(', ') ?? 'None'}
       EXCLUDE: ${exclude?.join(', ') ?? 'None'}
     `;
@@ -80,7 +82,7 @@ export class AiAssistantService {
     preferences: PreferenceTag[];
     exclude: PreferenceTag[];
     language?: string;
-  }): Promise<{ text: string }> {
+  }): Promise<UpdateChatResponse> {
     const prefContext = `
     TARGET_LANGUAGE: ${language}
     PREFERENCES: ${preferences?.join(', ') || 'None'}
@@ -97,13 +99,29 @@ export class AiAssistantService {
         { role: 'user', parts: [{ text: newMessage }] },
       ],
       config: {
+        responseMimeType: 'application/json',
         systemInstruction: `${process.env.GENERATE_CHAT_RESPONSE_PROMPT}\n\nUser Context:\n${prefContext}`,
+        responseJsonSchema: UpdateChatSessionResponseJson,
       },
     });
 
-    return {
-      text: result.text ?? "Désolé, je n'ai pas pu générer de réponse.",
-    };
+    try {
+      const jsonResponse = chatResponseSchema.parse(
+        JSON.parse(result.text ?? ''),
+      );
+      return {
+        text: jsonResponse.text ?? 'Error',
+        isRecipe: jsonResponse.isRecipe ?? false,
+        imagePrompt: jsonResponse.imagePrompt ?? '',
+      };
+    } catch (e) {
+      console.error('Erreur parsing JSON AI:', e);
+      return {
+        text: result.text ?? 'Error',
+        isRecipe: false,
+        imagePrompt: '',
+      };
+    }
   }
 
   async parseGroceries({
