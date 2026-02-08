@@ -24,8 +24,10 @@ export class RecipesRepository {
   async createRecipeEntry({
     userId,
     recipe,
+    imagePath,
   }: {
     userId: string;
+    imagePath: string;
     recipe: Omit<
       Prisma.RecipeCreateInput,
       'user' | 'ingredients' | 'mealPlans'
@@ -46,7 +48,7 @@ export class RecipesRepository {
         isVegan: recipe.isVegan ?? false,
         isGlutenFree: recipe.isGlutenFree ?? false,
         isDairyFree: recipe.isDairyFree ?? false,
-        imagePath: recipe.imagePath,
+        imagePath,
         userId: userId,
       },
     });
