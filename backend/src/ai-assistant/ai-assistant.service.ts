@@ -27,12 +27,30 @@ import {
   UpdateChatResponse,
   UpdateChatSessionResponseJson,
 } from 'src/chat-sessions/chat-sessions.dto';
+import {
+  ParseRecipeResponseJson,
+  ParseRecipeResponseSchema,
+} from 'src/recipes/recipes.dto';
 
 const DEFAULT_GEMINI_MODEL = 'gemini-3-flash-preview';
 
 @Injectable()
 export class AiAssistantService {
   private ai = new GoogleGenAI({});
+
+  async parseRecipe({ text }: { text: string }) {
+    const result = await this.ai.models.generateContent({
+      model: process.env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL,
+      contents: [{ role: 'user', parts: [{ text }] }],
+      config: {
+        responseMimeType: 'application/json',
+        systemInstruction: process.env.PARSE_RECIPE_PROMPT,
+        responseJsonSchema: ParseRecipeResponseJson,
+      },
+    });
+
+    return ParseRecipeResponseSchema.parse(JSON.parse(result.text ?? ''));
+  }
 
   async createChatWithTitle({
     message,

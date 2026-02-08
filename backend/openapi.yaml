@@ -180,6 +180,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/UpdateChatSessionResponseDto_Output'
       tags: *ref_0
+  /recipes/add-to-mealplan:
+    post:
+      operationId: RecipesController_addMealToPlan
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddMealToPlanRequestDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddMealToPlanResponseDto_Output'
+      tags:
+        - Recipes
 info:
   title: MonAmiChef
   description: The MonAmiChef API documentation
@@ -979,5 +998,20 @@ components:
         - messages
         - createdAt
         - updatedAt
+    AddMealToPlanRequestDto:
+      type: object
+      properties:
+        messageContent:
+          type: string
+      required:
+        - messageContent
+    AddMealToPlanResponseDto_Output:
+      type: object
+      properties:
+        status:
+          type: number
+          x-nestjs_zod-parent-additional-properties: false
+      required:
+        - status
 security:
   - X-API-KEY: []

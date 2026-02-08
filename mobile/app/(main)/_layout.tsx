@@ -21,6 +21,8 @@ function CustomDrawerContent(props: any) {
   const { t } = useTranslation();
   const router = useRouter();
 
+  console.log('sess', session?.access_token);
+
   const { data: sessions, isLoading } = useQuery({
     queryKey: ['chat-sessions'],
     queryFn: async () => {
