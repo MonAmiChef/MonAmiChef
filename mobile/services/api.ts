@@ -113,10 +113,8 @@ export const mealPlanApi = {
     return await response.json();
   },
 
-  // GET: Récupérer le plan (à synchroniser avec ton futur endpoint NestJS)
   getMealPlan: async (session: Session) => {
-    const response = await fetch(`${API_URL}/meal-plans`, {
-      // Vérifie le path sur ton Swagger
+    const response = await fetch(`${API_URL}/meal-plan`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

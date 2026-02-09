@@ -1,6 +1,6 @@
 import { Box } from '@/components/ui/box';
 import { useAuth } from '@/hooks/useAuth';
-import { chatApi } from '@/services/api';
+import { chatApi, mealPlanApi } from '@/services/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 import {
@@ -26,6 +26,7 @@ import { PreferencesQuickSelector } from '@/components/chat/PreferencesQuickSele
 import { PreferenceActionSheet } from '@/components/chat/PreferenceActionSheet';
 import { t } from 'i18next';
 import { ShoppingCart } from 'lucide-react-native';
+import Toast from 'react-native-toast-message';
 
 type ChatSession = components['schemas']['GetChatSessionResponseDto_Output'];
 type ChatMessage = ChatSession['messages'][number];
@@ -116,12 +117,31 @@ export default function ChatScreen() {
       await queryClient.invalidateQueries({ queryKey: ['chat-sessions'] });
     },
   });
-
   const handleSend = (msg: string) => {
     if (!msg.trim() || mutation.isPending) return;
     Keyboard.dismiss();
     mutation.mutate(msg);
   };
+
+  const addMealMutation = useMutation({
+    mutationFn: (item: { content: string; id: string }) =>
+      mealPlanApi.addMealToPlan(item.content, session!),
+    onSuccess: () => {
+      Toast.show({
+        text1: "C'est prêt !",
+        text2: 'La recette a été ajoutée à ton programme.',
+        type: 'success',
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+      Toast.show({
+        text1: 'Erreur',
+        text2: "Impossible d'ajouter le repas.",
+        type: 'error',
+      });
+    },
+  });
 
   if (isAuthLoading || (isLoading && !!session)) {
     return (
@@ -188,11 +208,32 @@ export default function ChatScreen() {
                     {formattedContent}
                   </Markdown>
                   {item.isRecipe && (
-                    <Pressable className="mt-2 flex gap-2 flex-row w-full justify-center items-center rounded-xl border border-green-300 bg-green-100 py-2.5">
-                      <ShoppingCart size={18} color="#008236" />
-                      <Text className="font-inter-medium text-md text-green-700">
-                        {t('chat.add_to_meal_plan')}
-                      </Text>
+                    <Pressable
+                      onPress={() => {
+                        if (!addMealMutation.isPending) {
+                          addMealMutation.mutate({
+                            content: item.content,
+                            id: item.id,
+                          });
+                        }
+                      }}
+                      disabled={addMealMutation.isPending}
+                      className={`mt-2 flex gap-2 flex-row w-full justify-center items-center rounded-xl border py-2.5 ${
+                        addMealMutation.isPending
+                          ? 'border-gray-300 bg-gray-100 opacity-70'
+                          : 'border-green-300 bg-green-100 active:bg-green-200'
+                      }`}
+                    >
+                      {addMealMutation.isPending ? (
+                        <ActivityIndicator size="small" color="#008236" />
+                      ) : (
+                        <>
+                          <ShoppingCart size={18} color="#008236" />
+                          <Text className="font-inter-medium text-md text-green-700">
+                            {t('chat.add_to_meal_plan')}
+                          </Text>
+                        </>
+                      )}
                     </Pressable>
                   )}
                 </Box>
