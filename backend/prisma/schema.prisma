@@ -7,40 +7,23 @@ datasource db {
   provider = "postgresql"
 }
 
-enum IngredientCategory {
-  FRUITS
-  VEGETABLES
-  MEAT
-  FISH
-  DAIRY
-  PANTRY
-  BAKERY
-  FROZEN
-  DRINKS
-  OTHER
-}
-
 model IngredientReference {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  imageUrl  String?
-
+  id          String       @id @default(uuid())
+  name        String       @unique
+  imageUrl    String?
   ingredients Ingredient[]
 }
 
 model Ingredient {
-  id       String             @id @default(uuid())
-  name     String
-  quantity Float
-  unit     String
-
-  referenceId   String?
-  reference     IngredientReference? @relation(fields: [referenceId], references: [id])
-
-  category IngredientCategory @default(OTHER)
-
-  recipeId String
-  recipe   Recipe             @relation(fields: [recipeId], references: [id])
+  id          String               @id @default(uuid())
+  name        String
+  quantity    Float
+  unit        String
+  recipeId    String
+  category    IngredientCategory   @default(OTHER)
+  referenceId String?
+  recipe      Recipe               @relation(fields: [recipeId], references: [id])
+  reference   IngredientReference? @relation(fields: [referenceId], references: [id])
 }
 
 model Recipe {
@@ -63,19 +46,20 @@ model Recipe {
   userId       String       @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   imagePath    String?
   ingredients  Ingredient[]
-  user         User         @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   mealPlans    MealPlan[]
+  user         User         @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model MealPlan {
-  userId     String @db.Uuid
-  recipeId   String
-  user       User     @relation(fields: [userId], references: [id])
-  recipe     Recipe   @relation(fields: [recipeId], references: [id])
-  plannedFor DateTime
-  createdAt  DateTime @default(now())
+  recipeId        String
+  plannedFor      DateTime
+  createdAt       DateTime @default(now())
+  userId          String   @db.Uuid
+  isInGroceryList Boolean  @default(false)
+  recipe          Recipe   @relation(fields: [recipeId], references: [id])
+  user            User     @relation(fields: [userId], references: [id])
 
-  @@id([userId, recipeId])
+  @@id([recipeId, userId])
 }
 
 model User {
@@ -84,8 +68,8 @@ model User {
   updatedAt DateTime?     @db.Date
   id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   chats     ChatSession[]
-  recipes   Recipe[]
   mealPlan  MealPlan[]
+  recipes   Recipe[]
 }
 
 model ChatSession {
@@ -116,6 +100,19 @@ model RecipeCache {
   aiResponseJson Json
   inputHash      String          @unique
   type           RecipeCacheType
+}
+
+enum IngredientCategory {
+  FRUITS
+  VEGETABLES
+  MEAT
+  FISH
+  DAIRY
+  PANTRY
+  BAKERY
+  FROZEN
+  DRINKS
+  OTHER
 }
 
 enum PreferenceTag {

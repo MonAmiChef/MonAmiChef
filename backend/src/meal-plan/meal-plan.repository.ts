@@ -13,4 +13,33 @@ export class MealPlanRepository {
       },
     });
   }
+
+  async removeFromMealPlan(userId: string, recipeId: string) {
+    return this.prismaService.mealPlan.delete({
+      where: {
+        recipeId_userId: {
+          recipeId,
+          userId,
+        },
+      },
+    });
+  }
+
+  async addRemoveMealToGroceries(
+    userId: string,
+    recipeId: string,
+    newState: boolean,
+  ) {
+    return this.prismaService.mealPlan.update({
+      where: {
+        recipeId_userId: {
+          userId,
+          recipeId,
+        },
+      },
+      data: {
+        isInGroceryList: newState,
+      },
+    });
+  }
 }

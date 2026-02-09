@@ -25,7 +25,7 @@ export class RecipesService {
   }) {
     const [aiData, image] = await Promise.all([
       this.parseRecipe({ text: messageContent }),
-      this.unsplashService.getImageByPrompt(messageContent.substring(0, 30)),
+      this.unsplashService.getImageByPrompt(messageContent),
     ]);
 
     await this.recipesRepository.createFullRecipeContext({
