@@ -206,8 +206,36 @@ paths:
       responses:
         '200':
           description: ''
-      tags:
+      tags: &ref_1
         - MealPlan
+  /meal-plan/remove:
+    post:
+      operationId: MealPlanController_removeMealFromMealPlan
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveFromMealPlanRequestDto'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_1
+  /meal-plan/add-groceries:
+    post:
+      operationId: MealPlanController_addRemoveMealToGroceries
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddMealToGroceriesRequestDto'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_1
 info:
   title: MonAmiChef
   description: The MonAmiChef API documentation
@@ -1022,5 +1050,22 @@ components:
           x-nestjs_zod-parent-additional-properties: false
       required:
         - status
+    RemoveFromMealPlanRequestDto:
+      type: object
+      properties:
+        recipeId:
+          type: string
+      required:
+        - recipeId
+    AddMealToGroceriesRequestDto:
+      type: object
+      properties:
+        recipeId:
+          type: string
+        newState:
+          type: boolean
+      required:
+        - recipeId
+        - newState
 security:
   - X-API-KEY: []
