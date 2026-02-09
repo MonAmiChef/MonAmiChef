@@ -33,7 +33,19 @@ export class UnsplashService {
       if (result.type === 'success') {
         const photo = result.response.results[0];
 
-        if (!photo) return null;
+        // --- LOGIQUE DE RETRY ---
+        // Si on n'a pas de photo et que le prompt contient plus de 3 mots
+        if (!photo) {
+          const words = prompt.trim().split(/\s+/);
+          if (words.length > 3) {
+            const simplifiedPrompt = words.slice(0, 3).join(' ');
+            this.logger.warn(
+              `No photo found for "${prompt}", retrying with "${simplifiedPrompt}"`,
+            );
+            return this.getImageByPrompt(simplifiedPrompt); // Récursion simple
+          }
+          return null;
+        }
 
         return {
           url: photo.urls.regular,
