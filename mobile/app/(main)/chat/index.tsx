@@ -116,7 +116,6 @@ export default function NewChat() {
 
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={{ zIndex: 1 }}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 110 : 0}
         >
           <PreferencesQuickSelector

@@ -7,15 +7,40 @@ datasource db {
   provider = "postgresql"
 }
 
+enum IngredientCategory {
+  FRUITS
+  VEGETABLES
+  MEAT
+  FISH
+  DAIRY
+  PANTRY
+  BAKERY
+  FROZEN
+  DRINKS
+  OTHER
+}
+
+model IngredientReference {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  imageUrl  String?
+
+  ingredients Ingredient[]
+}
+
 model Ingredient {
-  id       String  @id @default(uuid())
+  id       String             @id @default(uuid())
   name     String
   quantity Float
   unit     String
-  category String?
-  rawText  String?
+
+  referenceId   String?
+  reference     IngredientReference? @relation(fields: [referenceId], references: [id])
+
+  category IngredientCategory @default(OTHER)
+
   recipeId String
-  recipe   Recipe  @relation(fields: [recipeId], references: [id])
+  recipe   Recipe             @relation(fields: [recipeId], references: [id])
 }
 
 model Recipe {
@@ -36,8 +61,21 @@ model Recipe {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   userId       String       @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  imagePath    String?
   ingredients  Ingredient[]
   user         User         @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  mealPlans    MealPlan[]
+}
+
+model MealPlan {
+  userId     String @db.Uuid
+  recipeId   String
+  user       User     @relation(fields: [userId], references: [id])
+  recipe     Recipe   @relation(fields: [recipeId], references: [id])
+  plannedFor DateTime
+  createdAt  DateTime @default(now())
+
+  @@id([userId, recipeId])
 }
 
 model User {
@@ -47,6 +85,37 @@ model User {
   id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   chats     ChatSession[]
   recipes   Recipe[]
+  mealPlan  MealPlan[]
+}
+
+model ChatSession {
+  id          String          @id @default(uuid())
+  createdAt   DateTime        @default(now()) @db.Timestamp(6)
+  title       String          @default("Chat")
+  updatedAt   DateTime?       @default(now()) @updatedAt
+  userId      String          @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  preferences PreferenceTag[]
+  exclude     PreferenceTag[]
+  User        User            @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  messages    Message[]
+}
+
+model Message {
+  id          String      @id @default(uuid())
+  chatId      String
+  content     String
+  role        MessageRole
+  createdAt   DateTime?   @default(now()) @db.Timestamp(6)
+  isRecipe    Boolean     @default(false)
+  chatSession ChatSession @relation(fields: [chatId], references: [id], onDelete: Cascade)
+}
+
+model RecipeCache {
+  id             String          @id @default(uuid())
+  createdAt      DateTime        @default(now())
+  aiResponseJson Json
+  inputHash      String          @unique
+  type           RecipeCacheType
 }
 
 enum PreferenceTag {
@@ -58,7 +127,6 @@ enum PreferenceTag {
   low_fat
   vegetarian
   vegan
-
   italian
   mexican
   mediterranean
@@ -71,7 +139,6 @@ enum PreferenceTag {
   middle_eastern
   korean
   african
-
   breakfast
   lunch
   dinner
@@ -79,12 +146,10 @@ enum PreferenceTag {
   dessert
   snack
   smoothie_drink
-
   under_15
   under_30
   one_hour_max
   slow_cook
-
   chicken
   beef
   pork
@@ -93,7 +158,6 @@ enum PreferenceTag {
   lamb
   turkey
   duck
-
   tomatoes
   onions
   carrots
@@ -106,38 +170,6 @@ enum PreferenceTag {
   garlic
   lettuce
   cucumber
-}
-
-model ChatSession {
-  id        String    @id @default(uuid())
-  createdAt DateTime  @default(now()) @db.Timestamp(6)
-  title     String    @default("Chat")
-  updatedAt DateTime? @default(now()) @updatedAt
-  userId    String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  User      User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  messages  Message[]
-
-  preferences PreferenceTag[]
-  exclude PreferenceTag[]
-}
-
-model Message {
-  id          String      @id @default(uuid())
-  chatId      String
-  content     String
-  role        MessageRole
-
-  isRecipe    Boolean @default(false)
-  createdAt   DateTime?   @default(now()) @db.Timestamp(6)
-  chatSession ChatSession @relation(fields: [chatId], references: [id], onDelete: Cascade)
-}
-
-model RecipeCache {
-  id             String          @id @default(uuid())
-  createdAt      DateTime        @default(now())
-  aiResponseJson Json
-  inputHash      String          @unique
-  type           RecipeCacheType
 }
 
 enum MessageRole {

@@ -41,6 +41,12 @@ import { ChatSessionsModule } from './chat-sessions/chat-sessions.module';
 import { ChatSessionsRepository } from './chat-sessions/chat-sessions.repository';
 import { PrismaService } from './prisma.service';
 import { UnsplashService } from './unsplash/unsplash.service';
+import { RecipesController } from './recipes/recipes.controller';
+import { RecipesService } from './recipes/recipes.service';
+import { RecipesRepository } from './recipes/recipes.repository';
+import { MealPlanController } from './meal-plan/meal-plan.controller';
+import { MealPlanService } from './meal-plan/meal-plan.service';
+import { MealPlanRepository } from './meal-plan/meal-plan.repository';
 
 @Catch()
 class GlobalExceptionFilter extends BaseExceptionFilter {
@@ -106,11 +112,15 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     HealthController,
     CalculateCaloriesController,
     ChatSessionsController,
+    RecipesController,
+    MealPlanController,
   ],
   providers: [
     ParseGroceriesService,
     PrismaService,
     ChatSessionsRepository,
+    MealPlanRepository,
+    RecipesRepository,
     AiAssistantService,
     {
       provide: APP_PIPE,
@@ -135,6 +145,8 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     CalculateCaloriesService,
     ChatSessionsService,
     UnsplashService,
+    RecipesService,
+    MealPlanService,
   ],
 })
 export class AppModule {}
