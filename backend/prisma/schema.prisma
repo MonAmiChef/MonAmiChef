@@ -20,13 +20,25 @@ enum IngredientCategory {
   OTHER
 }
 
+model IngredientReference {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  imageUrl  String?
+
+  ingredients Ingredient[]
+}
+
 model Ingredient {
   id       String             @id @default(uuid())
   name     String
   quantity Float
   unit     String
+
+  referenceId   String?
+  reference     IngredientReference? @relation(fields: [referenceId], references: [id])
+
   category IngredientCategory @default(OTHER)
-  rawText  String?
+
   recipeId String
   recipe   Recipe             @relation(fields: [recipeId], references: [id])
 }

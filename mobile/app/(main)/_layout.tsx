@@ -6,7 +6,12 @@ import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { usePathname, useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useState } from 'react';
-import { User, Menu, MessageCirclePlus } from 'lucide-react-native';
+import {
+  User,
+  Menu,
+  MessageCirclePlus,
+  ChevronRight,
+} from 'lucide-react-native';
 import { DrawerActions } from '@react-navigation/native';
 import { chatApi } from '@/services/api';
 import { useQuery } from '@tanstack/react-query';
@@ -20,8 +25,6 @@ function CustomDrawerContent(props: any) {
   const pathname = usePathname();
   const { t } = useTranslation();
   const router = useRouter();
-
-  console.log('sess', session?.access_token);
 
   const { data: sessions, isLoading } = useQuery({
     queryKey: ['chat-sessions'],
@@ -56,6 +59,30 @@ function CustomDrawerContent(props: any) {
           <Text className="text-lg text-orange-500 font-inter-bold ml-2">
             {t('drawer.new_chat')}
           </Text>
+        </Pressable>
+      </Box>
+
+      <Box className="px-5 py-2">
+        <Pressable
+          onPress={() => router.push('/mealplan')}
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Text
+            className={`text-lg font-inter-medium ${
+              pathname === '/mealplan' ? 'text-orange-600' : 'text-black'
+            }`}
+          >
+            {t('drawer.meal_plan')}
+          </Text>
+          <ChevronRight
+            size={18}
+            color={pathname === '/mealplan' ? '#ea580c' : '#475569'}
+          />
         </Pressable>
       </Box>
 
@@ -98,6 +125,7 @@ function CustomDrawerContent(props: any) {
 export default function MainLayout() {
   const [showProfile, setShowProfile] = useState(false);
   const { session } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <>
@@ -151,6 +179,14 @@ export default function MainLayout() {
           options={{
             drawerLabel: 'Conversation',
             title: 'Chat',
+          }}
+        />
+
+        <Drawer.Screen
+          name="mealplan"
+          options={{
+            drawerLabel: 'Meal Plan',
+            title: t('meal_plan.title'),
           }}
         />
       </Drawer>

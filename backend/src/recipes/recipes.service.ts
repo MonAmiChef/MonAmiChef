@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { AddMealToPlanResponse, ParseRecipeResponse } from './recipes.dto';
+import { ParseRecipeResponse } from './recipes.dto';
 import { RecipesRepository } from './recipes.repository';
 import { AiAssistantService } from 'src/ai-assistant/ai-assistant.service';
-import { Ingredient, Recipe } from '@prisma/client';
 import { UnsplashService } from 'src/unsplash/unsplash.service';
 
 @Injectable()
@@ -23,36 +22,20 @@ export class RecipesService {
   }: {
     messageContent: string;
     userId: string;
-  }): Promise<AddMealToPlanResponse> {
-    // Parse recipe and ingredients from raw text
-    const { recipe, ingredients } = await this.parseRecipe({
-      text: messageContent,
-    });
+  }) {
+    const [aiData, image] = await Promise.all([
+      this.parseRecipe({ text: messageContent }),
+      this.unsplashService.getImageByPrompt(messageContent.substring(0, 30)),
+    ]);
 
-    // Retrieve unsplash image
-    const image = await this.unsplashService.getImageByPrompt(recipe.name);
-
-    // Store the recipe in db
-    const storedRecipe = await this.recipesRepository.createRecipeEntry({
+    await this.recipesRepository.createFullRecipeContext({
       userId,
-      recipe: recipe as Recipe,
       imagePath: image?.url ?? '',
+      recipeData: aiData.recipe,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+      ingredients: aiData.ingredients as any[],
     });
 
-    // Store the resulting list of ingredients in DB
-    await this.recipesRepository.storeIngredients({
-      recipeId: storedRecipe.id,
-      ingredients: ingredients as Ingredient[],
-    });
-
-    // Create meal plan entry
-    await this.recipesRepository.createMealPlanEntry({
-      userId,
-      recipeId: storedRecipe.id,
-    });
-
-    return {
-      status: 200,
-    };
+    return { status: 200 };
   }
 }

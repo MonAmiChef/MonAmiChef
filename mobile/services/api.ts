@@ -89,3 +89,43 @@ export const chatApi = {
     return data;
   },
 };
+
+type AddMealRequest = components['schemas']['AddMealToPlanRequestDto'];
+type AddMealResponse = components['schemas']['AddMealToPlanResponseDto_Output'];
+
+export const mealPlanApi = {
+  addMealToPlan: async (
+    messageContent: string,
+    session: Session,
+  ): Promise<AddMealResponse> => {
+    const body: AddMealRequest = { messageContent };
+    const response = await fetch(`${API_URL}/recipes/add-to-mealplan`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) throw new Error('Failed to add meal to plan');
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return await response.json();
+  },
+
+  // GET: Récupérer le plan (à synchroniser avec ton futur endpoint NestJS)
+  getMealPlan: async (session: Session) => {
+    const response = await fetch(`${API_URL}/meal-plans`, {
+      // Vérifie le path sur ton Swagger
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+    });
+
+    if (!response.ok) throw new Error('Failed to fetch meal plan');
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return await response.json();
+  },
+};

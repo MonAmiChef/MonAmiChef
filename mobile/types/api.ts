@@ -152,6 +152,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recipes/add-to-mealplan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RecipesController_addMealToPlan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -359,6 +375,12 @@ export interface components {
             createdAt: string;
             updatedAt: string;
         };
+        AddMealToPlanRequestDto: {
+            messageContent: string;
+        };
+        AddMealToPlanResponseDto_Output: {
+            status: number;
+        };
     };
     responses: never;
     parameters: never;
@@ -559,6 +581,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UpdateChatSessionResponseDto_Output"];
+                };
+            };
+        };
+    };
+    RecipesController_addMealToPlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddMealToPlanRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AddMealToPlanResponseDto_Output"];
                 };
             };
         };

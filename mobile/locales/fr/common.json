@@ -13,7 +13,8 @@
   "drawer": {
     "new_chat": "Nouveau Chat",
     "chats": "Conversations",
-    "failed_retrieving_sessions": "Échec de récupération des conversations"
+    "failed_retrieving_sessions": "Échec de récupération des conversations",
+    "meal_plan": "Plannificateur"
   },
   "chat": {
     "chef_typing": "Le chef prépare sa réponse...",
