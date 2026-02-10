@@ -23,8 +23,9 @@ export class UnsplashService {
     if (!prompt || prompt.trim().length === 0) return null;
 
     try {
+      const simplifiedPrompt = prompt.split(' ');
       const result = await this.unsplash.search.getPhotos({
-        query: prompt,
+        query: simplifiedPrompt.slice(0, 3).join(' '),
         page: 1,
         perPage: 1,
         orientation: 'landscape',
@@ -32,20 +33,6 @@ export class UnsplashService {
 
       if (result.type === 'success') {
         const photo = result.response.results[0];
-
-        // --- LOGIQUE DE RETRY ---
-        // Si on n'a pas de photo et que le prompt contient plus de 3 mots
-        if (!photo) {
-          const words = prompt.trim().split(/\s+/);
-          if (words.length > 3) {
-            const simplifiedPrompt = words.slice(0, 3).join(' ');
-            this.logger.warn(
-              `No photo found for "${prompt}", retrying with "${simplifiedPrompt}"`,
-            );
-            return this.getImageByPrompt(simplifiedPrompt); // Récursion simple
-          }
-          return null;
-        }
 
         return {
           url: photo.urls.regular,
