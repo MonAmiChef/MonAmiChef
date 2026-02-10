@@ -27,10 +27,6 @@ const CreateChatSessionRequestSchema = z.object({
   language: z.string().optional().default('english'),
 });
 
-export type CreateChatSessionRequest = z.output<
-  typeof CreateChatSessionRequestSchema
->;
-
 export class CreateChatSessionRequestDto extends createZodDto(
   CreateChatSessionRequestSchema,
 ) {}
@@ -43,8 +39,6 @@ const ChatMessageSchema = z.object({
   content: z.string(),
   createdAt: z.coerce.string(),
 });
-
-export type ChatMessage = z.output<typeof ChatMessageSchema>;
 
 const CreateChatSessionResponseSchema = z.object({
   id: z.uuid(),

@@ -1,31 +1,6 @@
-import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
-const AddMealToPlanRequestSchema = z.object({
-  messageContent: z.string(),
-});
-
-export type AddMealToPlanRequest = z.output<typeof AddMealToPlanRequestSchema>;
-
-export class AddMealToPlanRequestDto extends createZodDto(
-  AddMealToPlanRequestSchema,
-) {}
-
-const AddMealToPlanResponseSchema = z.object({
-  status: z.number(),
-});
-
-export type AddMealToPlanResponse = z.output<
-  typeof AddMealToPlanResponseSchema
->;
-
-export class AddMealToPlanResponseDto extends createZodDto(
-  AddMealToPlanResponseSchema,
-) {}
-
-// PARSE RECIPE
-
-export const IngredientCategoryEnum = z.enum([
+const ingredientCategoryEnum = z.enum([
   'FRUITS',
   'VEGETABLES',
   'MEAT',
@@ -38,15 +13,15 @@ export const IngredientCategoryEnum = z.enum([
   'OTHER',
 ]);
 
-export const IngredientSchema = z.object({
+const ingredientSchema = z.object({
   name: z.string(),
   quantity: z.number(),
   unit: z.string(),
-  category: IngredientCategoryEnum,
+  category: ingredientCategoryEnum,
 });
 
 export const ParseRecipeResponseSchema = z.object({
-  ingredients: z.array(IngredientSchema),
+  ingredients: z.array(ingredientSchema),
   recipe: z.object({
     name: z.string(),
     prepTimeMin: z.number().int(),

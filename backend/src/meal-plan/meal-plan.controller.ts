@@ -6,8 +6,11 @@ import {
 } from 'src/supabase-guard/supabase.guard';
 import {
   AddMealToGroceriesRequestDto,
+  AddMealToPlanRequestDto,
+  AddMealToPlanResponseDto,
   RemoveFromMealPlanRequestDto,
 } from './meal-plan.dto';
+import { ZodResponse } from 'nestjs-zod';
 
 @Controller('meal-plan')
 @UseGuards(SupabaseGuard)
@@ -37,5 +40,29 @@ export class MealPlanController {
       body.recipeId,
       body.newState,
     );
+  }
+
+  @Post('remove-from-mealplan')
+  removeFromMealPlan(
+    @Body() body: RemoveFromMealPlanRequestDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.mealPlanService.removeFromMealPlan(req.user.id, body.recipeId);
+  }
+
+  @Post('add-to-mealplan')
+  @ZodResponse({
+    status: 200,
+    type: AddMealToPlanResponseDto,
+  })
+  addMealToPlan(
+    @Body() body: AddMealToPlanRequestDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.mealPlanService.addMealToPlan({
+      messageId: body.messageId,
+      messageContent: body.messageContent,
+      userId: req.user.id,
+    });
   }
 }

@@ -30,7 +30,7 @@ import {
 import {
   ParseRecipeResponseJson,
   ParseRecipeResponseSchema,
-} from 'src/recipes/recipes.dto';
+} from 'src/recipes/recipes.types';
 
 const DEFAULT_GEMINI_MODEL = 'gemini-3-flash-preview';
 

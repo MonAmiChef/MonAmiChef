@@ -5,7 +5,7 @@
 import React from 'react';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { mealPlanApi } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -14,8 +14,11 @@ import {
   RefreshControl,
   Image,
   Dimensions,
+  Pressable,
 } from 'react-native';
 import { t } from 'i18next';
+import { ShoppingCart, X } from 'lucide-react-native';
+import Toast from 'react-native-toast-message';
 
 const { width } = Dimensions.get('window');
 const COLUMN_WIDTH = (width - 48) / 2; // (Écran - padding latéral - gap) / 2
@@ -27,6 +30,26 @@ export default function MealPlanPage() {
     queryKey: ['meal-plan'],
     queryFn: () => mealPlanApi.getMealPlan(session!),
     enabled: !!session,
+  });
+
+  const addTogroceriesMutation = useMutation({
+    mutationFn: (recipeId: string) =>
+      mealPlanApi.addToGroceries(session!, recipeId),
+    onSuccess: () => {
+      Toast.show({
+        text1: 'Succès!',
+        text2: 'La recette a été ajoutée à la liste de courses.',
+        type: 'success',
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+      Toast.show({
+        text1: 'Erreur',
+        text2: "Impossible d'ajouter le repas.",
+        type: 'error',
+      });
+    },
   });
 
   if (isLoading)
@@ -69,7 +92,22 @@ export default function MealPlanPage() {
               style={{ width: COLUMN_WIDTH }}
               className="bg-white rounded-[24px] mb-4 shadow-sm overflow-hidden border border-slate-100"
             >
-              {/* Image plus petite pour la grille */}
+              <Box className="absolute flex flex-row self-end mr-2 mt-2 gap-2 z-10">
+                <Pressable className="justify-center items-center h-8 w-8 bg-white rounded-full">
+                  <X size={18} />
+                </Pressable>
+                <Pressable
+                  onPress={() => {
+                    if (!addTogroceriesMutation.isPending) {
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                      addTogroceriesMutation.mutate(item.recipeId);
+                    }
+                  }}
+                  className="justify-center items-center h-8 w-8 bg-white rounded-full"
+                >
+                  <ShoppingCart size={18} />
+                </Pressable>
+              </Box>
               {r.imagePath && (
                 <Image
                   source={{ uri: r.imagePath }}

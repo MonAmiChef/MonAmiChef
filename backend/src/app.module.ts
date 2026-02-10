@@ -41,7 +41,6 @@ import { ChatSessionsModule } from './chat-sessions/chat-sessions.module';
 import { ChatSessionsRepository } from './chat-sessions/chat-sessions.repository';
 import { PrismaService } from './prisma.service';
 import { UnsplashService } from './unsplash/unsplash.service';
-import { RecipesController } from './recipes/recipes.controller';
 import { RecipesService } from './recipes/recipes.service';
 import { RecipesRepository } from './recipes/recipes.repository';
 import { MealPlanController } from './meal-plan/meal-plan.controller';
@@ -112,7 +111,6 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     HealthController,
     CalculateCaloriesController,
     ChatSessionsController,
-    RecipesController,
     MealPlanController,
   ],
   providers: [

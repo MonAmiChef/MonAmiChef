@@ -180,25 +180,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/UpdateChatSessionResponseDto_Output'
       tags: *ref_0
-  /recipes/add-to-mealplan:
-    post:
-      operationId: RecipesController_addMealToPlan
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AddMealToPlanRequestDto'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AddMealToPlanResponseDto_Output'
-      tags:
-        - Recipes
   /meal-plan:
     get:
       operationId: MealPlanController_getUserMealPlan
@@ -235,6 +216,38 @@ paths:
       responses:
         '201':
           description: ''
+      tags: *ref_1
+  /meal-plan/remove-from-mealplan:
+    post:
+      operationId: MealPlanController_removeFromMealPlan
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveFromMealPlanRequestDto'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_1
+  /meal-plan/add-to-mealplan:
+    post:
+      operationId: MealPlanController_addMealToPlan
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddMealToPlanRequestDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddMealToPlanResponseDto_Output'
       tags: *ref_1
 info:
   title: MonAmiChef
@@ -1035,21 +1048,6 @@ components:
         - messages
         - createdAt
         - updatedAt
-    AddMealToPlanRequestDto:
-      type: object
-      properties:
-        messageContent:
-          type: string
-      required:
-        - messageContent
-    AddMealToPlanResponseDto_Output:
-      type: object
-      properties:
-        status:
-          type: number
-          x-nestjs_zod-parent-additional-properties: false
-      required:
-        - status
     RemoveFromMealPlanRequestDto:
       type: object
       properties:
@@ -1067,5 +1065,27 @@ components:
       required:
         - recipeId
         - newState
+    AddMealToPlanRequestDto:
+      type: object
+      properties:
+        messageContent:
+          type: string
+        messageId:
+          type: string
+      required:
+        - messageContent
+        - messageId
+    AddMealToPlanResponseDto_Output:
+      type: object
+      properties:
+        status:
+          type: number
+          x-nestjs_zod-parent-additional-properties: false
+        alreadyPresent:
+          type: boolean
+          x-nestjs_zod-parent-additional-properties: false
+      required:
+        - status
+        - alreadyPresent
 security:
   - X-API-KEY: []

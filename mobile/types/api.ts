@@ -152,22 +152,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/recipes/add-to-mealplan": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["RecipesController_addMealToPlan"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/meal-plan": {
         parameters: {
             query?: never;
@@ -210,6 +194,38 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["MealPlanController_addRemoveMealToGroceries"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/meal-plan/remove-from-mealplan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MealPlanController_removeFromMealPlan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/meal-plan/add-to-mealplan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MealPlanController_addMealToPlan"];
         delete?: never;
         options?: never;
         head?: never;
@@ -423,18 +439,20 @@ export interface components {
             createdAt: string;
             updatedAt: string;
         };
-        AddMealToPlanRequestDto: {
-            messageContent: string;
-        };
-        AddMealToPlanResponseDto_Output: {
-            status: number;
-        };
         RemoveFromMealPlanRequestDto: {
             recipeId: string;
         };
         AddMealToGroceriesRequestDto: {
             recipeId: string;
             newState: boolean;
+        };
+        AddMealToPlanRequestDto: {
+            messageContent: string;
+            messageId: string;
+        };
+        AddMealToPlanResponseDto_Output: {
+            status: number;
+            alreadyPresent: boolean;
         };
     };
     responses: never;
@@ -640,29 +658,6 @@ export interface operations {
             };
         };
     };
-    RecipesController_addMealToPlan: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AddMealToPlanRequestDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AddMealToPlanResponseDto_Output"];
-                };
-            };
-        };
-    };
     MealPlanController_getUserMealPlan: {
         parameters: {
             query?: never;
@@ -719,6 +714,50 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    MealPlanController_removeFromMealPlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RemoveFromMealPlanRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanController_addMealToPlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddMealToPlanRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AddMealToPlanResponseDto_Output"];
+                };
             };
         };
     };

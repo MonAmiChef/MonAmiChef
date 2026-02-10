@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { createApi } from 'unsplash-js';
 
-export interface UnsplashImageResult {
+interface UnsplashImageResult {
   url: string;
   photographerName: string;
   photographerUrl: string;
