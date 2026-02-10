@@ -24,22 +24,4 @@ export class MealPlanRepository {
       },
     });
   }
-
-  async addRemoveMealToGroceries(
-    userId: string,
-    recipeId: string,
-    newState: boolean,
-  ) {
-    return this.prismaService.mealPlan.update({
-      where: {
-        recipeId_userId: {
-          userId,
-          recipeId,
-        },
-      },
-      data: {
-        isInGroceryList: newState,
-      },
-    });
-  }
 }

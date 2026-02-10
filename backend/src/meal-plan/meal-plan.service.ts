@@ -30,9 +30,6 @@ export class MealPlanService {
     messageContent: string;
     userId: string;
   }) {
-    const aiData = await this.recipesService.parseRecipe({
-      text: messageContent,
-    });
     const existingRecipe =
       await this.recipesRepository.findByMessageId(messageId);
 
@@ -43,6 +40,10 @@ export class MealPlanService {
       );
       return { status: 200, alreadyPresent: result.alreadyPresent ?? false };
     }
+
+    const aiData = await this.recipesService.parseRecipe({
+      text: messageContent,
+    });
 
     const image = await this.unsplashService.getImageByPrompt(messageContent);
 
@@ -56,17 +57,5 @@ export class MealPlanService {
     });
 
     return { status: 200, alreadyPresent: false };
-  }
-
-  async addRemoveMealToGroceries(
-    userId: string,
-    recipeId: string,
-    newState: boolean,
-  ) {
-    return this.mealPlanRepository.addRemoveMealToGroceries(
-      userId,
-      recipeId,
-      newState,
-    );
   }
 }

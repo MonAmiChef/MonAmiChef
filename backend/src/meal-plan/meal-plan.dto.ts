@@ -28,12 +28,3 @@ const removeFromMealPlanRequestSchema = z.object({
 export class RemoveFromMealPlanRequestDto extends createZodDto(
   removeFromMealPlanRequestSchema,
 ) {}
-
-const addMealToGroceriesRequestSchema = z.object({
-  recipeId: z.string(),
-  newState: z.boolean(),
-});
-
-export class AddMealToGroceriesRequestDto extends createZodDto(
-  addMealToGroceriesRequestSchema,
-) {}
