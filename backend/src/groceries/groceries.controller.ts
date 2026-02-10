@@ -27,4 +27,9 @@ export class GroceriesController {
   async getUserRecipesInGroceries(@Req() req: AuthenticatedRequest) {
     return this.groceriesService.getUserRecipesInGroceries(req.user.id);
   }
+
+  @Get()
+  async getUserGroceries(@Req() req: AuthenticatedRequest) {
+    return this.groceriesService.getUserGroceries(req.user.id);
+  }
 }

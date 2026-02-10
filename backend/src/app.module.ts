@@ -49,6 +49,7 @@ import { MealPlanRepository } from './meal-plan/meal-plan.repository';
 import { GroceriesController } from './groceries/groceries.controller';
 import { GroceriesService } from './groceries/groceries.service';
 import { GroceriesRepository } from './groceries/groceries.repository';
+import { RecipesController } from './recipes/recipes.controller';
 
 @Catch()
 class GlobalExceptionFilter extends BaseExceptionFilter {
@@ -116,6 +117,7 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     ChatSessionsController,
     MealPlanController,
     GroceriesController,
+    RecipesController,
   ],
   providers: [
     ParseGroceriesService,

@@ -17,7 +17,7 @@ import {
   Pressable,
 } from 'react-native';
 import { t } from 'i18next';
-import { ShoppingCart, X } from 'lucide-react-native';
+import { Ellipsis, ShoppingCart } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
 
 const { width } = Dimensions.get('window');
@@ -30,6 +30,37 @@ export default function MealPlanPage() {
     queryKey: ['meal-plan'],
     queryFn: () => mealPlanApi.getMealPlan(session!),
     enabled: !!session,
+  });
+
+  const { data: groceries } = useQuery({
+    queryKey: ['chat-sessions'],
+    queryFn: async () => {
+      const result = await mealPlanApi.getGroceriesRecipes(session!);
+      console.log('res', result);
+      return result;
+    },
+    enabled: !!session,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const removeFromPlanMutation = useMutation({
+    mutationFn: (recipeId: string) =>
+      mealPlanApi.removeFromMealPlan(session!, recipeId),
+    onSuccess: () => {
+      Toast.show({
+        text1: 'Succès',
+        text2: 'La recette à été retirée du plan',
+        type: 'success',
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+      Toast.show({
+        text1: 'Erreur',
+        text2: 'Impossible de supprimer le repas.',
+        type: 'error',
+      });
+    },
   });
 
   const addTogroceriesMutation = useMutation({
@@ -85,7 +116,6 @@ export default function MealPlanPage() {
         )}
         renderItem={({ item }) => {
           const r = item.recipe;
-          const hasHighProtein = (r.proteins ?? 0) >= 40;
 
           return (
             <Box
@@ -93,19 +123,17 @@ export default function MealPlanPage() {
               className="bg-white rounded-[24px] mb-4 shadow-sm overflow-hidden border border-slate-100"
             >
               <Box className="absolute flex flex-row self-end mr-2 mt-2 gap-2 z-10">
-                <Pressable className="justify-center items-center h-8 w-8 bg-white rounded-full">
-                  <X size={18} />
-                </Pressable>
                 <Pressable
                   onPress={() => {
-                    if (!addTogroceriesMutation.isPending) {
+                    if (!removeFromPlanMutation.isPending) {
                       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                      addTogroceriesMutation.mutate(item.recipeId);
+                      removeFromPlanMutation.mutate(item.recipeId);
+                      void refetch();
                     }
                   }}
-                  className="justify-center items-center h-8 w-8 bg-white rounded-full"
+                  className="justify-center items-center h-6 w-6 bg-white rounded-full"
                 >
-                  <ShoppingCart size={18} />
+                  <Ellipsis size={14} />
                 </Pressable>
               </Box>
               {r.imagePath && (
@@ -116,7 +144,7 @@ export default function MealPlanPage() {
                 />
               )}
 
-              <Box className="p-3">
+              <Box className="p-3 gap-4">
                 <Text
                   numberOfLines={2}
                   className="font-inter-bold text-sm text-slate-900 h-10"
@@ -124,29 +152,20 @@ export default function MealPlanPage() {
                   {r.name}
                 </Text>
 
-                {/* Badge Protéines compact */}
-                <Box
-                  className={`mt-2 self-start px-2 py-1 rounded-full ${
-                    hasHighProtein ? 'bg-orange-500' : 'bg-orange-100'
-                  }`}
+                <Pressable
+                  onPress={() => {
+                    if (!addTogroceriesMutation.isPending) {
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                      addTogroceriesMutation.mutate(item.recipeId);
+                    }
+                  }}
+                  className="flex flex-row gap-2 w-full bg-orange-50 border border-orange-100 justify-center items-center rounded-full py-2 mb-4 mt-2"
                 >
-                  <Text
-                    className={`font-inter-bold text-[10px] ${
-                      hasHighProtein ? 'text-white' : 'text-orange-700'
-                    }`}
-                  >
-                    {r.proteins}g Pro {hasHighProtein ? '🔥' : '💪'}
+                  <Text className="font-inter-medium text-orange-500">
+                    Ajouter
                   </Text>
-                </Box>
-
-                <Box className="flex-row justify-between items-center mt-2">
-                  <Text className="text-slate-400 text-[10px] font-inter-medium">
-                    {r.calories} kcal
-                  </Text>
-                  <Text className="text-slate-400 text-[10px] font-inter-medium">
-                    {r.prepTimeMin} min
-                  </Text>
-                </Box>
+                  <ShoppingCart color="#ff6900" size={16} />
+                </Pressable>
               </Box>
             </Box>
           );

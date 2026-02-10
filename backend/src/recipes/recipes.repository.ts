@@ -10,6 +10,15 @@ export class RecipesRepository {
     private unsplashService: UnsplashService,
   ) {}
 
+  async findRecipeWithIngredientsById(userId: string, recipeId: string) {
+    return this.prismaService.recipe.findUnique({
+      where: { id: recipeId, userId },
+      include: {
+        ingredients: true,
+      },
+    });
+  }
+
   private async enrichReferenceWithImage(id: string, name: string) {
     try {
       const image = await this.unsplashService.getImageByPrompt(
