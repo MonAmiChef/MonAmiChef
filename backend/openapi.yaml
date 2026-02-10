@@ -252,6 +252,19 @@ paths:
         '200':
           description: ''
       tags: *ref_2
+    post:
+      operationId: GroceriesController_toggleIngredientsStatus
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ToggleIngredientsStatusRequestDto'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_2
   /recipes/{id}:
     get:
       operationId: RecipesController_findRecipeWithIngredientsById
@@ -1104,5 +1117,17 @@ components:
       required:
         - recipeId
         - newState
+    ToggleIngredientsStatusRequestDto:
+      type: object
+      properties:
+        ingredientIds:
+          type: array
+          items:
+            type: string
+        isBought:
+          type: boolean
+      required:
+        - ingredientIds
+        - isBought
 security:
   - X-API-KEY: []

@@ -59,7 +59,7 @@ model MealPlan {
   createdAt       DateTime @default(now())
   userId          String   @db.Uuid
   isInGroceryList Boolean  @default(false)
-  servings        BigInt   @default(1)
+  servings        Int      @default(0)
   recipe          Recipe   @relation(fields: [recipeId], references: [id])
   user            User     @relation(fields: [userId], references: [id])
 
