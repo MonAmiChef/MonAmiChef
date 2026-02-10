@@ -33,11 +33,15 @@ export class GroceriesRepository {
 
   async getUserGroceries(userId: string) {
     const mealPlans = await this.prismaService.mealPlan.findMany({
-      where: { userId },
+      where: {
+        userId,
+        isInGroceryList: true,
+      },
       include: {
         recipe: {
           select: {
             name: true,
+            servings: true,
             ingredients: true,
           },
         },
@@ -47,20 +51,28 @@ export class GroceriesRepository {
     const mergedIngredients = mealPlans.reduce(
       (acc, plan) => {
         const recipeName = plan.recipe.name;
+        const planServings = Number(plan.servings || 2);
+        const recipeServings = plan.recipe.servings || 2;
 
+        const servingsFactor = planServings / recipeServings;
         plan.recipe.ingredients.forEach((ing) => {
           const key = `${ing.name.toLowerCase().trim()}_${ing.unit.toLowerCase().trim()}`;
+          const adjustedQuantity = ing.quantity * servingsFactor;
 
           if (!acc[key]) {
             acc[key] = {
               name: ing.name,
-              totalQuantity: ing.quantity,
+              totalQuantity: adjustedQuantity,
               unit: ing.unit,
               category: ing.category,
               recipes: [recipeName],
+              isBought: ing.isBought,
+              ingredientIds: [ing.id],
             };
           } else {
-            acc[key].totalQuantity += ing.quantity;
+            acc[key].totalQuantity += adjustedQuantity;
+            acc[key].isBought = acc[key].isBought && ing.isBought;
+            acc[key].ingredientIds.push(ing.id);
 
             if (!acc[key].recipes.includes(recipeName)) {
               acc[key].recipes.push(recipeName);
@@ -78,6 +90,8 @@ export class GroceriesRepository {
           unit: string;
           category: string;
           recipes: string[];
+          isBought: boolean;
+          ingredientIds: string[];
         }
       >,
     );
@@ -85,5 +99,19 @@ export class GroceriesRepository {
     return Object.values(mergedIngredients).sort((a, b) =>
       a.category.localeCompare(b.category),
     );
+  }
+
+  async toggleIngredientsStatus(
+    userId: string,
+    ingredientIds: string[],
+    isBought: boolean,
+  ) {
+    return this.prismaService.ingredient.updateMany({
+      where: {
+        id: { in: ingredientIds },
+        recipe: { userId: userId },
+      },
+      data: { isBought },
+    });
   }
 }

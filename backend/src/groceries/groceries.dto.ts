@@ -9,3 +9,12 @@ const addMealToGroceriesRequestSchema = z.object({
 export class AddMealToGroceriesRequestDto extends createZodDto(
   addMealToGroceriesRequestSchema,
 ) {}
+
+const toggleIngredientsStatusRequestSchema = z.object({
+  ingredientIds: z.array(z.string()),
+  isBought: z.boolean(),
+});
+
+export class ToggleIngredientsStatusRequestDto extends createZodDto(
+  toggleIngredientsStatusRequestSchema,
+) {}

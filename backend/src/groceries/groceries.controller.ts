@@ -3,7 +3,10 @@ import {
   SupabaseGuard,
   type AuthenticatedRequest,
 } from 'src/supabase-guard/supabase.guard';
-import { AddMealToGroceriesRequestDto } from './groceries.dto';
+import {
+  AddMealToGroceriesRequestDto,
+  ToggleIngredientsStatusRequestDto,
+} from './groceries.dto';
 import { GroceriesService } from './groceries.service';
 
 @Controller('groceries')
@@ -31,5 +34,17 @@ export class GroceriesController {
   @Get()
   async getUserGroceries(@Req() req: AuthenticatedRequest) {
     return this.groceriesService.getUserGroceries(req.user.id);
+  }
+
+  @Post()
+  async toggleIngredientsStatus(
+    @Req() req: AuthenticatedRequest,
+    @Body() body: ToggleIngredientsStatusRequestDto,
+  ) {
+    return this.groceriesService.toggleIngredientsStatus(
+      req.user.id,
+      body.ingredientIds,
+      body.isBought,
+    );
   }
 }

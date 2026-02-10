@@ -24,4 +24,16 @@ export class GroceriesService {
   async getUserGroceries(userId: string) {
     return this.groceriesRepository.getUserGroceries(userId);
   }
+
+  async toggleIngredientsStatus(
+    userId: string,
+    ingredientIds: string[],
+    isBought: boolean,
+  ) {
+    return this.groceriesRepository.toggleIngredientsStatus(
+      userId,
+      ingredientIds,
+      isBought,
+    );
+  }
 }
