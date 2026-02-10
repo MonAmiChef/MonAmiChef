@@ -37,8 +37,11 @@ function CustomDrawerContent(props: any) {
   });
 
   return (
-    <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
-      <Box className="flex px-4 py-3 mb-2">
+    <DrawerContentScrollView
+      {...props}
+      contentContainerStyle={{ flex: 1, gap: 20 }}
+    >
+      <Box className="flex px-4 py-3">
         <Pressable
           onPress={() => {
             router.push({ pathname: '/', params: { openPreferences: 'true' } });
@@ -74,7 +77,7 @@ function CustomDrawerContent(props: any) {
         >
           <Text
             className={`text-lg font-inter-medium ${
-              pathname === '/mealplan' ? 'text-orange-600' : 'text-black'
+              pathname === '/mealplan' ? 'text-orange-600' : 'text-slate-700'
             }`}
           >
             {t('drawer.meal_plan')}
@@ -86,32 +89,57 @@ function CustomDrawerContent(props: any) {
         </Pressable>
       </Box>
 
-      <Box className="px-5 py-2 border-slate-100">
-        <Text className="text-lg font-inter-medium text-black">
-          {t('drawer.chats')}
-        </Text>
+      <Box className="px-5 py-2">
+        <Pressable
+          onPress={() => router.push('/groceries')}
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Text
+            className={`text-lg font-inter-medium ${
+              pathname === '/groceries' ? 'text-orange-600' : 'text-slate-700'
+            }`}
+          >
+            {t('drawer.groceries')}
+          </Text>
+          <ChevronRight
+            size={18}
+            color={pathname === '/groceries' ? '#ea580c' : '#475569'}
+          />
+        </Pressable>
       </Box>
 
       <Box className="flex-1 py-1">
         {isLoading ? (
           <ActivityIndicator className="mt-4" />
         ) : sessions ? (
-          sessions.map((chat) => {
+          sessions.map((chat, index) => {
             return (
-              <Pressable
-                key={chat.id}
-                onPress={() => {
-                  router.navigate(`/chat/${chat.id}`);
-                }}
-                className={`px-5 py-3`}
-              >
-                <Text
-                  numberOfLines={1}
-                  className={`${pathname.split('/')[2] === chat.id ? 'bg-orange-600 rounded-full text-white' : 'text-slate-700'} px-5 py-3 font-inter-medium`}
+              <Box key={index}>
+                <Box className="px-5 py-2 border-slate-100">
+                  <Text className="text-lg font-inter-medium text-slate-700">
+                    {t('drawer.chats')}
+                  </Text>
+                </Box>
+                <Pressable
+                  key={chat.id}
+                  onPress={() => {
+                    router.navigate(`/chat/${chat.id}`);
+                  }}
+                  className={`px-5 py-3`}
                 >
-                  {chat.title || 'Nouvelle discussion'}
-                </Text>
-              </Pressable>
+                  <Text
+                    numberOfLines={1}
+                    className={`${pathname.split('/')[2] === chat.id ? 'bg-orange-600 rounded-full text-white' : 'text-slate-600'} px-5 py-3 font-inter-medium`}
+                  >
+                    {chat.title || 'Nouvelle discussion'}
+                  </Text>
+                </Pressable>
+              </Box>
             );
           })
         ) : (
@@ -187,6 +215,14 @@ export default function MainLayout() {
           options={{
             drawerLabel: 'Meal Plan',
             title: t('meal_plan.title'),
+          }}
+        />
+
+        <Drawer.Screen
+          name="groceries"
+          options={{
+            drawerLabel: 'Groceries',
+            title: t('groceries.title'),
           }}
         />
       </Drawer>

@@ -32,16 +32,16 @@ export default function MealPlanPage() {
     enabled: !!session,
   });
 
-  const { data: groceries } = useQuery({
-    queryKey: ['chat-sessions'],
-    queryFn: async () => {
-      const result = await mealPlanApi.getGroceriesRecipes(session!);
-      console.log('res', result);
-      return result;
-    },
-    enabled: !!session,
-    staleTime: 1000 * 60 * 5,
-  });
+  // const { data: groceries } = useQuery({
+  //   queryKey: ['chat-sessions'],
+  //   queryFn: async () => {
+  //     const result = await mealPlanApi.getGroceriesRecipes(session!);
+  //     console.log('res', result);
+  //     return result;
+  //   },
+  //   enabled: !!session,
+  //   staleTime: 1000 * 60 * 5,
+  // });
 
   const removeFromPlanMutation = useMutation({
     mutationFn: (recipeId: string) =>

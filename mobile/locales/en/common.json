@@ -14,7 +14,11 @@
     "new_chat": "New Chat",
     "chats": "Chats",
     "failed_retrieving_sessions": "Failed to retrieve sessions",
-    "meal_plan": "Meal plan"
+    "meal_plan": "Meal plan",
+    "groceries": "Grocery list"
+  },
+  "groceries": {
+    "groceries": "Grocery list"
   },
   "chat": {
     "chef_typing": "The chef is preparing...",

@@ -14,7 +14,11 @@
     "new_chat": "Nouveau Chat",
     "chats": "Conversations",
     "failed_retrieving_sessions": "Échec de récupération des conversations",
-    "meal_plan": "Plannificateur"
+    "meal_plan": "Plannificateur",
+    "groceries": "Liste de courses"
+  },
+  "groceries": {
+    "groceries": "Liste de courses"
   },
   "chat": {
     "chef_typing": "Le chef prépare sa réponse...",
