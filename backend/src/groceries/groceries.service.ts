@@ -20,4 +20,8 @@ export class GroceriesService {
   async getUserRecipesInGroceries(userId: string) {
     return this.groceriesRepository.getUserRecipesInGroceries(userId);
   }
+
+  async getUserGroceries(userId: string) {
+    return this.groceriesRepository.getUserGroceries(userId);
+  }
 }

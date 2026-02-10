@@ -125,7 +125,7 @@ export default function ChatScreen() {
 
   const addMealMutation = useMutation({
     mutationFn: (item: { content: string; id: string }) =>
-      mealPlanApi.addMealToPlan(item.content, session!),
+      mealPlanApi.addMealToPlan(item.content, item.id, session!),
     onSuccess: () => {
       Toast.show({
         text1: "C'est prêt !",

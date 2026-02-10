@@ -96,10 +96,11 @@ type AddMealResponse = components['schemas']['AddMealToPlanResponseDto_Output'];
 export const mealPlanApi = {
   addMealToPlan: async (
     messageContent: string,
+    messageId: string,
     session: Session,
   ): Promise<AddMealResponse> => {
-    const body: AddMealRequest = { messageContent };
-    const response = await fetch(`${API_URL}/recipes/add-to-mealplan`, {
+    const body: AddMealRequest = { messageContent, messageId };
+    const response = await fetch(`${API_URL}/meal-plan/add`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -131,7 +132,7 @@ export const mealPlanApi = {
   },
 
   addToGroceries: async (session: Session, recipeId: string) => {
-    const response = await fetch(`${API_URL}/meal-plan/add-groceries`, {
+    const response = await fetch(`${API_URL}/groceries/add`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -150,6 +151,20 @@ export const mealPlanApi = {
 
   getMealPlan: async (session: Session) => {
     const response = await fetch(`${API_URL}/meal-plan`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+    });
+
+    if (!response.ok) throw new Error('Failed to fetch meal plan');
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return await response.json();
+  },
+
+  getGroceriesRecipes: async (session: Session) => {
+    const response = await fetch(`${API_URL}/groceries/user-recipes`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
