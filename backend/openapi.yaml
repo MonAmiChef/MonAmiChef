@@ -203,20 +203,6 @@ paths:
         '201':
           description: ''
       tags: *ref_1
-  /meal-plan/add-groceries:
-    post:
-      operationId: MealPlanController_addRemoveMealToGroceries
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AddMealToGroceriesRequestDto'
-      responses:
-        '201':
-          description: ''
-      tags: *ref_1
   /meal-plan/add:
     post:
       operationId: MealPlanController_addMealToPlan
@@ -235,6 +221,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/AddMealToPlanResponseDto_Output'
       tags: *ref_1
+  /groceries/add:
+    post:
+      operationId: GroceriesController_addRemoveMealToGroceries
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddMealToGroceriesRequestDto'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_2
+        - Groceries
+  /groceries/user-recipes:
+    get:
+      operationId: GroceriesController_getUserRecipesInGroceries
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
 info:
   title: MonAmiChef
   description: The MonAmiChef API documentation
@@ -1041,16 +1050,6 @@ components:
           type: string
       required:
         - recipeId
-    AddMealToGroceriesRequestDto:
-      type: object
-      properties:
-        recipeId:
-          type: string
-        newState:
-          type: boolean
-      required:
-        - recipeId
-        - newState
     AddMealToPlanRequestDto:
       type: object
       properties:
@@ -1073,5 +1072,15 @@ components:
       required:
         - status
         - alreadyPresent
+    AddMealToGroceriesRequestDto:
+      type: object
+      properties:
+        recipeId:
+          type: string
+        newState:
+          type: boolean
+      required:
+        - recipeId
+        - newState
 security:
   - X-API-KEY: []

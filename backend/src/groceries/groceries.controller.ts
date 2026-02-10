@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import {
   SupabaseGuard,
   type AuthenticatedRequest,
@@ -21,5 +21,10 @@ export class GroceriesController {
       body.recipeId,
       body.newState,
     );
+  }
+
+  @Get('user-recipes')
+  async getUserRecipesInGroceries(@Req() req: AuthenticatedRequest) {
+    await this.groceriesService.getUserRecipesInGroceries(req.user.id);
   }
 }

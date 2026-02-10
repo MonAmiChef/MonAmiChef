@@ -22,4 +22,12 @@ export class GroceriesRepository {
       },
     });
   }
+
+  async getUserRecipesInGroceries(userId: string) {
+    return this.prismaService.mealPlan.findMany({
+      where: {
+        userId,
+      },
+    });
+  }
 }
