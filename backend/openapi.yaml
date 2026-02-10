@@ -217,21 +217,7 @@ paths:
         '201':
           description: ''
       tags: *ref_1
-  /meal-plan/remove-from-mealplan:
-    post:
-      operationId: MealPlanController_removeFromMealPlan
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RemoveFromMealPlanRequestDto'
-      responses:
-        '201':
-          description: ''
-      tags: *ref_1
-  /meal-plan/add-to-mealplan:
+  /meal-plan/add:
     post:
       operationId: MealPlanController_addMealToPlan
       parameters: []
