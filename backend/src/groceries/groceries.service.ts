@@ -16,4 +16,8 @@ export class GroceriesService {
       newState,
     );
   }
+
+  async getUserRecipesInGroceries(userId: string) {
+    return this.groceriesRepository.getUserRecipesInGroceries(userId);
+  }
 }
