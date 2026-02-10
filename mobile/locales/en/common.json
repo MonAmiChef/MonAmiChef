@@ -20,6 +20,10 @@
     "chef_typing": "The chef is preparing...",
     "add_to_meal_plan": "Add to meal plan"
   },
+  "meal_plan": {
+    "title": "Meal plan",
+    "subtitle": "Saved recipes"
+  },
   "not_found": {
     "screen": "This screen doesn't exist.",
     "go_to_home": "Go to home screen"

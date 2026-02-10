@@ -1,7 +1,27 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
-export const removeFromMealPlanRequestSchema = z.object({
+const AddMealToPlanRequestSchema = z.object({
+  messageContent: z.string(),
+  messageId: z.string(),
+});
+
+export class AddMealToPlanRequestDto extends createZodDto(
+  AddMealToPlanRequestSchema,
+) {}
+
+const AddMealToPlanResponseSchema = z.object({
+  status: z.number(),
+  alreadyPresent: z.boolean(),
+});
+
+export class AddMealToPlanResponseDto extends createZodDto(
+  AddMealToPlanResponseSchema,
+) {}
+
+// REMOVE
+
+const removeFromMealPlanRequestSchema = z.object({
   recipeId: z.string(),
 });
 
@@ -9,7 +29,7 @@ export class RemoveFromMealPlanRequestDto extends createZodDto(
   removeFromMealPlanRequestSchema,
 ) {}
 
-export const addMealToGroceriesRequestSchema = z.object({
+const addMealToGroceriesRequestSchema = z.object({
   recipeId: z.string(),
   newState: z.boolean(),
 });
@@ -17,23 +37,3 @@ export const addMealToGroceriesRequestSchema = z.object({
 export class AddMealToGroceriesRequestDto extends createZodDto(
   addMealToGroceriesRequestSchema,
 ) {}
-
-export const MealPlanItemSchema = z.object({
-  id: z.string(),
-  userId: z.string(),
-  recipeId: z.string(),
-  createdAt: z.date(),
-  plannedFor: z.date(),
-  recipe: z.object({
-    id: z.string(),
-    name: z.string(),
-    calories: z.number().nullable(),
-    proteins: z.number().nullable(),
-    carbs: z.number().nullable(),
-    fat: z.number().nullable(),
-    imagePath: z.string().nullable(),
-  }),
-});
-
-export const MealPlanListSchema = z.array(MealPlanItemSchema);
-export class MealPlanListResponseDto extends createZodDto(MealPlanListSchema) {}

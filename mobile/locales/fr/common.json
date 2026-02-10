@@ -20,6 +20,10 @@
     "chef_typing": "Le chef prépare sa réponse...",
     "add_to_meal_plan": "Ajouter au plan de repas"
   },
+  "meal_plan": {
+    "title": "Plannificateur",
+    "subtitle": "Plats enregistrés"
+  },
   "not_found": {
     "screen": "Cet écran n'existe pas.",
     "go_to_home": "Retourner a la page d'accueil"

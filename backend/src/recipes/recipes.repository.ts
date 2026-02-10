@@ -43,17 +43,62 @@ export class RecipesRepository {
     return ref.id;
   }
 
+  async findByMessageId(messageId: string) {
+    return this.prismaService.recipe.findUnique({
+      where: { messageId },
+    });
+  }
+
+  async isRecipeAlreadyInPlan(
+    userId: string,
+    recipeId: string,
+  ): Promise<boolean> {
+    const result = await this.prismaService.mealPlan.findUnique({
+      where: {
+        recipeId_userId: {
+          recipeId,
+          userId,
+        },
+      },
+    });
+
+    return result !== null;
+  }
+
+  async addExistingRecipeToPlan(recipeId: string, userId: string) {
+    try {
+      const entry = await this.prismaService.mealPlan.create({
+        data: {
+          recipeId,
+          userId,
+          plannedFor: new Date(),
+        },
+      });
+      return { ...entry, alreadyPresent: false };
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === 'P2002'
+      ) {
+        return { alreadyPresent: true };
+      }
+      throw e;
+    }
+  }
+
   async createFullRecipeContext({
     userId,
     recipeData,
     ingredients,
     imagePath,
+    messageId,
   }: {
     userId: string;
     imagePath: string;
+    messageId: string;
     recipeData: Omit<
-      Prisma.RecipeCreateInput,
-      'user' | 'ingredients' | 'mealPlans'
+      Prisma.RecipeUncheckedCreateInput,
+      'userId' | 'messageId' | 'ingredients' | 'mealPlans' | 'id'
     >;
     ingredients: Ingredient[];
   }) {
@@ -81,8 +126,9 @@ export class RecipesRepository {
     return this.prismaService.recipe.create({
       data: {
         ...recipeData,
-        imagePath,
-        userId,
+        messageId: messageId,
+        imagePath: imagePath,
+        userId: userId,
 
         ingredients: {
           create: ingredientsWithRefs,

@@ -77,7 +77,7 @@ export default function NewChat() {
 
   return (
     <>
-      <View className="flex-1 bg-base-bg">
+      <View className="flex-1 bg-base-bg pb-20">
         <Pressable
           onPress={Keyboard.dismiss}
           className="flex-1"

@@ -45,8 +45,10 @@ model Recipe {
   updatedAt    DateTime     @updatedAt
   userId       String       @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   imagePath    String?
+  messageId    String? @unique
   ingredients  Ingredient[]
   mealPlans    MealPlan[]
+  Message      Message?     @relation(fields: [messageId], references: [id], onDelete: Cascade)
   user         User         @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -92,6 +94,7 @@ model Message {
   createdAt   DateTime?   @default(now()) @db.Timestamp(6)
   isRecipe    Boolean     @default(false)
   chatSession ChatSession @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  Recipe      Recipe[]
 }
 
 model RecipeCache {

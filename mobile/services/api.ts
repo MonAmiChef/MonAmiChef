@@ -113,10 +113,43 @@ export const mealPlanApi = {
     return await response.json();
   },
 
-  // GET: Récupérer le plan (à synchroniser avec ton futur endpoint NestJS)
+  removeFromMealPlan: async (session: Session, recipeId: string) => {
+    const response = await fetch(`${API_URL}/meal-plan/remove`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+      body: JSON.stringify({
+        recipeId,
+      }),
+    });
+
+    if (!response.ok) throw new Error('Failed to remove meal from plan');
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return await response.json();
+  },
+
+  addToGroceries: async (session: Session, recipeId: string) => {
+    const response = await fetch(`${API_URL}/meal-plan/add-groceries`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+      body: JSON.stringify({
+        recipeId,
+        newState: true,
+      }),
+    });
+
+    if (!response.ok) throw new Error('Failed to add recipe to groceries');
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return await response.json();
+  },
+
   getMealPlan: async (session: Session) => {
-    const response = await fetch(`${API_URL}/meal-plans`, {
-      // Vérifie le path sur ton Swagger
+    const response = await fetch(`${API_URL}/meal-plan`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
