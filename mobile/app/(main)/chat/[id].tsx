@@ -1,6 +1,6 @@
 import { Box } from '@/components/ui/box';
 import { useAuth } from '@/hooks/useAuth';
-import { chatApi, mealPlanApi } from '@/services/api';
+import { chatApi } from '@/services/chat.api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 import {
@@ -27,6 +27,9 @@ import { PreferenceActionSheet } from '@/components/chat/PreferenceActionSheet';
 import { t } from 'i18next';
 import { ShoppingCart } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
+import { mealPlanApi } from '@/services/meal-plan.api';
+import { useTranslation } from 'react-i18next';
+import { getLanguageName } from '@/utils/get-language-name';
 
 type ChatSession = components['schemas']['GetChatSessionResponseDto_Output'];
 type ChatMessage = ChatSession['messages'][number];
@@ -52,6 +55,7 @@ export default function ChatScreen() {
     queryFn: () => chatApi.getSession(id, session!),
     enabled: !!id && !!session,
   });
+  const { i18n } = useTranslation();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mutation = useMutation<any, Error, string, MutationContext>({
@@ -125,7 +129,12 @@ export default function ChatScreen() {
 
   const addMealMutation = useMutation({
     mutationFn: (item: { content: string; id: string }) =>
-      mealPlanApi.addMealToPlan(item.content, item.id, session!),
+      mealPlanApi.addMealToPlan(
+        getLanguageName(i18n.language),
+        item.content,
+        item.id,
+        session!,
+      ),
     onSuccess: () => {
       Toast.show({
         text1: "C'est prêt !",

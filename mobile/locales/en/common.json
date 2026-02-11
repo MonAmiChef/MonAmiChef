@@ -18,7 +18,7 @@
     "groceries": "Grocery list"
   },
   "groceries": {
-    "groceries": "Grocery list"
+    "title": "Grocery list"
   },
   "chat": {
     "chef_typing": "The chef is preparing...",
@@ -26,7 +26,7 @@
   },
   "meal_plan": {
     "title": "Meal plan",
-    "subtitle": "Saved recipes"
+    "subtitle": "Recipes"
   },
   "not_found": {
     "screen": "This screen doesn't exist.",

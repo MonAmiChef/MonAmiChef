@@ -32,6 +32,7 @@ export class GroceriesRepository {
     return this.prismaService.mealPlan.findMany({
       where: {
         userId,
+        isInGroceryList: true,
       },
     });
   }

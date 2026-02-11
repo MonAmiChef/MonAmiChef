@@ -12,7 +12,8 @@
     "test": "jest --watchAll",
     "generate-types": "npx openapi-typescript http://localhost:8888/docs-json --output ./types/api.ts",
     "knip": "knip",
-    "i18n:scan": "npx i18next-parser --config i18next-parser.config.mjs"
+    "i18n:scan": "npx i18next-parser --config i18next-parser.config.mjs",
+    "typecheck": "npx tsc --noEmit"
   },
   "jest": {
     "preset": "jest-expo"

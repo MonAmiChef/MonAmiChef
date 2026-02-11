@@ -13,7 +13,7 @@ import {
   ChevronRight,
 } from 'lucide-react-native';
 import { DrawerActions } from '@react-navigation/native';
-import { chatApi } from '@/services/api';
+import { chatApi } from '@/services/chat.api';
 import { useQuery } from '@tanstack/react-query';
 import { ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -114,17 +114,17 @@ function CustomDrawerContent(props: any) {
       </Box>
 
       <Box className="flex-1 py-1">
+        <Box className="px-5 py-2 border-slate-100">
+          <Text className="text-lg font-inter-medium text-slate-700">
+            {t('drawer.chats')}
+          </Text>
+        </Box>
         {isLoading ? (
           <ActivityIndicator className="mt-4" />
         ) : sessions ? (
           sessions.map((chat, index) => {
             return (
               <Box key={index}>
-                <Box className="px-5 py-2 border-slate-100">
-                  <Text className="text-lg font-inter-medium text-slate-700">
-                    {t('drawer.chats')}
-                  </Text>
-                </Box>
                 <Pressable
                   key={chat.id}
                   onPress={() => {

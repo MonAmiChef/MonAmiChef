@@ -1,47 +1,58 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable i18next/no-literal-string */
-import React from 'react';
+import React, { useState } from 'react';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { mealPlanApi } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import {
   ActivityIndicator,
   FlatList,
   RefreshControl,
-  Image,
-  Dimensions,
   Pressable,
 } from 'react-native';
 import { t } from 'i18next';
-import { Ellipsis, ShoppingCart } from 'lucide-react-native';
+import { Check, Ellipsis, ShoppingCart, Trash2, X } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
-
-const { width } = Dimensions.get('window');
-const COLUMN_WIDTH = (width - 48) / 2; // (Écran - padding latéral - gap) / 2
+import { mealPlanApi } from '@/services/meal-plan.api';
+import { capitalizeFull } from '../groceries';
+import {
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+} from '@/components/ui/modal';
 
 export default function MealPlanPage() {
   const { session } = useAuth();
-
+  const [selectedRecipe, setSelectedRecipe] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const { data, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ['meal-plan'],
     queryFn: () => mealPlanApi.getMealPlan(session!),
     enabled: !!session,
   });
+  const [showModal, setShowModal] = useState(false);
 
-  // const { data: groceries } = useQuery({
-  //   queryKey: ['chat-sessions'],
-  //   queryFn: async () => {
-  //     const result = await mealPlanApi.getGroceriesRecipes(session!);
-  //     console.log('res', result);
-  //     return result;
-  //   },
-  //   enabled: !!session,
-  //   staleTime: 1000 * 60 * 5,
-  // });
+  const { data: recipesInGroceries } = useQuery({
+    queryKey: ['chat-sessions'],
+    queryFn: () => mealPlanApi.getGroceriesRecipes(session!),
+    enabled: !!session,
+  });
+
+  const isAlreadyInGroceries = (recipeId: string) => {
+    return recipesInGroceries?.some((item: any) => item.recipeId === recipeId);
+  };
 
   const removeFromPlanMutation = useMutation({
     mutationFn: (recipeId: string) =>
@@ -83,6 +94,19 @@ export default function MealPlanPage() {
     },
   });
 
+  const handleOpenMenu = (id: string, name: string) => {
+    setSelectedRecipe({ id, name });
+    setShowModal(true);
+  };
+
+  const handleDelete = () => {
+    if (selectedRecipe) {
+      removeFromPlanMutation.mutate(selectedRecipe.id);
+      setShowModal(false);
+      void refetch();
+    }
+  };
+
   if (isLoading)
     return <ActivityIndicator className="flex-1" color="#ff6900" />;
 
@@ -95,8 +119,7 @@ export default function MealPlanPage() {
         data={data}
         contentContainerStyle={{ flex: 1 }}
         keyExtractor={(item) => item.recipeId}
-        numColumns={2}
-        columnWrapperStyle={{ justifyContent: 'space-between' }}
+        numColumns={1}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -116,61 +139,98 @@ export default function MealPlanPage() {
         )}
         renderItem={({ item }) => {
           const r = item.recipe;
+          const isInGroceries = isAlreadyInGroceries(item.recipeId);
 
+          console.log(item.recipeId, isInGroceries);
           return (
-            <Box
-              style={{ width: COLUMN_WIDTH }}
-              className="bg-white rounded-[24px] mb-4 shadow-sm overflow-hidden border border-slate-100"
-            >
-              <Box className="absolute flex flex-row self-end mr-2 mt-2 gap-2 z-10">
-                <Pressable
-                  onPress={() => {
-                    if (!removeFromPlanMutation.isPending) {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                      removeFromPlanMutation.mutate(item.recipeId);
-                      void refetch();
-                    }
-                  }}
-                  className="justify-center items-center h-6 w-6 bg-white rounded-full"
-                >
-                  <Ellipsis size={14} />
-                </Pressable>
-              </Box>
-              {r.imagePath && (
-                <Image
-                  source={{ uri: r.imagePath }}
-                  className="w-full h-32"
-                  resizeMode="cover"
-                />
-              )}
-
-              <Box className="p-3 gap-4">
-                <Text
-                  numberOfLines={2}
-                  className="font-inter-bold text-sm text-slate-900 h-10"
-                >
-                  {r.name}
+            <Box className="flex-row items-center bg-white py-3 px-4 border-b border-slate-50">
+              <Box className="h-12 w-12 bg-slate-900 rounded-xl items-center justify-center mr-4">
+                <Text className="text-white font-inter-bold text-xs">
+                  {r.proteins}g
                 </Text>
+                <Text className="text-slate-400 text-[8px] uppercase">
+                  Prot
+                </Text>
+              </Box>
+
+              <Box className="flex-1">
+                <Text
+                  numberOfLines={1}
+                  className="font-inter-semibold text-slate-900 text-base"
+                >
+                  {capitalizeFull(r.name)}
+                </Text>
+                <Text className="text-slate-500 text-xs">
+                  {r.calories} kcal • {r.prepTime} min
+                </Text>
+              </Box>
+
+              <Box className="flex-row items-center gap-1">
+                {isInGroceries ? (
+                  <Pressable
+                    onPress={() => addTogroceriesMutation.mutate(item.recipeId)}
+                    className="p-3 active:bg-orange-50 rounded-full"
+                  >
+                    <Check size={20} color="green" />
+                  </Pressable>
+                ) : (
+                  <Pressable
+                    onPress={() => addTogroceriesMutation.mutate(item.recipeId)}
+                    className="p-3 active:bg-orange-50 rounded-full"
+                  >
+                    <ShoppingCart size={20} color="#f97316" />
+                  </Pressable>
+                )}
 
                 <Pressable
-                  onPress={() => {
-                    if (!addTogroceriesMutation.isPending) {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                      addTogroceriesMutation.mutate(item.recipeId);
-                    }
-                  }}
-                  className="flex flex-row gap-2 w-full bg-orange-50 border border-orange-100 justify-center items-center rounded-full py-2 mb-4 mt-2"
+                  onPress={() => handleOpenMenu(item.recipeId, r.name)}
+                  className="p-2 active:bg-slate-100 rounded-full"
                 >
-                  <Text className="font-inter-medium text-orange-500">
-                    Ajouter
-                  </Text>
-                  <ShoppingCart color="#ff6900" size={16} />
+                  <Ellipsis size={20} color="#94a3b8" />
                 </Pressable>
               </Box>
             </Box>
           );
         }}
       />
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} size="md">
+        <ModalBackdrop />
+        {/* On force le contenu en bas avec justify-end et on arrondit seulement le haut */}
+        <ModalContent className="mb-0 mt-auto rounded-b-none rounded-t-[32px] pb-10 shadow-2xl border-0">
+          <ModalHeader className="border-b border-slate-100 pb-4">
+            <Box>
+              <Text className="text-sm text-slate-400 font-inter-medium">
+                Options de recette
+              </Text>
+              <Text
+                className="text-lg text-slate-900 font-inter-bold"
+                numberOfLines={1}
+              >
+                {selectedRecipe?.name}
+              </Text>
+            </Box>
+            <ModalCloseButton>
+              <X size={20} color="#94a3b8" />
+            </ModalCloseButton>
+          </ModalHeader>
+
+          <ModalBody className="mt-6">
+            <Pressable
+              onPress={handleDelete}
+              className="flex-row items-center gap-3 bg-red-50 p-4 rounded-2xl active:bg-red-100 border border-red-100"
+            >
+              <Trash2 size={20} color="#dc2626" />
+              <Text className="text-red-600 font-inter-bold text-base">
+                Supprimer du plan
+              </Text>
+            </Pressable>
+
+            <Text className="text-center text-slate-400 text-xs mt-6">
+              Cette action retirera le repas de ton planning hebdomadaire.
+            </Text>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 }

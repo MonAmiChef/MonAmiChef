@@ -1092,6 +1092,9 @@ components:
           type: string
         messageId:
           type: string
+        language:
+          default: english
+          type: string
       required:
         - messageContent
         - messageId

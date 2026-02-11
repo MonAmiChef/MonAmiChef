@@ -184,39 +184,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/meal-plan/add-groceries": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["MealPlanController_addRemoveMealToGroceries"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/meal-plan/remove-from-mealplan": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["MealPlanController_removeFromMealPlan"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/meal-plan/add-to-mealplan": {
+    "/meal-plan/add": {
         parameters: {
             query?: never;
             header?: never;
@@ -226,6 +194,70 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["MealPlanController_addMealToPlan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groceries/add": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["GroceriesController_addRemoveMealToGroceries"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groceries/user-recipes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GroceriesController_getUserRecipesInGroceries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groceries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GroceriesController_getUserGroceries"];
+        put?: never;
+        post: operations["GroceriesController_toggleIngredientsStatus"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recipes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["RecipesController_findRecipeWithIngredientsById"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -442,17 +474,23 @@ export interface components {
         RemoveFromMealPlanRequestDto: {
             recipeId: string;
         };
-        AddMealToGroceriesRequestDto: {
-            recipeId: string;
-            newState: boolean;
-        };
         AddMealToPlanRequestDto: {
             messageContent: string;
             messageId: string;
+            /** @default english */
+            language: string;
         };
         AddMealToPlanResponseDto_Output: {
             status: number;
             alreadyPresent: boolean;
+        };
+        AddMealToGroceriesRequestDto: {
+            recipeId: string;
+            newState: boolean;
+        };
+        ToggleIngredientsStatusRequestDto: {
+            ingredientIds: string[];
+            isBought: boolean;
         };
     };
     responses: never;
@@ -696,48 +734,6 @@ export interface operations {
             };
         };
     };
-    MealPlanController_addRemoveMealToGroceries: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AddMealToGroceriesRequestDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    MealPlanController_removeFromMealPlan: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RemoveFromMealPlanRequestDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     MealPlanController_addMealToPlan: {
         parameters: {
             query?: never;
@@ -758,6 +754,101 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["AddMealToPlanResponseDto_Output"];
                 };
+            };
+        };
+    };
+    GroceriesController_addRemoveMealToGroceries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddMealToGroceriesRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GroceriesController_getUserRecipesInGroceries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GroceriesController_getUserGroceries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GroceriesController_toggleIngredientsStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ToggleIngredientsStatusRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RecipesController_findRecipeWithIngredientsById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

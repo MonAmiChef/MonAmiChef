@@ -18,7 +18,7 @@
     "groceries": "Liste de courses"
   },
   "groceries": {
-    "groceries": "Liste de courses"
+    "title": "Liste de courses"
   },
   "chat": {
     "chef_typing": "Le chef prépare sa réponse...",

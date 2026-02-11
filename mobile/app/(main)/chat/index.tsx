@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Text } from '@/components/ui/text';
-import { chatApi } from '@/services/api';
+import { chatApi } from '@/services/chat.api';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import { ChatInput } from '@/components/chat/ChatInput';
