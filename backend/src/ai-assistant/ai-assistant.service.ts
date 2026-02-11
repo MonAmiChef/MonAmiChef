@@ -38,10 +38,19 @@ const DEFAULT_GEMINI_MODEL = 'gemini-3-flash-preview';
 export class AiAssistantService {
   private ai = new GoogleGenAI({});
 
-  async parseRecipe({ text }: { text: string }) {
+  async parseRecipe({ language, text }: { language: string; text: string }) {
     const result = await this.ai.models.generateContent({
       model: process.env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL,
-      contents: [{ role: 'user', parts: [{ text }] }],
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            {
+              text: `Generate the response in this language: ${language}\n\nContent to parse:\n${text}`,
+            },
+          ],
+        },
+      ],
       config: {
         responseMimeType: 'application/json',
         systemInstruction: process.env.PARSE_RECIPE_PROMPT,

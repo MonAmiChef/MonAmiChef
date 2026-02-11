@@ -22,10 +22,12 @@ export class MealPlanService {
   }
 
   async addMealToPlan({
+    language,
     messageId,
     messageContent,
     userId,
   }: {
+    language: string;
     messageId: string;
     messageContent: string;
     userId: string;
@@ -42,14 +44,15 @@ export class MealPlanService {
     }
 
     const aiData = await this.recipesService.parseRecipe({
+      language,
       text: messageContent,
     });
 
-    const image = await this.unsplashService.getImageByPrompt(messageContent);
+    // const image = await this.unsplashService.getImageByPrompt(messageContent);
 
     await this.recipesRepository.createFullRecipeContext({
       userId,
-      imagePath: image?.url ?? '',
+      imagePath: '',
       recipeData: aiData.recipe,
       messageId,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any

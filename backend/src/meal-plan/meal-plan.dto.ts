@@ -4,6 +4,7 @@ import { z } from 'zod';
 const AddMealToPlanRequestSchema = z.object({
   messageContent: z.string(),
   messageId: z.string(),
+  language: z.string().default('english'),
 });
 
 export class AddMealToPlanRequestDto extends createZodDto(

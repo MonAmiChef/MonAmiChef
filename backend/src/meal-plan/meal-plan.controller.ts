@@ -39,6 +39,7 @@ export class MealPlanController {
     @Req() req: AuthenticatedRequest,
   ) {
     return this.mealPlanService.addMealToPlan({
+      language: body.language,
       messageId: body.messageId,
       messageContent: body.messageContent,
       userId: req.user.id,

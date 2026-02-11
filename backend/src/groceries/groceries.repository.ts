@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -93,7 +95,7 @@ export class GroceriesRepository {
 
         return acc;
       },
-      {} as Record<string, any>, // Simplifié pour l'exemple
+      {} as Record<string, any>,
     );
 
     return Object.values(mergedIngredients).sort((a: any, b: any) =>

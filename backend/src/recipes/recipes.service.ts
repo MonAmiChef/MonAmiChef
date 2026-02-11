@@ -17,7 +17,13 @@ export class RecipesService {
     );
   }
 
-  async parseRecipe({ text }: { text: string }): Promise<ParseRecipeResponse> {
-    return this.aiAssistantService.parseRecipe({ text });
+  async parseRecipe({
+    language,
+    text,
+  }: {
+    language: string;
+    text: string;
+  }): Promise<ParseRecipeResponse> {
+    return this.aiAssistantService.parseRecipe({ language, text });
   }
 }
