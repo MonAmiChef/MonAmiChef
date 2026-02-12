@@ -30,6 +30,7 @@ model Ingredient {
 model Recipe {
   id           String       @id @default(uuid())
   name         String
+  description String?
   prepTimeMin  Int?
   servings     Int?
   difficulty   String?
