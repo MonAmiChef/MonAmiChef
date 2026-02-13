@@ -55,11 +55,7 @@ export const ParseRecipeResponseJson = {
         servings: { type: 'integer' },
         instructions: {
           type: 'array',
-          items: {
-            type: 'object',
-            properties: { step: { type: 'string' } },
-            required: ['step'],
-          },
+          items: { type: 'string' },
         },
         difficulty: {
           type: 'string',
