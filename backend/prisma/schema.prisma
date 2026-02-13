@@ -34,6 +34,7 @@ model Recipe {
   prepTimeMin  Int?
   servings     Int?
   difficulty   String?
+  instructions String[]
   calories     Float?
   proteins     Float?
   carbs        Float?
