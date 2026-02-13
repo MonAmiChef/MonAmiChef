@@ -128,6 +128,7 @@ const GetChatSessionResponseSchema = z.object({
   messages: z.array(ChatMessageSchema),
   createdAt: z.string(),
   updatedAt: z.string(),
+  preferences: z.array(z.string()),
 });
 
 export type GetChatSessionResponse = z.output<

@@ -691,12 +691,18 @@ components:
         updatedAt:
           type: string
           x-nestjs_zod-parent-additional-properties: false
+        preferences:
+          type: array
+          items:
+            type: string
+          x-nestjs_zod-parent-additional-properties: false
       required:
         - id
         - title
         - messages
         - createdAt
         - updatedAt
+        - preferences
     GetAllChatsSessionResponseDto_Output:
       type: object
       properties:
