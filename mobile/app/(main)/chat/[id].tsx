@@ -16,7 +16,7 @@ import { FlashList, FlashListRef } from '@shopify/flash-list';
 import Markdown from 'react-native-markdown-display';
 import { markdownStyles } from '@/constants/MarkdownStyles';
 import { ChatInput } from '@/components/chat/ChatInput';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { components } from '@/types/api';
 import Drawer from 'expo-router/drawer';
 import { WaveText } from '@/components/chat/WaveText';
@@ -43,6 +43,7 @@ export default function ChatScreen() {
   const { session, loading: isAuthLoading } = useAuth();
   const queryClient = useQueryClient();
   const [showPreferences, setShowPreferences] = useState(false);
+  const [message, setMessage] = useState('');
 
   const [selectedPreferences, setSelectedPreferences] = useState<
     PreferenceTag[]
@@ -67,7 +68,6 @@ export default function ChatScreen() {
         selectedPreferences,
         selectedExclude,
       ),
-
     onMutate: async (newMessage: string): Promise<MutationContext> => {
       await queryClient.cancelQueries({ queryKey: ['chat-session', id] });
 
@@ -102,11 +102,6 @@ export default function ChatScreen() {
         };
       });
 
-      setTimeout(
-        () => flashListRef.current?.scrollToEnd({ animated: true }),
-        50,
-      );
-
       return { previousData };
     },
 
@@ -121,6 +116,15 @@ export default function ChatScreen() {
       await queryClient.invalidateQueries({ queryKey: ['chat-sessions'] });
     },
   });
+
+  useEffect(() => {
+    if (!data?.messages?.length) return;
+
+    requestAnimationFrame(() => {
+      flashListRef.current?.scrollToEnd({ animated: true });
+    });
+  }, [data?.messages?.length]);
+
   const handleSend = (msg: string) => {
     if (!msg.trim() || mutation.isPending) return;
     Keyboard.dismiss();
@@ -283,7 +287,12 @@ export default function ChatScreen() {
             onOpenSelector={() => setShowPreferences(true)}
           />
           <ChatInput
-            onSend={(msg) => handleSend(msg)}
+            value={message}
+            onChangeText={setMessage}
+            onSend={(msg) => {
+              handleSend(msg);
+              setMessage('');
+            }}
             isLoading={mutation.isPending}
           />
         </KeyboardAvoidingView>
