@@ -4,7 +4,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable i18next/no-literal-string */
 import React, { useState } from 'react';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
@@ -20,6 +19,7 @@ import {
 } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
 import { groceriesApi, MergedIngredient } from '@/services/groceries.api';
+import { useTranslation } from 'react-i18next';
 
 export const capitalizeFull = (str: string): string => {
   if (!str) return '';
@@ -55,7 +55,6 @@ const formatData = (items: MergedIngredient[], expandedSections: string[]) => {
       flatList.push({ type: 'HEADER', title: cat, isExpanded, isCompleted });
 
       if (isExpanded) {
-        // --- TRI STABLE ICI ---
         const sortedIngredients = [...groups[cat]].sort((a, b) => {
           if (a.isBought !== b.isBought) {
             return a.isBought ? 1 : -1;
@@ -75,10 +74,10 @@ export default function GroceriesPage() {
   const { session } = useAuth();
   const queryClient = useQueryClient();
   const [expandedSections, setExpandedSections] = useState<string[]>([
-    'VEGETABLES',
-    'MEAT',
-    'DAIRY',
-    'PANTRY',
+    'vegetables',
+    'meat',
+    'dairy',
+    'pantry',
   ]);
 
   const toggleSection = (title: string) => {
@@ -94,6 +93,8 @@ export default function GroceriesPage() {
   });
 
   const formattedData = data ? formatData(data, expandedSections) : [];
+
+  const { t } = useTranslation();
 
   const toggleMutation = useMutation({
     mutationFn: ({ ids, bought }: { ids: string[]; bought: boolean }) =>
@@ -115,8 +116,6 @@ export default function GroceriesPage() {
 
   return (
     <Box className="flex-1 bg-white p-4">
-      <Text className="text-2xl font-inter-bold mb-6">Ma Liste</Text>
-
       <FlashList
         data={formattedData}
         keyExtractor={(item) =>
@@ -152,13 +151,13 @@ export default function GroceriesPage() {
                     item.isCompleted ? 'text-emerald-600' : 'text-slate-500'
                   }`}
                 >
-                  {item.title}
+                  {t(`groceries.categories.${item.title.toLowerCase()}`)}
                 </Text>
 
                 {item.isCompleted && (
                   <Box className="ml-auto bg-emerald-500 px-2 py-0.5 rounded-full">
                     <Text className="text-[8px] text-white font-inter-bold">
-                      COMPLET
+                      {t('groceries.complete')}
                     </Text>
                   </Box>
                 )}

@@ -1,29 +1,73 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useState } from 'react';
 import {
   View,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ActivityIndicator,
+  TouchableWithoutFeedback,
+  Pressable,
 } from 'react-native';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Text } from '@/components/ui/text';
 import { chatApi } from '@/services/chat.api';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
+import { Image } from 'expo-image';
 import { ChatInput } from '@/components/chat/ChatInput';
 import { WaveText } from '@/components/chat/WaveText';
 import { useTranslation } from 'react-i18next';
 import { PreferenceTag } from '@/constants/PreferencesTags';
 import { PreferencesQuickSelector } from '@/components/chat/PreferencesQuickSelector';
 import { PreferenceActionSheet } from '@/components/chat/PreferenceActionSheet';
+import Logo from '@/assets/images/monamichef_bg_less.png';
+import { ScrollView } from 'react-native-gesture-handler';
+
+const default_prompts: Array<{
+  text: string;
+  bgColor: string;
+  textColor: string;
+  borderColor: string;
+}> = [
+  {
+    text: 'quick',
+    bgColor: 'bg-orange-100',
+    textColor: 'text-orange-700',
+    borderColor: 'border-orange-200',
+  },
+  {
+    text: 'prot',
+    bgColor: 'bg-blue-100',
+    textColor: 'text-blue-700',
+    borderColor: 'border-blue-200',
+  },
+  {
+    text: 'healthy',
+    bgColor: 'bg-purple-100',
+    textColor: 'text-purple-700',
+    borderColor: 'border-purple-200',
+  },
+  {
+    text: 'veggie',
+    bgColor: 'bg-green-100',
+    textColor: 'text-green-700',
+    borderColor: 'border-green-200',
+  },
+  {
+    text: 'spicy',
+    bgColor: 'bg-red-100',
+    textColor: 'text-red-700',
+    borderColor: 'border-red-200',
+  },
+];
 
 export default function NewChat() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { session } = useAuth();
   const { t } = useTranslation();
+  const [message, setMessage] = useState('');
 
   const [selectedPreferences, setSelectedPreferences] = useState<
     PreferenceTag[]
@@ -31,7 +75,6 @@ export default function NewChat() {
   const [selectedExclude, setSelectedExclude] = useState<PreferenceTag[]>([]);
   const [showPreferences, setShowPreferences] = useState(false);
 
-  // État pour stocker le message envoyé le temps de la création
   const [optimisticMessage, setOptimisticMessage] = React.useState<
     string | null
   >(null);
@@ -77,15 +120,15 @@ export default function NewChat() {
 
   return (
     <>
-      <View className="flex-1 bg-base-bg pb-20">
-        <Pressable
+      <View className="flex-1 bg-base-bg">
+        <TouchableWithoutFeedback
           onPress={Keyboard.dismiss}
           className="flex-1"
           accessible={false}
         >
-          <View className="flex-1 p-6">
+          <View className="flex-1">
             {optimisticMessage ? (
-              <View className="flex-1 justify-start">
+              <View className="flex-1 justify-start p-6">
                 <View className="bg-orange-500 self-end p-4 rounded-2xl rounded-tr-none mb-4 max-w-[80%]">
                   <Text className="text-white text-[15px] font-inter-medium">
                     {optimisticMessage}
@@ -102,17 +145,55 @@ export default function NewChat() {
                 </View>
               </View>
             ) : (
-              <View className="flex-1 justify-center items-center">
-                <Text className="text-2xl font-bold text-slate-800 text-center">
-                  {t('monamichef')}
+              <View className="flex flex-1 align-middle self-center justify-center items-center mb-8">
+                <Image
+                  source={Logo}
+                  contentFit="contain"
+                  style={{
+                    display: 'flex',
+                    width: 200,
+                    height: 200,
+                    opacity: 0.5,
+                  }}
+                />
+                <Text className="font-inter-semibold mb-4">
+                  {t('chat.default_prompts.title')}
                 </Text>
-                <Text className="text-slate-400 text-center mt-2">
-                  {t('new_chat')}
-                </Text>
+                <ScrollView
+                  style={{ flexGrow: 0 }}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{
+                    flexGrow: 0,
+                    gap: 16,
+                    padding: 4,
+                    marginLeft: 50,
+                  }}
+                  horizontal={true}
+                >
+                  {default_prompts.map((prompt, index) => {
+                    return (
+                      <Pressable
+                        className={`border overflow-hidden ${prompt.borderColor} ${prompt.bgColor} rounded-xl`}
+                        onPress={() => {
+                          const msg = t(`chat.default_prompts.${prompt.text}`);
+
+                          setMessage(msg.slice(2, msg.length));
+                        }}
+                        key={index}
+                      >
+                        <Text
+                          className={`${prompt.textColor} text-lg font-inter-medium p-3`}
+                        >
+                          {t(`chat.default_prompts.${prompt.text}`)}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </ScrollView>
               </View>
             )}
           </View>
-        </Pressable>
+        </TouchableWithoutFeedback>
 
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -124,7 +205,15 @@ export default function NewChat() {
             onToggle={handleTagPress}
             onOpenSelector={() => setShowPreferences(true)}
           />
-          <ChatInput onSend={handleSend} isLoading={mutation.isPending} />
+          <ChatInput
+            value={message}
+            onChangeText={setMessage}
+            onSend={(msg) => {
+              handleSend(msg);
+              setMessage('');
+            }}
+            isLoading={mutation.isPending}
+          />
         </KeyboardAvoidingView>
       </View>
       <PreferenceActionSheet

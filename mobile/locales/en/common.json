@@ -1,6 +1,7 @@
 {
   "monamichef": "MonAmiChef",
   "language": "Language",
+  "experimental": "experimental",
   "auth": {
     "title": "MonAmiChef",
     "subtitle": "Your culinary AI assistant",
@@ -18,15 +19,48 @@
     "groceries": "Grocery list"
   },
   "groceries": {
-    "title": "Grocery list"
+    "title": "Grocery list",
+    "categories": {
+      "vegetables": "VEGETABLES",
+      "meat": "MEAT",
+      "pantry": "PANTRY",
+      "dairy": "DAIRY"
+    },
+    "complete": "COMPLETE"
+  },
+  "recipe_details": {
+    "loading": "Loading recipe...",
+    "fail_loading": "Oops! Impossible to load recipe.",
+    "back_to_plan": "Go back to plan",
+    "about": "About",
+    "ingredients": "Ingredients",
+    "steps": "Cooking steps",
+    "macros": "Macros per serving"
+  },
+  "remove_modal": {
+    "title": "Remove recipe",
+    "confirm_text": "Are you sure you want to remove this item from the grocery list?",
+    "cancel": "Cancel",
+    "confirm": "Remove recipe"
   },
   "chat": {
     "chef_typing": "The chef is preparing...",
-    "add_to_meal_plan": "Add to meal plan"
+    "add_to_meal_plan": "Add to meal plan",
+    "cancel": "Cancel",
+    "default_prompts": {
+      "title": "Don't know where to start? Try these!",
+      "quick": "⏱️ Quick dinner in 20 minutes",
+      "prot": "🍗 High-protein meal for muscle gain",
+      "healthy": "🥗 Healthy low-calorie lunch",
+      "veggie": "🌱 Vegetarian comfort food",
+      "spicy": "🌶️ Spicy recipe to impress guests"
+    }
   },
   "meal_plan": {
     "title": "Meal plan",
-    "subtitle": "Recipes"
+    "subtitle": "Recipes",
+    "empty": "Your plan is empty",
+    "remove": "Remove from meal plan"
   },
   "not_found": {
     "screen": "This screen doesn't exist.",

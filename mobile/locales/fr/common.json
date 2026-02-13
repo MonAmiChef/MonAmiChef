@@ -1,6 +1,7 @@
 {
   "monamichef": "MonAmiChef",
   "language": "Langage",
+  "experimental": "experimental",
   "auth": {
     "title": "MonAmiChef",
     "subtitle": "Ton assistant cuisine IA",
@@ -18,15 +19,46 @@
     "groceries": "Liste de courses"
   },
   "groceries": {
-    "title": "Liste de courses"
+    "title": "Liste de courses",
+    "categories": {
+      "vegetables": "LEGUMES",
+      "meat": "VIANDE",
+      "pantry": "CONDIMENTS",
+      "dairy": "PRODUITS LAITIERS"
+    },
+    "complete": "COMPLET"
+  },
+  "recipe_details": {
+    "loading": "Chargement de la recette...",
+    "fail_loading": "Oups! Impossible de charger la recette.",
+    "about": "À propos",
+    "ingredients": "Ingrédients",
+    "steps": "Étapes de préparation",
+    "macros": "Apports par portion"
+  },
+  "remove_modal": {
+    "title": "Retirer la recette",
+    "confirm_text": "Voulez-vous vraiment retirer cette recette de la liste de courses?",
+    "cancel": "Annuler",
+    "confirm": "Retirer la recette"
   },
   "chat": {
     "chef_typing": "Le chef prépare sa réponse...",
-    "add_to_meal_plan": "Ajouter au plan de repas"
+    "add_to_meal_plan": "Ajouter au plan de repas",
+    "default_prompts": {
+      "title": "Perdu? Essayez ca!",
+      "quick": "⏱️ Dinner rapide en 20 minutes",
+      "prot": "🍗 Repas riche en protéines",
+      "healthy": "🥗 Repas sain faible en calories",
+      "veggie": "🌱 Plat végétarien réconfortant",
+      "spicy": "🌶️ Plat épicé pour improssiionner des invités"
+    }
   },
   "meal_plan": {
     "title": "Plannificateur",
-    "subtitle": "Plats enregistrés"
+    "subtitle": "Plats enregistrés",
+    "empty": "Votre plan est vide",
+    "remove": "Retirer du plan"
   },
   "not_found": {
     "screen": "Cet écran n'existe pas.",

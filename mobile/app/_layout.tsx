@@ -9,6 +9,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import {
   Inter_400Regular,
   Inter_700Bold,
+  Inter_300Light_Italic,
   Inter_600SemiBold,
   useFonts,
   Inter_500Medium,
@@ -29,6 +30,7 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
+    Inter_300Light_Italic,
   });
 
   useEffect(() => {
@@ -67,6 +69,14 @@ function RootLayoutNav() {
           <Stack.Screen
             name="(main)"
             options={{ animation: 'fade', headerShown: false }}
+          />
+          <Stack.Screen
+            name="recipe-details/[id]"
+            options={{
+              animation: 'slide_from_right',
+              headerShown: false,
+              gestureEnabled: true,
+            }}
           />
         </Stack>
         <Toast />

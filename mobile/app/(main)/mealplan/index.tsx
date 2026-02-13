@@ -1,15 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable i18next/no-literal-string */
 import React, { useState } from 'react';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import {
   ActivityIndicator,
@@ -18,18 +16,13 @@ import {
   Pressable,
 } from 'react-native';
 import { t } from 'i18next';
-import { Check, Ellipsis, ShoppingCart, Trash2, X } from 'lucide-react-native';
+import { Check, Ellipsis, ShoppingCart } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
 import { mealPlanApi } from '@/services/meal-plan.api';
 import { capitalizeFull } from '../groceries';
-import {
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-} from '@/components/ui/modal';
+import { useRouter } from 'expo-router';
+import MealPlanOptionsSheet from '@/components/meal-plan/MealPlanOptionsSheet';
+import ConfirmRemoveModal from '@/components/meal-plan/ConfirmRemoveModal';
 
 export default function MealPlanPage() {
   const { session } = useAuth();
@@ -42,10 +35,13 @@ export default function MealPlanPage() {
     queryFn: () => mealPlanApi.getMealPlan(session!),
     enabled: !!session,
   });
-  const [showModal, setShowModal] = useState(false);
+  const [showSheet, setShowSheet] = useState(false);
+  const router = useRouter();
+  const [showConfirmRemove, setShowConfirmRemove] = useState(false);
+  const queryClient = useQueryClient();
 
-  const { data: recipesInGroceries } = useQuery({
-    queryKey: ['chat-sessions'],
+  const { data: recipesInGroceries, refetch: refetchGroceries } = useQuery({
+    queryKey: ['groceries-recipes'],
     queryFn: () => mealPlanApi.getGroceriesRecipes(session!),
     enabled: !!session,
   });
@@ -75,12 +71,18 @@ export default function MealPlanPage() {
   });
 
   const addTogroceriesMutation = useMutation({
-    mutationFn: (recipeId: string) =>
-      mealPlanApi.addToGroceries(session!, recipeId),
-    onSuccess: () => {
+    mutationFn: ({
+      recipeId,
+      newState,
+    }: {
+      recipeId: string;
+      newState: boolean;
+    }) => mealPlanApi.addToGroceries(session!, recipeId, newState),
+    onSuccess: async (_data, variables) => {
+      await queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
       Toast.show({
         text1: 'Succès!',
-        text2: 'La recette a été ajoutée à la liste de courses.',
+        text2: `La recette a été ${variables.newState === true ? 'ajoutée à' : 'supprimée de'} la liste de courses.`,
         type: 'success',
       });
     },
@@ -96,14 +98,15 @@ export default function MealPlanPage() {
 
   const handleOpenMenu = (id: string, name: string) => {
     setSelectedRecipe({ id, name });
-    setShowModal(true);
+    setShowSheet(true);
   };
 
   const handleDelete = () => {
     if (selectedRecipe) {
       removeFromPlanMutation.mutate(selectedRecipe.id);
-      setShowModal(false);
+      setShowSheet(false);
       void refetch();
+      void refetchGroceries();
     }
   };
 
@@ -112,7 +115,7 @@ export default function MealPlanPage() {
 
   return (
     <Box className="flex-1 bg-[#fffdfb] p-4 gap-8">
-      <Text className="text-2xl text-black font-inter-medium">
+      <Text className="text-2xl px-4 text-black font-inter-medium">
         {t('meal_plan.subtitle')}
       </Text>
       <FlatList
@@ -141,13 +144,17 @@ export default function MealPlanPage() {
           const r = item.recipe;
           const isInGroceries = isAlreadyInGroceries(item.recipeId);
 
-          console.log(item.recipeId, isInGroceries);
           return (
-            <Box className="flex-row items-center bg-white py-3 px-4 border-b border-slate-50">
-              <Box className="h-12 w-12 bg-slate-900 rounded-xl items-center justify-center mr-4">
+            <Pressable
+              onPress={() => router.push(`/recipe-details/${item.recipeId}`)}
+              className="flex-row items-center bg-white py-3 px-4 border-b border-slate-50"
+            >
+              <Box className="h-12 w-12 bg-slate-700 rounded-xl items-center justify-center mr-4">
                 <Text className="text-white font-inter-bold text-xs">
+                  {/* eslint-disable-next-line i18next/no-literal-string */}
                   {r.proteins}g
                 </Text>
+                {/* eslint-disable-next-line i18next/no-literal-string */}
                 <Text className="text-slate-400 text-[8px] uppercase">
                   Prot
                 </Text>
@@ -161,21 +168,33 @@ export default function MealPlanPage() {
                   {capitalizeFull(r.name)}
                 </Text>
                 <Text className="text-slate-500 text-xs">
-                  {r.calories} kcal • {r.prepTime} min
+                  {/* eslint-disable-next-line i18next/no-literal-string */}
+                  {r.calories} kcal • {r.prepTimeMin} min
                 </Text>
               </Box>
 
               <Box className="flex-row items-center gap-1">
                 {isInGroceries ? (
                   <Pressable
-                    onPress={() => addTogroceriesMutation.mutate(item.recipeId)}
+                    onPress={() => {
+                      setSelectedRecipe({
+                        id: item.recipeId,
+                        name: r.name,
+                      });
+                      setShowConfirmRemove(true);
+                    }}
                     className="p-3 active:bg-orange-50 rounded-full"
                   >
                     <Check size={20} color="green" />
                   </Pressable>
                 ) : (
                   <Pressable
-                    onPress={() => addTogroceriesMutation.mutate(item.recipeId)}
+                    onPress={() =>
+                      addTogroceriesMutation.mutate({
+                        recipeId: item.recipeId,
+                        newState: true,
+                      })
+                    }
                     className="p-3 active:bg-orange-50 rounded-full"
                   >
                     <ShoppingCart size={20} color="#f97316" />
@@ -189,48 +208,26 @@ export default function MealPlanPage() {
                   <Ellipsis size={20} color="#94a3b8" />
                 </Pressable>
               </Box>
-            </Box>
+            </Pressable>
           );
         }}
       />
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} size="md">
-        <ModalBackdrop />
-        {/* On force le contenu en bas avec justify-end et on arrondit seulement le haut */}
-        <ModalContent className="mb-0 mt-auto rounded-b-none rounded-t-[32px] pb-10 shadow-2xl border-0">
-          <ModalHeader className="border-b border-slate-100 pb-4">
-            <Box>
-              <Text className="text-sm text-slate-400 font-inter-medium">
-                Options de recette
-              </Text>
-              <Text
-                className="text-lg text-slate-900 font-inter-bold"
-                numberOfLines={1}
-              >
-                {selectedRecipe?.name}
-              </Text>
-            </Box>
-            <ModalCloseButton>
-              <X size={20} color="#94a3b8" />
-            </ModalCloseButton>
-          </ModalHeader>
-
-          <ModalBody className="mt-6">
-            <Pressable
-              onPress={handleDelete}
-              className="flex-row items-center gap-3 bg-red-50 p-4 rounded-2xl active:bg-red-100 border border-red-100"
-            >
-              <Trash2 size={20} color="#dc2626" />
-              <Text className="text-red-600 font-inter-bold text-base">
-                Supprimer du plan
-              </Text>
-            </Pressable>
-
-            <Text className="text-center text-slate-400 text-xs mt-6">
-              Cette action retirera le repas de ton planning hebdomadaire.
-            </Text>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+      <MealPlanOptionsSheet
+        isOpen={showSheet}
+        onClose={() => setShowSheet(false)}
+        handleDelete={handleDelete}
+      />
+      <ConfirmRemoveModal
+        showModal={showConfirmRemove}
+        onClose={() => setShowConfirmRemove(false)}
+        onConfirm={() => {
+          addTogroceriesMutation.mutate({
+            recipeId: selectedRecipe?.id ?? '',
+            newState: false,
+          });
+          void refetchGroceries();
+        }}
+      />
     </Box>
   );
 }

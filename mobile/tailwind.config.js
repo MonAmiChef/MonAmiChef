@@ -183,6 +183,7 @@ module.exports = {
         'inter-bold': ['Inter_700Bold'],
         'inter-medium': ['Inter_500Medium'],
         'inter-semibold': ['Inter_600SemiBold'],
+        'inter-light-italic': ['Inter_300Light_Italic'],
         'inter-normal': ['Inter_400Normal'],
         'space-mono': ['var(--font-space-mono)'],
       },

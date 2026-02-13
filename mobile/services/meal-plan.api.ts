@@ -45,7 +45,11 @@ export const mealPlanApi = {
     return await response.json();
   },
 
-  addToGroceries: async (session: Session, recipeId: string) => {
+  addToGroceries: async (
+    session: Session,
+    recipeId: string,
+    newState: boolean,
+  ) => {
     const response = await fetch(`${API_URL}/groceries/add`, {
       method: 'POST',
       headers: {
@@ -54,7 +58,7 @@ export const mealPlanApi = {
       },
       body: JSON.stringify({
         recipeId,
-        newState: true,
+        newState,
       }),
     });
 
