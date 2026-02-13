@@ -48,6 +48,7 @@ export class ChatSessionsService {
       id: chat.id,
       title: chat.title,
       preferences: chat.preferences,
+      exclude: chat.exclude,
       messages: chat.messages.map((msg) => ({
         ...msg,
         createdAt: msg.createdAt?.toISOString() ?? new Date().toISOString(),

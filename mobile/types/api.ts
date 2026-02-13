@@ -411,6 +411,8 @@ export interface components {
             }[];
             createdAt: string;
             updatedAt: string;
+            preferences: string[];
+            exclude: string[];
         };
         GetAllChatsSessionResponseDto_Output: {
             chats: {

@@ -696,6 +696,11 @@ components:
           items:
             type: string
           x-nestjs_zod-parent-additional-properties: false
+        exclude:
+          type: array
+          items:
+            type: string
+          x-nestjs_zod-parent-additional-properties: false
       required:
         - id
         - title
@@ -703,6 +708,7 @@ components:
         - createdAt
         - updatedAt
         - preferences
+        - exclude
     GetAllChatsSessionResponseDto_Output:
       type: object
       properties:
