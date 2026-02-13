@@ -123,6 +123,11 @@ export default function ChatScreen() {
     requestAnimationFrame(() => {
       flashListRef.current?.scrollToEnd({ animated: true });
     });
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    setSelectedPreferences(data.preferences);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    setSelectedExclude(data.exclude);
   }, [data?.messages?.length]);
 
   const handleSend = (msg: string) => {
