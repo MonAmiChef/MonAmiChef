@@ -134,7 +134,7 @@ function CustomDrawerContent(props: any) {
                 >
                   <Text
                     numberOfLines={1}
-                    className={`${pathname.split('/')[2] === chat.id ? 'bg-orange-600 rounded-full text-white' : 'text-slate-600'} px-5 py-3 font-inter-medium`}
+                    className={`${pathname.split('/')[2] === chat.id ? 'bg-orange-100 border border-orange-300 rounded-lg text-orange-600' : 'text-slate-600'} px-5 py-3 font-inter-medium`}
                   >
                     {chat.title || 'Nouvelle discussion'}
                   </Text>

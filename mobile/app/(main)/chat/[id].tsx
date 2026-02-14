@@ -119,18 +119,33 @@ export default function ChatScreen() {
   });
 
   useEffect(() => {
-    if (!data?.messages?.length) return;
+    if (!data) return;
 
-    requestAnimationFrame(() => {
-      flashListRef.current?.scrollToEnd({ animated: true });
-    });
+    if (data.messages?.length) {
+      requestAnimationFrame(() => {
+        flashListRef.current?.scrollToEnd({ animated: true });
+      });
+    }
 
-    setSelectedPreferences(data.preferences);
-    setSelectedExclude(data.exclude);
-  }, [data?.messages?.length]);
+    if (data.preferences) {
+      setSelectedPreferences(data.preferences);
+    }
+    if (data.exclude) {
+      setSelectedExclude(data.exclude);
+    }
+  }, [data]);
 
   const handleSend = (msg: string) => {
     if (mutation.isPending) return;
+
+    if (msg === '') {
+      if (i18n.language === 'en') {
+        msg = `Please suggest a recipe or cooking advice based on the following preferences: ${selectedPreferences.join(', ')} ${selectedExclude.length > 0 ? `and following exclusions ${selectedExclude.join(',')}` : ''}`;
+      } else if (i18n.language === 'fr') {
+        msg = `Peux-tu me suggérer une recette ou des conseils de cuisine basés sur les préférences suivantes: ${selectedPreferences.join(', ')} ${selectedExclude.length > 0 ? `et en excluant les ingrédients suivants ${selectedExclude.join(',')}` : ''}`;
+      }
+    }
+
     Keyboard.dismiss();
     mutation.mutate(msg);
   };

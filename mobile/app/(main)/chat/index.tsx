@@ -82,6 +82,7 @@ export default function NewChat() {
   const mutation = useMutation({
     mutationFn: async (message: string) => {
       if (!session?.access_token) throw new Error('Pas de token');
+
       return await chatApi.createSession(
         message,
         session,
@@ -100,6 +101,15 @@ export default function NewChat() {
 
   const handleSend = (msg: string) => {
     if (mutation.isPending) return;
+
+    if (msg === '') {
+      if (i18n.language === 'en') {
+        msg = `Please suggest a recipe or cooking advice based on the following preferences: ${selectedPreferences.join(', ')} ${selectedExclude.length > 0 ? `and following exclusions ${selectedExclude.join(',')}` : ''}`;
+      } else if (i18n.language === 'fr') {
+        msg = `Peux-tu me suggérer une recette ou des conseils de cuisine basés sur les préférences suivantes: ${selectedPreferences.join(', ')} ${selectedExclude.length > 0 ? `et en excluant les ingrédients suivants ${selectedExclude.join(',')}` : ''}`;
+      }
+    }
+
     Keyboard.dismiss();
     setOptimisticMessage(msg);
     mutation.mutate(msg);
