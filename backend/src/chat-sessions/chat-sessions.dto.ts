@@ -98,6 +98,7 @@ const UpdateChatSessionRequestSchema = z.object({
   message: z.string(),
   preferences: z.array(PreferenceTagEnum).default([]),
   exclude: z.array(PreferenceTagEnum).default([]),
+  language: z.string().optional().default('english'),
 });
 
 export class UpdateChatSessionRequestDto extends createZodDto(

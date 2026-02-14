@@ -5,6 +5,7 @@ import { Send } from 'lucide-react-native';
 
 interface ChatInputProps {
   value: string;
+  tagsNumber: number;
   onChangeText: (text: string) => void;
   onSend: (message: string) => void;
   isLoading?: boolean;
@@ -13,12 +14,14 @@ interface ChatInputProps {
 
 export function ChatInput({
   value,
+  tagsNumber,
   onChangeText,
   onSend,
   isLoading,
   placeholder = 'Écris ton message...',
 }: ChatInputProps) {
   const insets = useSafeAreaInsets();
+  const canSend = !isLoading && (value.trim().length > 0 || tagsNumber >= 3);
 
   return (
     <View
@@ -37,11 +40,13 @@ export function ChatInput({
         />
         <Pressable
           onPress={() => {
-            onSend(value);
+            if (canSend) {
+              onSend(value);
+            }
           }}
-          disabled={!value.trim() || isLoading}
+          disabled={!canSend}
           className={`ml-2 w-10 h-10 rounded-full items-center justify-center ${
-            value.trim() ? 'bg-orange-500' : 'bg-slate-300'
+            canSend ? 'bg-orange-500' : 'bg-slate-300'
           }`}
         >
           <Send size={18} color="white" />

@@ -114,11 +114,13 @@ export class ChatSessionsService {
     message,
     preferences,
     exclude,
+    language,
   }: {
     chatId: string;
     message: string;
     preferences: PreferenceTag[];
     exclude: PreferenceTag[];
+    language: string;
   }): Promise<UpdateChatSessionResponse> {
     const chat = await this.getChat({ chatId });
 
@@ -131,6 +133,7 @@ export class ChatSessionsService {
       newMessage: message,
       preferences,
       exclude,
+      language,
     });
 
     const result = await this.chatSessionsRepository.updateChat({

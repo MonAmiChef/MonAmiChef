@@ -80,6 +80,7 @@ export class ChatSessionsController {
       message: body.message,
       preferences: body.preferences as PreferenceTag[],
       exclude: body.exclude as PreferenceTag[],
+      language: body.language,
     });
   }
 }

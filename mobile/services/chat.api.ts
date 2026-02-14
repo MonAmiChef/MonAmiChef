@@ -50,6 +50,7 @@ export const chatApi = {
     session: Session,
     preferences: PreferenceTag[],
     exclude: PreferenceTag[],
+    language: string,
   ): Promise<CreateChatResponse> => {
     const response = await fetch(`${API_URL}/chat-sessions`, {
       method: 'POST',
@@ -57,7 +58,12 @@ export const chatApi = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${session?.access_token}`,
       },
-      body: JSON.stringify({ firstMessage, preferences, exclude }),
+      body: JSON.stringify({
+        firstMessage,
+        preferences,
+        exclude,
+        language,
+      }),
     });
 
     if (!response.ok) throw new Error('Failed to create session');
@@ -71,6 +77,7 @@ export const chatApi = {
     session: Session,
     preferences: PreferenceTag[],
     exclude: PreferenceTag[],
+    language: string,
   ): Promise<CreateChatResponse> => {
     const response = await fetch(
       `${API_URL}/chat-sessions/${chatId}/messages`,
@@ -80,7 +87,7 @@ export const chatApi = {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${session?.access_token}`,
         },
-        body: JSON.stringify({ message, preferences, exclude }),
+        body: JSON.stringify({ message, preferences, exclude, language }),
       },
     );
 

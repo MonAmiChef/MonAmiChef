@@ -67,6 +67,7 @@ export default function ChatScreen() {
         session!,
         selectedPreferences,
         selectedExclude,
+        i18n.language,
       ),
     onMutate: async (newMessage: string): Promise<MutationContext> => {
       await queryClient.cancelQueries({ queryKey: ['chat-session', id] });
@@ -124,14 +125,12 @@ export default function ChatScreen() {
       flashListRef.current?.scrollToEnd({ animated: true });
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     setSelectedPreferences(data.preferences);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     setSelectedExclude(data.exclude);
   }, [data?.messages?.length]);
 
   const handleSend = (msg: string) => {
-    if (!msg.trim() || mutation.isPending) return;
+    if (mutation.isPending) return;
     Keyboard.dismiss();
     mutation.mutate(msg);
   };
@@ -294,6 +293,7 @@ export default function ChatScreen() {
           <ChatInput
             value={message}
             onChangeText={setMessage}
+            tagsNumber={selectedPreferences.length}
             onSend={(msg) => {
               handleSend(msg);
               setMessage('');

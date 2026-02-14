@@ -102,13 +102,13 @@ export class AiAssistantService {
     newMessage,
     preferences,
     exclude,
-    language = 'francais',
+    language,
   }: {
     messages: Pick<Message, 'role' | 'content'>[];
     newMessage: string;
     preferences: PreferenceTag[];
     exclude: PreferenceTag[];
-    language?: string;
+    language: string;
   }): Promise<UpdateChatResponse> {
     const prefContext = `
     TARGET_LANGUAGE: ${language}

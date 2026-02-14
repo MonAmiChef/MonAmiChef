@@ -66,7 +66,7 @@ export default function NewChat() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { session } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [message, setMessage] = useState('');
 
   const [selectedPreferences, setSelectedPreferences] = useState<
@@ -87,6 +87,7 @@ export default function NewChat() {
         session,
         selectedPreferences,
         selectedExclude,
+        i18n.language,
       );
     },
     onSuccess: async (data) => {
@@ -98,7 +99,7 @@ export default function NewChat() {
   });
 
   const handleSend = (msg: string) => {
-    if (!msg.trim() || mutation.isPending) return;
+    if (mutation.isPending) return;
     Keyboard.dismiss();
     setOptimisticMessage(msg);
     mutation.mutate(msg);
@@ -207,6 +208,7 @@ export default function NewChat() {
           />
           <ChatInput
             value={message}
+            tagsNumber={selectedPreferences.length}
             onChangeText={setMessage}
             onSend={(msg) => {
               handleSend(msg);
