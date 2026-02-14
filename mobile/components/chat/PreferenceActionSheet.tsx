@@ -9,7 +9,11 @@ import {
 } from '@/components/ui/actionsheet';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
-import { preferencesTags, PreferenceTag } from '@/constants/PreferencesTags';
+import {
+  limitedCategories,
+  preferencesTags,
+  PreferenceTag,
+} from '@/constants/PreferencesTags';
 import { Pressable, ScrollView } from 'react-native';
 import { Box } from '../ui/box';
 import { HStack } from '../ui/hstack';
@@ -29,14 +33,6 @@ export const PreferenceActionSheet = ({
   onClose: () => void;
 }) => {
   const { t } = useTranslation();
-  const categories: { name: string; limit: number }[] = [
-    { name: 'nutrition', limit: 3 },
-    { name: 'cuisines', limit: 2 },
-    { name: 'occasion', limit: 1 },
-    { name: 'timing', limit: 1 },
-    { name: 'meat', limit: 1 },
-    { name: 'vegetables', limit: 4 },
-  ];
 
   return (
     <Actionsheet isOpen={isOpen} onClose={onClose}>
@@ -51,7 +47,7 @@ export const PreferenceActionSheet = ({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ gap: 20 }}
         >
-          {categories.map((category, cIndex) => {
+          {limitedCategories.map((category, cIndex) => {
             const categoryTags = preferencesTags[category.name] || [];
 
             const currentCount = [
@@ -79,7 +75,6 @@ export const PreferenceActionSheet = ({
                     const isExclude = selectedExclude.includes(tag);
                     const isActive = isSelected || isExclude;
 
-                    // Bloquer si limite atteinte ET que le tag n'est pas déjà actif
                     const isDisabled = isLimitReached && !isActive;
                     let bgColor = 'bg-transparent';
                     let textColor = 'text-slate-700';

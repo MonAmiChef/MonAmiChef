@@ -3,10 +3,13 @@ import { ScrollView, Text, View } from 'react-native';
 import { Pressable } from '@/components/ui/pressable';
 import { useTranslation } from 'react-i18next';
 import {
+  limitedCategories,
+  preferencesTags,
   PreferenceTag,
-  unifiedPreferencesTags,
 } from '@/constants/PreferencesTags';
-import { Plus } from 'lucide-react-native';
+import { Check, Plus, X } from 'lucide-react-native';
+import { VStack } from '../ui/vstack';
+import { Box } from '../ui/box';
 
 interface PreferencesQuickSelectorProps {
   selectedPreferences: PreferenceTag[];
@@ -35,34 +38,65 @@ export const PreferencesQuickSelector = ({
         }}
         keyboardShouldPersistTaps="handled"
       >
-        {unifiedPreferencesTags.map((pref) => {
-          const isPreference = selectedPreferences.includes(pref);
-          const isExclude = selectedExclude.includes(pref);
+        {limitedCategories.map((category, cIndex) => {
+          const categoryTags = preferencesTags[category.name] || [];
 
-          let bgColor = 'bg-transparent';
-          let textColor = 'text-slate-700';
-          let borderColor = 'border-slate-200';
+          const currentCount = [
+            ...selectedPreferences,
+            ...selectedExclude,
+          ].filter((tag) => categoryTags.includes(tag)).length;
 
-          if (isPreference) {
-            bgColor = 'bg-orange-500';
-            textColor = 'text-white';
-            borderColor = 'border-orange-500';
-          } else if (isExclude) {
-            bgColor = 'bg-red-500';
-            textColor = 'text-white';
-            borderColor = 'border-red-500';
-          }
+          const isLimitReached = currentCount >= category.limit;
 
           return (
-            <Pressable
-              key={pref}
-              onPress={() => onToggle(pref)}
-              className={`flex border ${borderColor} py-1.5 px-3 rounded-full ${bgColor}`}
-            >
-              <Text className={`font-inter-medium text-sm ${textColor}`}>
-                {t(`preferences.tags.${pref}`)}
-              </Text>
-            </Pressable>
+            <VStack className="gap-y-4" key={cIndex}>
+              <Box className="flex flex-row gap-2">
+                {preferencesTags[category.name].map((tag, index) => {
+                  const isSelected = selectedPreferences.includes(tag);
+                  const isExclude = selectedExclude.includes(tag);
+                  const isActive = isSelected || isExclude;
+
+                  const isDisabled = isLimitReached && !isActive;
+                  let bgColor = 'bg-transparent';
+                  let textColor = 'text-slate-700';
+                  let borderColor = 'border-slate-200';
+
+                  if (isSelected) {
+                    bgColor = 'bg-orange-500';
+                    textColor = 'text-white';
+                    borderColor = 'border-orange-500';
+                  } else if (isExclude) {
+                    bgColor = 'bg-red-500';
+                    textColor = 'text-white';
+                    borderColor = 'border-red-500';
+                  }
+
+                  return (
+                    <Pressable
+                      key={index}
+                      onPress={() => {
+                        if (!isDisabled || isSelected) {
+                          onToggle(tag);
+                        }
+                      }}
+                      className={`flex flex-row gap-2 items-center border ${borderColor} py-1.5 px-3 rounded-full ${bgColor}`}
+                    >
+                      {isSelected && (
+                        <Check strokeWidth={3} color={'#fff'} size={14} />
+                      )}
+                      {isExclude && (
+                        <X strokeWidth={3} color={'#fff'} size={14} />
+                      )}
+                      <Text
+                        className={`font-inter-medium text-sm ${textColor}`}
+                      >
+                        {t(`preferences.tags.${tag}`)}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </Box>
+            </VStack>
           );
         })}
       </ScrollView>

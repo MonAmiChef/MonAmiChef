@@ -62,11 +62,11 @@ export const preferencesTags: { [category: string]: string[] } = {
 export type PreferenceTag =
   (typeof preferencesTags)[keyof typeof preferencesTags][number];
 
-export const unifiedPreferencesTags = [
-  ...preferencesTags.nutrition,
-  ...preferencesTags.cuisines,
-  ...preferencesTags.occasion,
-  ...preferencesTags.timing,
-  ...preferencesTags.meat,
-  ...preferencesTags.vegetables,
+export const limitedCategories: { name: string; limit: number }[] = [
+  { name: 'nutrition', limit: 3 },
+  { name: 'cuisines', limit: 2 },
+  { name: 'occasion', limit: 1 },
+  { name: 'timing', limit: 1 },
+  { name: 'meat', limit: 1 },
+  { name: 'vegetables', limit: 4 },
 ];
