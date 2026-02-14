@@ -180,6 +180,7 @@ module.exports = {
         roboto: ['var(--font-roboto)'],
         code: ['var(--font-source-code-pro)'],
         inter: ['Inter_400Regular'],
+        'inter-extrabold': ['Inter_800ExtraBold'],
         'inter-bold': ['Inter_700Bold'],
         'inter-medium': ['Inter_500Medium'],
         'inter-semibold': ['Inter_600SemiBold'],

@@ -9,6 +9,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import {
   Inter_400Regular,
   Inter_700Bold,
+  Inter_800ExtraBold,
   Inter_300Light_Italic,
   Inter_600SemiBold,
   useFonts,
@@ -30,6 +31,7 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
+    Inter_800ExtraBold,
     Inter_300Light_Italic,
   });
 

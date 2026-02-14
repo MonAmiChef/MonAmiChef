@@ -6,9 +6,12 @@ import { Button, ButtonText, ButtonSpinner } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Heading } from '@/components/ui/heading';
 import { useAuth } from '@/hooks/useAuth';
-import { HStack } from '@/components/ui/hstack';
 import { Link } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import Blob from '@/assets/images/auth_bg.svg';
+import { Image } from 'expo-image';
+import Logo from '@/assets/images/monamichef_bg_less.png';
+import { HStack } from '@/components/ui/hstack';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -18,15 +21,35 @@ export default function LoginScreen() {
 
   return (
     <Box className="flex-1 bg-background-0 justify-center p-6">
-      <VStack space="xl" className="w-full max-w-[400px] self-center">
+      <Image
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        source={Blob}
+        contentFit="fill"
+        style={{
+          position: 'absolute',
+          width: '120%',
+          height: '120%',
+        }}
+      />
+      <VStack space="xl" className="space-y-22 w-full mb-4 self-center">
         <Box className="items-center">
-          <Heading size="3xl" className="text-primary-500">
-            {t('auth.title')}
+          <Image
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            source={Logo}
+            contentFit="contain"
+            style={{
+              display: 'flex',
+              width: 150,
+              height: 150,
+              marginBottom: -20,
+            }}
+          />
+          <Heading size="3xl" className="font-inter-extrabold text-primary-500">
+            {t('auth.welcome_back')}
           </Heading>
-          <Text className="text-typography-500">{t('auth.subtitle')}</Text>
         </Box>
 
-        <VStack space="md">
+        <VStack className="mt-8" space="md">
           <Input variant="outline" size="md">
             <InputField
               placeholder="Email"
@@ -38,7 +61,7 @@ export default function LoginScreen() {
 
           <Input variant="outline" size="md">
             <InputField
-              placeholder="Mot de passe"
+              placeholder={t('auth.password')}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -51,26 +74,41 @@ export default function LoginScreen() {
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             onPress={() => signInWithEmail(email, password)}
             disabled={loading}
+            className="bg-orange-500 rounded-full"
           >
             {loading ? (
               <ButtonSpinner />
             ) : (
-              <ButtonText>{t('auth.login')}</ButtonText>
+              <ButtonText>
+                <Text className="text-white font-inter-bold">
+                  {t('auth.login')}
+                </Text>
+              </ButtonText>
             )}
           </Button>
         </VStack>
 
-        <HStack className="flex gap-x-2 justify-center align-middle">
-          <Text className="text-typography-500">
-            {t('auth.no_account_yet')}
-          </Text>
+        <VStack className="items-center gap-2">
+          <HStack className="flex gap-x-2 items-center gap-2 justify-center align-middle">
+            <Text className="font-inter-normal text-typography-500">
+              {t('auth.no_account_yet')}
+            </Text>
+            <Link
+              href="/(auth)/register"
+              className="font-inter-medium text-typography-500 underline"
+            >
+              {t('auth.register')}
+            </Link>
+          </HStack>
+
+          <Text className="font-inter-semibold text-typography-500">OR</Text>
           <Link
-            href="/(auth)/register"
-            className="text-typography-500 underline"
+            href="/(main)"
+            className="font-inter-medium text-typography-500 underline"
           >
-            {t('auth.register')}
+            {t('auth.continue_as_guest')}
           </Link>
-        </HStack>
+        </VStack>
 
         {/* <Text className="text-center text-xs text-typography-400 mt-4">
           En continuant, tu acceptes de cuisiner des trucs incroyables.
