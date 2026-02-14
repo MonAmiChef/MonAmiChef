@@ -9,17 +9,19 @@ import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
-import { ActivityIndicator, Pressable } from 'react-native';
+import { ActivityIndicator, Pressable, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import {
   CheckCircle2,
   ChevronDown,
   ChevronRight,
   Circle,
+  ShoppingCart,
 } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
 import { groceriesApi, MergedIngredient } from '@/services/groceries.api';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 
 export const capitalizeFull = (str: string): string => {
   if (!str) return '';
@@ -92,6 +94,8 @@ export default function GroceriesPage() {
     enabled: !!session,
   });
 
+  const router = useRouter();
+
   const formattedData = data ? formatData(data, expandedSections) : [];
 
   const { t } = useTranslation();
@@ -104,8 +108,8 @@ export default function GroceriesPage() {
     },
     onError: () => {
       Toast.show({
-        text1: 'Erreur',
-        text2: "Impossible de mettre à jour l'article.",
+        text1: t('toast.error'),
+        text2: t('toast.error_togling_item'),
         type: 'error',
       });
     },
@@ -115,7 +119,12 @@ export default function GroceriesPage() {
     return <ActivityIndicator className="flex-1" color="#ff6900" />;
 
   return (
-    <Box className="flex-1 bg-white p-4">
+    <Box className="flex-1 bg-[#fffdfb]  p-4">
+      {formattedData?.length > 0 && (
+        <Text className="text-2xl px-4 text-black font-inter-medium">
+          {t('meal_plan.subtitle')}
+        </Text>
+      )}
       <FlashList
         data={formattedData}
         keyExtractor={(item) =>
@@ -123,6 +132,27 @@ export default function GroceriesPage() {
             ? `header-${item.title}`
             : `item-${item.ingredientIds.join('-')}`
         }
+        contentContainerStyle={{ flex: 1 }}
+        ListEmptyComponent={() => (
+          <Box className="flex h-[75%] bg-[#fffdfb] px-2 justify-center items-center gap-6">
+            <View className="w-24 h-24 bg-orange-50 rounded-full items-center justify-center">
+              <ShoppingCart size={48} color="#f97316" strokeWidth={1.5} />
+            </View>
+
+            <Text className="font-inter-bold text-2xl text-slate-900 text-center">
+              {t('groceries.empty')}
+            </Text>
+
+            <Pressable
+              onPress={() => router.push('/(main)/chat')}
+              className="bg-orange-500 px-8 py-4 rounded-2xl active:bg-orange-600 shadow-sm shadow-orange-200"
+            >
+              <Text className="font-inter-semibold text-white text-lg">
+                {t('groceries.go_to_chat')}
+              </Text>
+            </Pressable>
+          </Box>
+        )}
         renderItem={({ item }) => {
           if (item.type === 'HEADER') {
             return (

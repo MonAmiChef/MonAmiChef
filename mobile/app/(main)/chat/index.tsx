@@ -131,7 +131,7 @@ export default function NewChat() {
 
   return (
     <>
-      <View className="flex-1 bg-base-bg">
+      <View className="flex-1 bg-base-bg pb-12">
         <TouchableWithoutFeedback
           onPress={Keyboard.dismiss}
           className="flex-1"
@@ -233,6 +233,11 @@ export default function NewChat() {
         selectedExclude={selectedExclude}
         onToggle={handleTagPress}
         isOpen={showPreferences}
+        messageEmpty={message.length === 0}
+        onSend={() => {
+          handleSend(message);
+          setMessage('');
+        }}
         onClose={() => setShowPreferences(false)}
       />
     </>

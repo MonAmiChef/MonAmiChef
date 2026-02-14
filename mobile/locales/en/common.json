@@ -56,6 +56,8 @@
   },
   "groceries": {
     "title": "Grocery list",
+    "empty": "Your grocery list is empty, let's generate a recipe first!",
+    "go_to_chat": "Go to chat",
     "categories": {
       "vegetables": "VEGETABLES",
       "meat": "MEAT",
@@ -75,13 +77,15 @@
   },
   "remove_modal": {
     "title": "Remove recipe",
-    "confirm_text": "Are you sure you want to remove this item from the grocery list?",
+    "confirm_text_groceries": "Are you sure you want to remove this item from the grocery list?",
+    "confirm_text_meal_plan": "Are you sure you want to remove this item from the meal plan?",
     "cancel": "Cancel",
     "confirm": "Remove recipe"
   },
   "chat": {
     "chef_typing": "The chef is preparing...",
     "add_to_meal_plan": "Add to meal plan",
+    "already_in_meal_plan": "Already in meal plan",
     "cancel": "Cancel",
     "default_prompts": {
       "title": "Don't know where to start? Try these!",
@@ -95,7 +99,8 @@
   "meal_plan": {
     "title": "Meal plan",
     "subtitle": "Recipes",
-    "empty": "Your plan is empty",
+    "empty": "Your meal plan is empty, generate a recipe first",
+    "go_to_chat": "Go to chat",
     "remove": "Remove from meal plan"
   },
   "not_found": {
@@ -168,5 +173,25 @@
       "lettuce": "Lettuce",
       "cucumber": "Cucumber"
     }
+  },
+  "toast": {
+    "success": "Success",
+    "error": "An error occured",
+    "added_to_plan": "The recipe was added to the plan",
+    "error_added_to_plan": "The recipe was added to the plan",
+    "removed_from_plan": "The recipe was removed from plan",
+    "error_removed_from_plan": "The recipe was could not be removed from the plan",
+    "removed_from_groceries": "The recipe was removed from groceries",
+    "error_toggling_item": "Failed updating item",
+    "recipe_was": "The recipe",
+    "added": "added to grocery list",
+    "removed": "removed from grocery list",
+    "add_grocery": "The recipe was added to the grocery list",
+    "error_add_grocery": "An error occured while adding the recipe",
+    "fail_guest": "Failed to log in as guest",
+    "error_login": "Failed to login",
+    "error_register": "Failed to register",
+    "success_register": "Successfully registered!",
+    "please_login": "Please log in"
   }
 }

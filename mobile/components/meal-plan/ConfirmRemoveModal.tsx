@@ -17,10 +17,12 @@ export default function ConfirmRemoveModal({
   showModal,
   onClose,
   onConfirm,
+  bodyText,
 }: {
   showModal: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  bodyText: string;
 }) {
   const { t } = useTranslation();
 
@@ -36,7 +38,7 @@ export default function ConfirmRemoveModal({
             </ModalCloseButton>
           </ModalHeader>
           <ModalBody>
-            <Text>{t('remove_modal.confirm_text')}</Text>
+            <Text>{bodyText}</Text>
           </ModalBody>
           <ModalFooter>
             <Button

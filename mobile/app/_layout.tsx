@@ -8,6 +8,7 @@ import Toast from 'react-native-toast-message';
 import * as SplashScreen from 'expo-splash-screen';
 import {
   Inter_400Regular,
+  Inter_400Regular_Italic,
   Inter_700Bold,
   Inter_800ExtraBold,
   Inter_300Light_Italic,
@@ -28,6 +29,7 @@ const queryClient = new QueryClient();
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     Inter_400Regular,
+    Inter_400Regular_Italic,
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,

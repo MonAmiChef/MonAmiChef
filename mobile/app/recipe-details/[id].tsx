@@ -115,16 +115,16 @@ export default function RecipeDetailPage() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
       Toast.show({
-        text1: 'Succès',
-        text2: 'La recette à été retirée du plan',
+        text1: t('toast.success'),
+        text2: t('toast.removed_from_plan'),
         type: 'success',
       });
     },
     onError: (error) => {
       console.error(error);
       Toast.show({
-        text1: 'Erreur',
-        text2: 'Impossible de supprimer le repas.',
+        text1: t('toast.error'),
+        text2: t('toast.error_removed_from_plan'),
         type: 'error',
       });
     },
@@ -146,16 +146,16 @@ export default function RecipeDetailPage() {
     }) => mealPlanApi.addToGroceries(session!, recipeId, newState),
     onSuccess: () => {
       Toast.show({
-        text1: 'Succès!',
-        text2: 'La recette a été ajoutée à la liste de courses.',
+        text1: t('toast.success'),
+        text2: t('toast.add_grocery'),
         type: 'success',
       });
     },
     onError: (error) => {
       console.error(error);
       Toast.show({
-        text1: 'Erreur',
-        text2: "Impossible d'ajouter le repas.",
+        text1: t('toast.error'),
+        text2: t('toast.error_add_grocery'),
         type: 'error',
       });
     },
@@ -499,6 +499,7 @@ export default function RecipeDetailPage() {
         handleDelete={handleDelete}
       />
       <ConfirmRemoveModal
+        bodyText={t('remove_modal.confirm_text_groceries')}
         showModal={showConfirmRemove}
         onClose={() => setShowConfirmRemove(false)}
         onConfirm={() => {

@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Box } from '@/components/ui/box';
 import { useAuth } from '@/hooks/useAuth';
 import { chatApi } from '@/services/chat.api';
@@ -25,11 +29,12 @@ import { PreferenceTag } from '@/constants/PreferencesTags';
 import { PreferencesQuickSelector } from '@/components/chat/PreferencesQuickSelector';
 import { PreferenceActionSheet } from '@/components/chat/PreferenceActionSheet';
 import { t } from 'i18next';
-import { ShoppingCart } from 'lucide-react-native';
+import { ShoppingCart, Check } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
 import { mealPlanApi } from '@/services/meal-plan.api';
 import { useTranslation } from 'react-i18next';
 import { getLanguageName } from '@/utils/get-language-name';
+import ConfirmRemoveModal from '@/components/meal-plan/ConfirmRemoveModal';
 
 type ChatSession = components['schemas']['GetChatSessionResponseDto_Output'];
 type ChatMessage = ChatSession['messages'][number];
@@ -43,7 +48,9 @@ export default function ChatScreen() {
   const { session, loading: isAuthLoading } = useAuth();
   const queryClient = useQueryClient();
   const [showPreferences, setShowPreferences] = useState(false);
+  const [showConfirmRemove, setShowConfirmRemove] = useState(false);
   const [message, setMessage] = useState('');
+  const [selectedRecipeId, setSelectedRecipeId] = useState('');
 
   const [selectedPreferences, setSelectedPreferences] = useState<
     PreferenceTag[]
@@ -56,9 +63,38 @@ export default function ChatScreen() {
     queryFn: () => chatApi.getSession(id, session!),
     enabled: !!id && !!session,
   });
+
+  const { data: mealPlan } = useQuery({
+    queryKey: ['meal-plan'],
+    queryFn: () => mealPlanApi.getMealPlan(session!),
+    enabled: !!session,
+  });
+
   const { i18n } = useTranslation();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const removeFromPlanMutation = useMutation({
+    mutationFn: (recipeId: string) =>
+      mealPlanApi.removeFromMealPlan(session!, recipeId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['meal-plan'] });
+      await queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
+      Toast.show({
+        text1: t('toast.success'),
+        text2: t('toast.removed_from_plan'),
+        type: 'success',
+      });
+      setShowConfirmRemove(false);
+    },
+    onError: (error) => {
+      console.error(error);
+      Toast.show({
+        text1: t('toast.error'),
+        text2: t('toast.error_removed_from_plan'),
+        type: 'error',
+      });
+    },
+  });
+
   const mutation = useMutation<any, Error, string, MutationContext>({
     mutationFn: (message: string) =>
       chatApi.sendMessageToSession(
@@ -160,16 +196,16 @@ export default function ChatScreen() {
       ),
     onSuccess: () => {
       Toast.show({
-        text1: "C'est prêt !",
-        text2: 'La recette a été ajoutée à ton programme.',
+        text1: t('toast.success'),
+        text2: t('toast.added_to_plan'),
         type: 'success',
       });
     },
     onError: (error) => {
       console.error(error);
       Toast.show({
-        text1: 'Erreur',
-        text2: "Impossible d'ajouter le repas.",
+        text1: t('toast.error'),
+        text2: t('toast.error_added_to_plan'),
         type: 'error',
       });
     },
@@ -219,6 +255,9 @@ export default function ChatScreen() {
             const isModel = item.role === 'model';
             const formattedContent = item.content.replace(/\n/g, '\n\n');
             const messageDate = new Date(item.createdAt);
+            const isAlreadyInPlan = mealPlan?.find(
+              (meal: any) => meal.recipe.messageId === item.id,
+            );
 
             if (item.id === 'temp-loading-id') {
               return (
@@ -239,35 +278,50 @@ export default function ChatScreen() {
                   <Markdown mergeStyle={true} style={markdownStyles}>
                     {formattedContent}
                   </Markdown>
-                  {item.isRecipe && (
-                    <Pressable
-                      onPress={() => {
-                        if (!addMealMutation.isPending) {
-                          addMealMutation.mutate({
-                            content: item.content,
-                            id: item.id,
-                          });
-                        }
-                      }}
-                      disabled={addMealMutation.isPending}
-                      className={`mt-2 flex gap-2 flex-row w-full justify-center items-center rounded-xl border py-2.5 ${
-                        addMealMutation.isPending
-                          ? 'border-gray-300 bg-gray-100 opacity-70'
-                          : 'border-green-300 bg-green-100 active:bg-green-200'
-                      }`}
-                    >
-                      {addMealMutation.isPending ? (
-                        <ActivityIndicator size="small" color="#008236" />
-                      ) : (
-                        <>
-                          <ShoppingCart size={18} color="#008236" />
-                          <Text className="font-inter-medium text-md text-green-700">
-                            {t('chat.add_to_meal_plan')}
-                          </Text>
-                        </>
-                      )}
-                    </Pressable>
-                  )}
+                  {item.isRecipe &&
+                    (isAlreadyInPlan ? (
+                      <Pressable
+                        onPress={() => {
+                          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                          setSelectedRecipeId(isAlreadyInPlan.recipeId);
+                          setShowConfirmRemove(true);
+                        }}
+                        className="mt-2 flex gap-2 flex-row w-full justify-center items-center rounded-xl border border-green-300 bg-green-100 py-2.5"
+                      >
+                        <Check size={18} color="#008236" />
+                        <Text className="font-inter-medium text-md text-green-700">
+                          {t('chat.already_in_meal_plan')}
+                        </Text>
+                      </Pressable>
+                    ) : (
+                      <Pressable
+                        onPress={() => {
+                          if (!addMealMutation.isPending) {
+                            addMealMutation.mutate({
+                              content: item.content,
+                              id: item.id,
+                            });
+                          }
+                        }}
+                        disabled={addMealMutation.isPending}
+                        className={`mt-2 flex gap-2 flex-row w-full justify-center items-center rounded-xl border py-2.5 ${
+                          addMealMutation.isPending
+                            ? 'border-gray-300 bg-gray-100 opacity-70'
+                            : 'border-green-300 bg-green-100 active:bg-green-200'
+                        }`}
+                      >
+                        {addMealMutation.isPending ? (
+                          <ActivityIndicator size="small" color="#008236" />
+                        ) : (
+                          <>
+                            <ShoppingCart size={18} color="#008236" />
+                            <Text className="font-inter-medium text-md text-green-700">
+                              {t('chat.add_to_meal_plan')}
+                            </Text>
+                          </>
+                        )}
+                      </Pressable>
+                    ))}
                 </Box>
               );
             }
@@ -321,8 +375,21 @@ export default function ChatScreen() {
         selectedPreferences={selectedPreferences}
         selectedExclude={selectedExclude}
         onToggle={handleTagPress}
+        messageEmpty={message.length === 0}
+        onSend={() => {
+          handleSend(message);
+          setMessage('');
+        }}
         isOpen={showPreferences}
         onClose={() => setShowPreferences(false)}
+      />
+      <ConfirmRemoveModal
+        bodyText={t('remove_modal.confirm_text_meal_plan')}
+        showModal={showConfirmRemove}
+        onClose={() => setShowConfirmRemove(false)}
+        onConfirm={() => {
+          removeFromPlanMutation.mutate(selectedRecipeId);
+        }}
       />
     </>
   );

@@ -56,6 +56,8 @@
   },
   "groceries": {
     "title": "Liste de courses",
+    "empty": "Votre liste de course est vide, générez une recette d'abord!",
+    "go_to_chat": "Aller au chat",
     "categories": {
       "vegetables": "LEGUMES",
       "meat": "VIANDE",
@@ -74,13 +76,15 @@
   },
   "remove_modal": {
     "title": "Retirer la recette",
-    "confirm_text": "Voulez-vous vraiment retirer cette recette de la liste de courses?",
+    "confirm_text_groceries": "Voulez-vous vraiment retirer cette recette de la liste de courses?",
+    "confirm_text_meal_plan": "Voulez-vous vraiment retirer cette recette de la liste du plan?",
     "cancel": "Annuler",
     "confirm": "Retirer la recette"
   },
   "chat": {
     "chef_typing": "Le chef prépare sa réponse...",
     "add_to_meal_plan": "Ajouter au plan de repas",
+    "already_in_meal_plan": "Déjà dans le plan",
     "default_prompts": {
       "title": "Perdu? Essayez ca!",
       "quick": "⏱️ Dinner rapide en 20 minutes",
@@ -93,7 +97,8 @@
   "meal_plan": {
     "title": "Plannificateur",
     "subtitle": "Plats enregistrés",
-    "empty": "Votre plan est vide",
+    "empty": "Votre plan est vide, générez une recette!",
+    "go_to_chat": "Aller au chat",
     "remove": "Retirer du plan"
   },
   "not_found": {
@@ -166,5 +171,25 @@
       "lettuce": "Salade",
       "cucumber": "Concombre"
     }
+  },
+  "toast": {
+    "success": "Succès",
+    "error": "Une erreur est survenue",
+    "added_to_plan": "La recette à été ajoutée au programme",
+    "error_added_to_plan": "The recipe was added to the plan",
+    "removed_from_plan": "The recipe was removed from plan",
+    "error_removed_from_plan": "The recipe was could not be removed from the plan",
+    "removed_from_groceries": "The recipe was removed from groceries",
+    "error_toggling_item": "Impossible de mettre à jour l'article",
+    "recipe_was": "La recette",
+    "added": "à été ajoutée à la liste de courses",
+    "removed": "retirée de la liste de courses",
+    "add_grocery": "Le recette a été ajoutée à la liste de courses",
+    "error_add_grocery": "Impossible d'ajouter le repas",
+    "fail_guest": "Échec de la connexion anonyme",
+    "error_login": "Échec de l'authentification",
+    "error_register": "Échec de le création de compte",
+    "success_register": "Compte créé avec succès!",
+    "please_login": "Veuillez vous connecter"
   }
 }

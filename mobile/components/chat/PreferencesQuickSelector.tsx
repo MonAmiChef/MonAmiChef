@@ -103,7 +103,7 @@ export const PreferencesQuickSelector = ({
 
       <Pressable
         onPress={onOpenSelector}
-        className="mr-4 bg-orange-100 p-2 rounded-full active:bg-orange-200"
+        className="mr-4 bg-orange-100 border border-orange-300 p-1 rounded-full active:bg-orange-200"
       >
         <Plus size={20} color="#ff6900" strokeWidth={2.5} />
       </Pressable>

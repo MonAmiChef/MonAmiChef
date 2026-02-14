@@ -14,9 +14,10 @@ import {
   FlatList,
   RefreshControl,
   Pressable,
+  View,
 } from 'react-native';
 import { t } from 'i18next';
-import { Check, Ellipsis, ShoppingCart } from 'lucide-react-native';
+import { Check, Ellipsis, Notebook, ShoppingCart } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
 import { mealPlanApi } from '@/services/meal-plan.api';
 import { capitalizeFull } from '../groceries';
@@ -55,16 +56,16 @@ export default function MealPlanPage() {
       mealPlanApi.removeFromMealPlan(session!, recipeId),
     onSuccess: () => {
       Toast.show({
-        text1: 'Succès',
-        text2: 'La recette à été retirée du plan',
+        text1: t('toast.success'),
+        text2: t('toast.removed_from_plan'),
         type: 'success',
       });
     },
     onError: (error) => {
       console.error(error);
       Toast.show({
-        text1: 'Erreur',
-        text2: 'Impossible de supprimer le repas.',
+        text1: t('toast.error'),
+        text2: t('toast.error_removed_from_plan'),
         type: 'error',
       });
     },
@@ -81,16 +82,16 @@ export default function MealPlanPage() {
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
       Toast.show({
-        text1: 'Succès!',
-        text2: `La recette a été ${variables.newState === true ? 'ajoutée à' : 'supprimée de'} la liste de courses.`,
+        text1: t('toast.success'),
+        text2: `${t('toast.recipe_was')} ${variables.newState === true ? t('toast.added') : t('toast.removed')}`,
         type: 'success',
       });
     },
     onError: (error) => {
       console.error(error);
       Toast.show({
-        text1: 'Erreur',
-        text2: "Impossible d'ajouter le repas.",
+        text1: t('toast.error'),
+        text2: t('toast.error_add_grocery'),
         type: 'error',
       });
     },
@@ -115,9 +116,11 @@ export default function MealPlanPage() {
 
   return (
     <Box className="flex-1 bg-[#fffdfb] p-4 gap-8">
-      <Text className="text-2xl px-4 text-black font-inter-medium">
-        {t('meal_plan.subtitle')}
-      </Text>
+      {data?.length > 0 && (
+        <Text className="text-2xl px-4 text-black font-inter-medium">
+          {t('meal_plan.subtitle')}
+        </Text>
+      )}
       <FlatList
         data={data}
         contentContainerStyle={{ flex: 1 }}
@@ -134,10 +137,23 @@ export default function MealPlanPage() {
           />
         }
         ListEmptyComponent={() => (
-          <Box className="mt-20 items-center px-10">
-            <Text className="text-slate-400 text-center font-inter-medium">
-              Ton assiette est vide...
+          <Box className="flex h-[75%] bg-[#fffdfb] px-2 justify-center items-center gap-6">
+            <View className="w-24 h-24 bg-orange-50 rounded-full items-center justify-center">
+              <Notebook size={48} color="#f97316" strokeWidth={1.5} />
+            </View>
+
+            <Text className="font-inter-bold text-2xl text-slate-900 text-center">
+              {t('meal_plan.empty')}
             </Text>
+
+            <Pressable
+              onPress={() => router.push('/(main)/chat')}
+              className="bg-orange-500 px-8 py-4 rounded-2xl active:bg-orange-600 shadow-sm shadow-orange-200"
+            >
+              <Text className="font-inter-semibold text-white text-lg">
+                {t('meal_plan.go_to_chat')}
+              </Text>
+            </Pressable>
           </Box>
         )}
         renderItem={({ item }) => {
@@ -218,6 +234,7 @@ export default function MealPlanPage() {
         handleDelete={handleDelete}
       />
       <ConfirmRemoveModal
+        bodyText={t('remove_modal.confirm_text_groceries')}
         showModal={showConfirmRemove}
         onClose={() => setShowConfirmRemove(false)}
         onConfirm={() => {

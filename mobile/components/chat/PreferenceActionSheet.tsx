@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -17,22 +18,27 @@ import {
 import { Pressable, ScrollView } from 'react-native';
 import { Box } from '../ui/box';
 import { HStack } from '../ui/hstack';
-import { Check, X } from 'lucide-react-native';
+import { Check, Send, X } from 'lucide-react-native';
 
 export const PreferenceActionSheet = ({
   selectedPreferences,
   selectedExclude,
   isOpen,
+  messageEmpty,
   onToggle,
+  onSend,
   onClose,
 }: {
   selectedPreferences: PreferenceTag[];
   selectedExclude: PreferenceTag[];
+  messageEmpty: boolean;
   onToggle: (tag: PreferenceTag) => void;
   isOpen: boolean;
   onClose: () => void;
+  onSend: () => void;
 }) => {
   const { t } = useTranslation();
+  const canSend = selectedPreferences.length >= 3 || !messageEmpty;
 
   return (
     <Actionsheet isOpen={isOpen} onClose={onClose}>
@@ -47,6 +53,11 @@ export const PreferenceActionSheet = ({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ gap: 20 }}
         >
+          {messageEmpty && (
+            <Text className="font-inter-normal-italic text-slate-400">
+              Select at least 3 preferences
+            </Text>
+          )}
           {limitedCategories.map((category, cIndex) => {
             const categoryTags = preferencesTags[category.name] || [];
 
@@ -119,6 +130,25 @@ export const PreferenceActionSheet = ({
             );
           })}
         </ScrollView>
+        <Box className="w-full">
+          <Pressable
+            onPress={() => {
+              if (canSend) {
+                onSend();
+                onClose();
+              }
+            }}
+            disabled={!canSend}
+            className={`flex flex-row bg-orange-500 w-full px-3 py-3 gap-2 rounded-full justify-center align-middle items-center text-center ${
+              canSend ? 'opacity-100' : 'opacity-50'
+            }`}
+          >
+            <Send size={18} color="white" />
+            <Text className="text-white self-center text-lg font-inter-semibold">
+              Send
+            </Text>
+          </Pressable>
+        </Box>
       </ActionsheetContent>
     </Actionsheet>
   );

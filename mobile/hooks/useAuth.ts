@@ -3,12 +3,14 @@ import { supabase } from '@/services/supabase';
 import { useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { Session } from '@supabase/supabase-js';
+import { useTranslation } from 'react-i18next';
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [isReady, setIsReady] = useState(false);
   const router = useRouter();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -37,7 +39,7 @@ export const useAuth = () => {
     if (error) {
       Toast.show({
         type: 'error',
-        text1: 'Échec de la connexion anonyme',
+        text1: t('toast.fail_guest'),
         text2: error.message,
       });
     }
@@ -53,7 +55,7 @@ export const useAuth = () => {
     if (error) {
       Toast.show({
         type: 'error',
-        text1: 'Erreur de connexion',
+        text1: t('toast.error_login'),
         text2: error.message,
       });
     } else {
@@ -79,14 +81,14 @@ export const useAuth = () => {
     if (error) {
       Toast.show({
         type: 'error',
-        text1: 'Erreur de création de compte',
+        text1: t('toast.error_register'),
         text2: error.message,
       });
     } else {
       Toast.show({
         type: 'success',
-        text1: 'Compte créé avec succès!',
-        text2: 'Veuillez vous connecter.',
+        text1: t('toast.success_register'),
+        text2: t('toast.please_login'),
       });
       router.replace('/(auth)/login');
     }
