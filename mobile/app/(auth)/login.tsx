@@ -32,7 +32,7 @@ export default function LoginScreen() {
         }}
       />
       <VStack space="xl" className="space-y-22 w-full mb-4 self-center">
-        <Box className="items-center">
+        <Box className="items-center text-nowrap">
           <Image
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             source={Logo}
@@ -44,9 +44,9 @@ export default function LoginScreen() {
               marginBottom: -20,
             }}
           />
-          <Heading size="3xl" className="font-inter-extrabold text-primary-500">
+          <Text className="text-3xl font-inter-extrabold text-primary-500">
             {t('auth.welcome_back')}
-          </Heading>
+          </Text>
         </Box>
 
         <VStack className="mt-8" space="md">

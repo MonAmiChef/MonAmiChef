@@ -1,5 +1,4 @@
 import { Drawer } from 'expo-router/drawer';
-import { Pressable } from 'react-native-gesture-handler';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
@@ -15,7 +14,7 @@ import {
 import { DrawerActions } from '@react-navigation/native';
 import { chatApi } from '@/services/chat.api';
 import { useQuery } from '@tanstack/react-query';
-import { ActivityIndicator } from 'react-native';
+import { Pressable, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ProfileActionSheet } from '@/components/profile/ProfileActionSheet';
 
@@ -143,7 +142,9 @@ function CustomDrawerContent(props: any) {
             );
           })
         ) : (
-          <Text>{t('drawer.failed_retrieving_sessions')}</Text>
+        <Box className="flex-1 justify-center items-center">
+            <Text>{t('drawer.failed_retrieving_sessions')}</Text>
+        </Box>
         )}
       </Box>
     </DrawerContentScrollView>
@@ -174,8 +175,11 @@ export default function MainLayout() {
           ),
           headerRight: () => (
             <Pressable
-              onPress={() => setShowProfile(true)}
-              style={{ marginRight: 15 }}
+              onPress={() => {
+                  console.log('to');
+                  setShowProfile(true);
+                 }}
+              style={{ marginRight: 15, zIndex: 10 }}
             >
               <Box className="bg-slate-500 h-10 w-10 items-center justify-center rounded-full">
                 {session?.user.is_anonymous ? (
