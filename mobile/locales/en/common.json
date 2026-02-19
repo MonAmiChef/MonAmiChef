@@ -112,6 +112,8 @@
   },
   "preferences": {
     "title": "My Preferences",
+    "info": "Select at least 3 preferences",
+    "send": "Send",
     "categories": {
       "nutrition": "Nutrition",
       "cuisines": "World Cuisines",

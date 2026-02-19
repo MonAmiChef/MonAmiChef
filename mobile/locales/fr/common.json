@@ -110,6 +110,8 @@
   },
   "preferences": {
     "title": "Mes Préférences",
+    "info": "Selectionez au moins 3 préférences",
+    "send": "Envoyer",
     "categories": {
       "nutrition": "Nutrition",
       "cuisines": "Cuisines du monde",

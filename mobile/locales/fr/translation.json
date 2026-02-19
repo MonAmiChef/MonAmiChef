@@ -1,0 +1,114 @@
+{
+  "auth": {
+    "welcome_back": "auth.welcome_back",
+    "password": "auth.password",
+    "login": "auth.login",
+    "no_account_yet": "auth.no_account_yet",
+    "register": "auth.register",
+    "continue_as_guest": "auth.continue_as_guest",
+    "terms_4": "auth.terms_4",
+    "privacy_last_updated": "auth.privacy_last_updated",
+    "privacy_clauses": {
+      "clause_1": "auth.privacy_clauses.clause_1",
+      "clause_1_text": "auth.privacy_clauses.clause_1_text",
+      "clause_2": "auth.privacy_clauses.clause_2",
+      "clause_2_text": "auth.privacy_clauses.clause_2_text",
+      "clause_3": "auth.privacy_clauses.clause_3",
+      "clause_3_text": "auth.privacy_clauses.clause_3_text",
+      "clause_4": "auth.privacy_clauses.clause_4",
+      "clause_4_text": "auth.privacy_clauses.clause_4_text",
+      "clause_5": "auth.privacy_clauses.clause_5",
+      "clause_5_text": "auth.privacy_clauses.clause_5_text"
+    },
+    "passwords_do_not_match": "auth.passwords_do_not_match",
+    "welcome": "auth.welcome",
+    "confirm_password": "auth.confirm_password",
+    "already_signed": "auth.already_signed",
+    "terms_1": "auth.terms_1",
+    "terms_2": "auth.terms_2",
+    "terms_3": "auth.terms_3",
+    "terms_5": "auth.terms_5",
+    "terms_last_updated": "auth.terms_last_updated",
+    "terms_clauses": {
+      "clause_1": "auth.terms_clauses.clause_1",
+      "clause_1_text": "auth.terms_clauses.clause_1_text",
+      "clause_2": "auth.terms_clauses.clause_2",
+      "clause_2_text": "auth.terms_clauses.clause_2_text",
+      "clause_3": "auth.terms_clauses.clause_3",
+      "clause_3_text": "auth.terms_clauses.clause_3_text",
+      "clause_4": "auth.terms_clauses.clause_4",
+      "clause_4_text": "auth.terms_clauses.clause_4_text",
+      "clause_5": "auth.terms_clauses.clause_5",
+      "clause_5_text": "auth.terms_clauses.clause_5_text"
+    },
+    "logout": "auth.logout"
+  },
+  "back": "back",
+  "drawer": {
+    "new_chat": "drawer.new_chat",
+    "meal_plan": "drawer.meal_plan",
+    "groceries": "drawer.groceries",
+    "chats": "drawer.chats",
+    "failed_retrieving_sessions": "drawer.failed_retrieving_sessions"
+  },
+  "meal_plan": {
+    "title": "meal_plan.title",
+    "subtitle": "meal_plan.subtitle",
+    "empty": "meal_plan.empty",
+    "go_to_chat": "meal_plan.go_to_chat",
+    "remove": "meal_plan.remove"
+  },
+  "groceries": {
+    "title": "groceries.title",
+    "empty": "groceries.empty",
+    "go_to_chat": "groceries.go_to_chat",
+    "complete": "groceries.complete"
+  },
+  "toast": {
+    "success": "toast.success",
+    "removed_from_plan": "toast.removed_from_plan",
+    "error": "toast.error",
+    "error_removed_from_plan": "toast.error_removed_from_plan",
+    "added_to_plan": "toast.added_to_plan",
+    "error_added_to_plan": "toast.error_added_to_plan",
+    "error_togling_item": "toast.error_togling_item",
+    "recipe_was": "toast.recipe_was",
+    "added": "toast.added",
+    "removed": "toast.removed",
+    "error_add_grocery": "toast.error_add_grocery",
+    "add_grocery": "toast.add_grocery"
+  },
+  "chat": {
+    "already_in_meal_plan": "chat.already_in_meal_plan",
+    "add_to_meal_plan": "chat.add_to_meal_plan",
+    "chef_typing": "chat.chef_typing",
+    "default_prompts": {
+      "title": "chat.default_prompts.title"
+    }
+  },
+  "remove_modal": {
+    "confirm_text_meal_plan": "remove_modal.confirm_text_meal_plan",
+    "confirm_text_groceries": "remove_modal.confirm_text_groceries",
+    "title": "remove_modal.title",
+    "cancel": "remove_modal.cancel",
+    "confirm": "remove_modal.confirm"
+  },
+  "not_found": {
+    "screen": "not_found.screen",
+    "go_to_home": "not_found.go_to_home"
+  },
+  "recipe_details": {
+    "loading": "recipe_details.loading",
+    "fail_loading": "recipe_details.fail_loading",
+    "back_to_plan": "recipe_details.back_to_plan",
+    "macros": "recipe_details.macros",
+    "about": "recipe_details.about",
+    "ingredients": "recipe_details.ingredients",
+    "steps": "recipe_details.steps"
+  },
+  "experimental": "experimental",
+  "profile_action_sheet": {
+    "guest": "profile_action_sheet.guest"
+  },
+  "language": "language"
+}

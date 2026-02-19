@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -55,7 +54,7 @@ export const PreferenceActionSheet = ({
         >
           {messageEmpty && (
             <Text className="font-inter-normal-italic text-slate-400">
-              Select at least 3 preferences
+              {t('preferences.info')}
             </Text>
           )}
           {limitedCategories.map((category, cIndex) => {
@@ -145,7 +144,7 @@ export const PreferenceActionSheet = ({
           >
             <Send size={18} color="white" />
             <Text className="text-white self-center text-lg font-inter-semibold">
-              Send
+              {t('preferences.send')}
             </Text>
           </Pressable>
         </Box>

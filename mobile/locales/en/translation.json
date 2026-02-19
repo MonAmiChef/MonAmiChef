@@ -1,0 +1,114 @@
+{
+  "auth": {
+    "welcome_back": "",
+    "password": "",
+    "login": "",
+    "no_account_yet": "",
+    "register": "",
+    "continue_as_guest": "",
+    "terms_4": "",
+    "privacy_last_updated": "",
+    "privacy_clauses": {
+      "clause_1": "",
+      "clause_1_text": "",
+      "clause_2": "",
+      "clause_2_text": "",
+      "clause_3": "",
+      "clause_3_text": "",
+      "clause_4": "",
+      "clause_4_text": "",
+      "clause_5": "",
+      "clause_5_text": ""
+    },
+    "passwords_do_not_match": "",
+    "welcome": "",
+    "confirm_password": "",
+    "already_signed": "",
+    "terms_1": "",
+    "terms_2": "",
+    "terms_3": "",
+    "terms_5": "",
+    "terms_last_updated": "",
+    "terms_clauses": {
+      "clause_1": "",
+      "clause_1_text": "",
+      "clause_2": "",
+      "clause_2_text": "",
+      "clause_3": "",
+      "clause_3_text": "",
+      "clause_4": "",
+      "clause_4_text": "",
+      "clause_5": "",
+      "clause_5_text": ""
+    },
+    "logout": ""
+  },
+  "back": "",
+  "drawer": {
+    "new_chat": "",
+    "meal_plan": "",
+    "groceries": "",
+    "chats": "",
+    "failed_retrieving_sessions": ""
+  },
+  "meal_plan": {
+    "title": "",
+    "subtitle": "",
+    "empty": "",
+    "go_to_chat": "",
+    "remove": ""
+  },
+  "groceries": {
+    "title": "",
+    "empty": "",
+    "go_to_chat": "",
+    "complete": ""
+  },
+  "toast": {
+    "success": "",
+    "removed_from_plan": "",
+    "error": "",
+    "error_removed_from_plan": "",
+    "added_to_plan": "",
+    "error_added_to_plan": "",
+    "error_togling_item": "",
+    "recipe_was": "",
+    "added": "",
+    "removed": "",
+    "error_add_grocery": "",
+    "add_grocery": ""
+  },
+  "chat": {
+    "already_in_meal_plan": "",
+    "add_to_meal_plan": "",
+    "chef_typing": "",
+    "default_prompts": {
+      "title": ""
+    }
+  },
+  "remove_modal": {
+    "confirm_text_meal_plan": "",
+    "confirm_text_groceries": "",
+    "title": "",
+    "cancel": "",
+    "confirm": ""
+  },
+  "not_found": {
+    "screen": "",
+    "go_to_home": ""
+  },
+  "recipe_details": {
+    "loading": "",
+    "fail_loading": "",
+    "back_to_plan": "",
+    "macros": "",
+    "about": "",
+    "ingredients": "",
+    "steps": ""
+  },
+  "experimental": "",
+  "profile_action_sheet": {
+    "guest": ""
+  },
+  "language": ""
+}
