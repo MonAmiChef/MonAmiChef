@@ -131,7 +131,7 @@ export default function NewChat() {
 
   return (
     <>
-      <View className="flex-1 bg-base-bg pb-6">
+      <View className="flex-1 bg-base-bg pb-4">
         <TouchableWithoutFeedback
           onPress={Keyboard.dismiss}
           className="flex-1"

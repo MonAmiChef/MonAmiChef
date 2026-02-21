@@ -235,7 +235,7 @@ export default function ChatScreen() {
 
   return (
     <>
-      <View className="flex-1 bg-base-bg">
+      <View className="flex-1 bg-base-bg pb-4">
         <Drawer.Screen
           options={{
             headerTitle: data?.title || 'MonAmiChef',
