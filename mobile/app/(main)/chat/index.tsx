@@ -207,7 +207,7 @@ export default function NewChat() {
         </TouchableWithoutFeedback>
 
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 110 : 0}
         >
           <PreferencesQuickSelector

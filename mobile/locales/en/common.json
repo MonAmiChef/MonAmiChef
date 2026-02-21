@@ -12,6 +12,8 @@
     "no_account_yet": "No account yet?",
     "already_signed": "Already have an account?",
     "register": "Create an account",
+    "too_short": "Password must be at least 8 characters long",
+    "invalid_field": "Invalid field(s)",
     "logout": "Log out",
     "passwords_do_not_match": "The passwords do not match.",
     "terms_last_updated": "Last updated: February 14, 2026",

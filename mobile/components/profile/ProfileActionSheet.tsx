@@ -16,7 +16,7 @@ import { Pressable } from 'react-native';
 import { LogOut, User } from 'lucide-react-native';
 import { Box } from '../ui/box';
 import { useAuth } from '@/hooks/useAuth';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { supabase } from '@/services/supabase';
 
 export const ProfileActionSheet = ({
@@ -28,6 +28,7 @@ export const ProfileActionSheet = ({
 }) => {
   const { t, i18n } = useTranslation();
   const { session } = useAuth();
+  const router = useRouter();
 
   const handleLanguageChange = (lang: string) => {
     void i18n.changeLanguage(lang);
@@ -36,6 +37,7 @@ export const ProfileActionSheet = ({
   const handleLogOut = async () => {
     onClose();
     await supabase.auth.signOut();
+    router.navigate('/(auth)/login');
   };
 
   return (

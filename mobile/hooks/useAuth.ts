@@ -36,7 +36,6 @@ export const useAuth = () => {
   const signInAnonymously = async () => {
     const { error } = await supabase.auth.signInAnonymously();
 
-    console.log('err', error);
     if (error) {
       Toast.show({
         type: 'error',

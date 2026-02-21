@@ -90,7 +90,7 @@ export default function LoginScreen() {
           <Input variant="outline" size="md">
             <InputField
               placeholder={t('auth.confirm_password')}
-              value={password}
+              value={confirmPassword}
               onChangeText={(v) => {
                 setConfirmPassword(v);
                 setError(null);
@@ -114,7 +114,25 @@ export default function LoginScreen() {
               });
 
               if (!result.success) {
-                setError(result.error.issues[0]?.message ?? 'Invalid form');
+                const issue = result.error.issues[0];
+
+                let translationKey = 'auth.generic_error';
+
+                switch (issue.code) {
+                  case 'too_small':
+                    translationKey = 'auth.too_short';
+                    break;
+
+                  case 'invalid_type':
+                    translationKey = 'auth.invalid_field';
+                    break;
+
+                  case 'custom':
+                    translationKey = issue.message;
+                    break;
+                }
+
+                setError(t(translationKey));
                 return;
               }
 

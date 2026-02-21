@@ -142,9 +142,9 @@ function CustomDrawerContent(props: any) {
             );
           })
         ) : (
-        <Box className="flex-1 justify-center items-center">
+          <Box className="flex-1 justify-center items-center">
             <Text>{t('drawer.failed_retrieving_sessions')}</Text>
-        </Box>
+          </Box>
         )}
       </Box>
     </DrawerContentScrollView>
@@ -176,9 +176,8 @@ export default function MainLayout() {
           headerRight: () => (
             <Pressable
               onPress={() => {
-                  console.log('to');
-                  setShowProfile(true);
-                 }}
+                setShowProfile(true);
+              }}
               style={{ marginRight: 15, zIndex: 10 }}
             >
               <Box className="bg-slate-500 h-10 w-10 items-center justify-center rounded-full">
@@ -196,6 +195,7 @@ export default function MainLayout() {
             width: '80%',
             backgroundColor: '#fffdfb',
           },
+          headerTitleAlign: 'center',
           headerStyle: {
             elevation: 0,
             shadowOpacity: 0,
