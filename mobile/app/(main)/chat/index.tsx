@@ -3,11 +3,9 @@ import React, { useState } from 'react';
 import {
   View,
   Keyboard,
-  KeyboardAvoidingView,
-  Platform,
   ActivityIndicator,
-  TouchableWithoutFeedback,
   Pressable,
+  ScrollView,
 } from 'react-native';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Text } from '@/components/ui/text';
@@ -22,7 +20,7 @@ import { PreferenceTag } from '@/constants/PreferencesTags';
 import { PreferencesQuickSelector } from '@/components/chat/PreferencesQuickSelector';
 import { PreferenceActionSheet } from '@/components/chat/PreferenceActionSheet';
 import Logo from '@/assets/images/monamichef_bg_less.png';
-import { ScrollView } from 'react-native-gesture-handler';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const default_prompts: Array<{
   text: string;
@@ -132,84 +130,87 @@ export default function NewChat() {
   return (
     <>
       <View className="flex-1 bg-base-bg pb-4">
-        <TouchableWithoutFeedback
-          onPress={Keyboard.dismiss}
-          className="flex-1"
-          accessible={false}
+        <KeyboardAwareScrollView
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 140 }}
+          enableOnAndroid
+          enableAutomaticScroll
+          keyboardShouldPersistTaps="handled"
+          extraScrollHeight={16}
         >
-          <View className="flex-1">
-            {optimisticMessage ? (
-              <View className="flex-1 justify-start p-6">
-                <View className="bg-orange-500 self-end p-4 rounded-2xl rounded-tr-none mb-4 max-w-[80%]">
-                  <Text className="text-white text-[15px] font-inter-medium">
-                    {optimisticMessage}
-                  </Text>
-                </View>
+          <Pressable onPress={Keyboard.dismiss} style={{ flex: 1 }}>
+            <View className="flex-1">
+              {optimisticMessage ? (
+                <View className="flex-1 justify-start p-6">
+                  <View className="bg-orange-500 self-end p-4 rounded-2xl rounded-tr-none mb-4 max-w-[80%]">
+                    <Text className="text-white text-[15px] font-inter-medium">
+                      {optimisticMessage}
+                    </Text>
+                  </View>
 
-                <View className="flex-row gap-3 items-center mb-8">
-                  <ActivityIndicator size="small" color="#ff6900" />
-                  <WaveText
-                    text={t('chat.chef_typing')}
-                    color="#FF9800"
-                    fontSize={14}
+                  <View className="flex-row gap-3 items-center mb-8">
+                    <ActivityIndicator size="small" color="#ff6900" />
+                    <WaveText
+                      text={t('chat.chef_typing')}
+                      color="#FF9800"
+                      fontSize={14}
+                    />
+                  </View>
+                </View>
+              ) : (
+                <View className="flex flex-1 align-middle self-center justify-center items-center mb-8">
+                  <Image
+                    source={Logo}
+                    contentFit="contain"
+                    style={{
+                      display: 'flex',
+                      width: 200,
+                      height: 200,
+                      opacity: 0.5,
+                    }}
                   />
-                </View>
-              </View>
-            ) : (
-              <View className="flex flex-1 align-middle self-center justify-center items-center mb-8">
-                <Image
-                  source={Logo}
-                  contentFit="contain"
-                  style={{
-                    display: 'flex',
-                    width: 200,
-                    height: 200,
-                    opacity: 0.5,
-                  }}
-                />
-                <Text className="font-inter-semibold mb-4">
-                  {t('chat.default_prompts.title')}
-                </Text>
-                <ScrollView
-                  style={{ flexGrow: 0 }}
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{
-                    flexGrow: 0,
-                    gap: 16,
-                    padding: 4,
-                    marginLeft: 50,
-                  }}
-                  horizontal={true}
-                >
-                  {default_prompts.map((prompt, index) => {
-                    return (
-                      <Pressable
-                        className={`border overflow-hidden ${prompt.borderColor} ${prompt.bgColor} rounded-xl`}
-                        onPress={() => {
-                          const msg = t(`chat.default_prompts.${prompt.text}`);
+                  <Text className="font-inter-semibold mb-4">
+                    {t('chat.default_prompts.title')}
+                  </Text>
+                  <ScrollView
+                    style={{ flexGrow: 0 }}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{
+                      flexGrow: 0,
+                      gap: 16,
+                      padding: 4,
+                      marginLeft: 50,
+                    }}
+                    horizontal={true}
+                  >
+                    {default_prompts.map((prompt, index) => {
+                      return (
+                        <Pressable
+                          className={`border overflow-hidden ${prompt.borderColor} ${prompt.bgColor} rounded-xl`}
+                          onPress={() => {
+                            const msg = t(
+                              `chat.default_prompts.${prompt.text}`,
+                            );
 
-                          setMessage(msg.slice(2, msg.length));
-                        }}
-                        key={index}
-                      >
-                        <Text
-                          className={`${prompt.textColor} text-lg font-inter-medium p-3`}
+                            setMessage(msg.slice(2, msg.length));
+                          }}
+                          key={index}
                         >
-                          {t(`chat.default_prompts.${prompt.text}`)}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </ScrollView>
-              </View>
-            )}
-          </View>
-        </TouchableWithoutFeedback>
+                          <Text
+                            className={`${prompt.textColor} text-lg font-inter-medium p-3`}
+                          >
+                            {t(`chat.default_prompts.${prompt.text}`)}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+              )}
+            </View>
+          </Pressable>
+        </KeyboardAwareScrollView>
 
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 110 : 0}
-        >
+        <View>
           <PreferencesQuickSelector
             selectedPreferences={selectedPreferences}
             selectedExclude={selectedExclude}
@@ -226,7 +227,7 @@ export default function NewChat() {
             }}
             isLoading={mutation.isPending}
           />
-        </KeyboardAvoidingView>
+        </View>
       </View>
       <PreferenceActionSheet
         selectedPreferences={selectedPreferences}
