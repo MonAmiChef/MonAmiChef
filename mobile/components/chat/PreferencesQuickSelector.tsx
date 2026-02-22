@@ -27,7 +27,7 @@ export const PreferencesQuickSelector = ({
   const { t } = useTranslation();
 
   return (
-    <View className="flex flex-row gap-x-2">
+    <View className="flex flex-row gap-x-2 bg-[#fffdfb]">
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -57,7 +57,7 @@ export const PreferencesQuickSelector = ({
                   const isActive = isSelected || isExclude;
 
                   const isDisabled = isLimitReached && !isActive;
-                  let bgColor = 'bg-transparent';
+                  let bgColor = 'bg-orange-[#f000fb]';
                   let textColor = 'text-slate-700';
                   let borderColor = 'border-slate-200';
 

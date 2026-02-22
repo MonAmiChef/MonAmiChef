@@ -51,6 +51,14 @@ export default function ChatScreen() {
   const [showConfirmRemove, setShowConfirmRemove] = useState(false);
   const [message, setMessage] = useState('');
   const [selectedRecipeId, setSelectedRecipeId] = useState('');
+  const [kbKey, setKbKey] = useState(0);
+
+  useEffect(() => {
+    const hide = Keyboard.addListener('keyboardDidHide', () => {
+      setKbKey((k) => k + 1);
+    });
+    return () => hide.remove();
+  }, []);
 
   const [selectedPreferences, setSelectedPreferences] = useState<
     PreferenceTag[]
@@ -350,8 +358,9 @@ export default function ChatScreen() {
         />
 
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+          key={kbKey}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'position'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 110 : 80}
         >
           <PreferencesQuickSelector
             selectedPreferences={selectedPreferences}
