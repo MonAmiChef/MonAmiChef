@@ -66,7 +66,7 @@ function CustomDrawerContent(props: any) {
 
       <Box className="px-5 py-2">
         <Pressable
-          onPress={() => router.push('/mealplan')}
+          onPress={() => router.push('/savedrecipes')}
           style={{
             display: 'flex',
             flexDirection: 'row',
@@ -76,14 +76,14 @@ function CustomDrawerContent(props: any) {
         >
           <Text
             className={`text-lg font-inter-medium ${
-              pathname === '/mealplan' ? 'text-orange-600' : 'text-slate-700'
+              pathname === '/savedrecipes' ? 'text-orange-600' : 'text-slate-700'
             }`}
           >
-            {t('drawer.meal_plan')}
+            {t('drawer.saved_recipes')}
           </Text>
           <ChevronRight
             size={18}
-            color={pathname === '/mealplan' ? '#ea580c' : '#475569'}
+            color={pathname === '/savedrecipes' ? '#ea580c' : '#475569'}
           />
         </Pressable>
       </Box>
@@ -215,10 +215,10 @@ export default function MainLayout() {
         />
 
         <Drawer.Screen
-          name="mealplan"
+          name="savedrecipes"
           options={{
-            drawerLabel: 'Meal Plan',
-            title: t('meal_plan.title'),
+            drawerLabel: 'Saved Recipes',
+            title: t('saved_recipes.title'),
           }}
         />
 

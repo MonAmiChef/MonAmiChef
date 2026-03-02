@@ -1,27 +1,29 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
-import { MealPlanRepository } from './meal-plan.repository';
+import { SavedRecipesRepository } from './saved-recipes.repository';
 import { RecipesService } from 'src/recipes/recipes.service';
 import { RecipesRepository } from 'src/recipes/recipes.repository';
 import { UnsplashService } from 'src/unsplash/unsplash.service';
 
 @Injectable()
-export class MealPlanService {
+export class SavedRecipesService {
   constructor(
-    private mealPlanRepository: MealPlanRepository,
+    private savedRecipesRepository: SavedRecipesRepository,
     private recipesRepository: RecipesRepository,
     private recipesService: RecipesService,
     private unsplashService: UnsplashService,
   ) {}
 
-  async getUserMealPlan(userId: string) {
-    return this.mealPlanRepository.getUserMealPlan(userId);
+  async getSavedRecipes(userId: string) {
+    return this.savedRecipesRepository.getSavedRecipes(userId);
   }
 
-  async removeFromMealPlan(userId: string, recipeId: string) {
-    return this.mealPlanRepository.removeFromMealPlan(userId, recipeId);
+  async removeFromSavedRecipes(userId: string, recipeId: string) {
+    return this.savedRecipesRepository.removeFromSavedRecipes(userId, recipeId);
   }
 
-  async addMealToPlan({
+  async addToSavedRecipes({
     language,
     messageId,
     messageContent,
@@ -48,14 +50,11 @@ export class MealPlanService {
       text: messageContent,
     });
 
-    // const image = await this.unsplashService.getImageByPrompt(messageContent);
-
     await this.recipesRepository.createFullRecipeContext({
       userId,
       imagePath: '',
       recipeData: aiData.recipe,
       messageId,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
       ingredients: aiData.ingredients as any[],
     });
 

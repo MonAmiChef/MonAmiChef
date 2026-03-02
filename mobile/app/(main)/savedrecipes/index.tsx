@@ -19,21 +19,21 @@ import {
 import { t } from 'i18next';
 import { Check, Ellipsis, Notebook, ShoppingCart } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
-import { mealPlanApi } from '@/services/meal-plan.api';
+import { savedRecipesApi } from '@/services/saved-recipes.api';
 import { capitalizeFull } from '../groceries';
 import { useRouter } from 'expo-router';
-import MealPlanOptionsSheet from '@/components/meal-plan/MealPlanOptionsSheet';
-import ConfirmRemoveModal from '@/components/meal-plan/ConfirmRemoveModal';
+import SavedRecipesOptionsSheet from '@/components/saved-recipes/SavedRecipesOptionsSheet';
+import ConfirmRemoveModal from '@/components/saved-recipes/ConfirmRemoveModal';
 
-export default function MealPlanPage() {
+export default function SavedRecipesPage() {
   const { session } = useAuth();
   const [selectedRecipe, setSelectedRecipe] = useState<{
     id: string;
     name: string;
   } | null>(null);
   const { data, isLoading, refetch, isRefetching } = useQuery({
-    queryKey: ['meal-plan'],
-    queryFn: () => mealPlanApi.getMealPlan(session!),
+    queryKey: ['saved-recipes'],
+    queryFn: () => savedRecipesApi.getSavedRecipes(session!),
     enabled: !!session,
   });
   const [showSheet, setShowSheet] = useState(false);
@@ -43,7 +43,7 @@ export default function MealPlanPage() {
 
   const { data: recipesInGroceries, refetch: refetchGroceries } = useQuery({
     queryKey: ['groceries-recipes'],
-    queryFn: () => mealPlanApi.getGroceriesRecipes(session!),
+    queryFn: () => savedRecipesApi.getGroceriesRecipes(session!),
     enabled: !!session,
   });
 
@@ -51,9 +51,9 @@ export default function MealPlanPage() {
     return recipesInGroceries?.some((item: any) => item.recipeId === recipeId);
   };
 
-  const removeFromPlanMutation = useMutation({
+  const removeFromSavedMutation = useMutation({
     mutationFn: (recipeId: string) =>
-      mealPlanApi.removeFromMealPlan(session!, recipeId),
+      savedRecipesApi.removeFromSavedRecipes(session!, recipeId),
     onSuccess: () => {
       Toast.show({
         text1: t('toast.success'),
@@ -78,7 +78,7 @@ export default function MealPlanPage() {
     }: {
       recipeId: string;
       newState: boolean;
-    }) => mealPlanApi.addToGroceries(session!, recipeId, newState),
+    }) => savedRecipesApi.addToGroceries(session!, recipeId, newState),
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
       Toast.show({
@@ -104,7 +104,7 @@ export default function MealPlanPage() {
 
   const handleDelete = () => {
     if (selectedRecipe) {
-      removeFromPlanMutation.mutate(selectedRecipe.id);
+      removeFromSavedMutation.mutate(selectedRecipe.id);
       setShowSheet(false);
       void refetch();
       void refetchGroceries();
@@ -118,7 +118,7 @@ export default function MealPlanPage() {
     <Box className="flex-1 bg-[#fffdfb] p-4 gap-8">
       {data?.length > 0 && (
         <Text className="text-2xl px-4 text-black font-inter-medium">
-          {t('meal_plan.subtitle')}
+          {t('saved_recipes.subtitle')}
         </Text>
       )}
       <FlatList
@@ -143,7 +143,7 @@ export default function MealPlanPage() {
             </View>
 
             <Text className="font-inter-bold text-2xl text-slate-900 text-center">
-              {t('meal_plan.empty')}
+              {t('saved_recipes.empty')}
             </Text>
 
             <Pressable
@@ -151,7 +151,7 @@ export default function MealPlanPage() {
               className="bg-orange-500 px-8 py-4 rounded-2xl active:bg-orange-600 shadow-sm shadow-orange-200"
             >
               <Text className="font-inter-semibold text-white text-lg">
-                {t('meal_plan.go_to_chat')}
+                {t('saved_recipes.go_to_chat')}
               </Text>
             </Pressable>
           </Box>
@@ -228,7 +228,7 @@ export default function MealPlanPage() {
           );
         }}
       />
-      <MealPlanOptionsSheet
+      <SavedRecipesOptionsSheet
         isOpen={showSheet}
         onClose={() => setShowSheet(false)}
         handleDelete={handleDelete}

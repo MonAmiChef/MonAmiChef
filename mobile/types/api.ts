@@ -152,14 +152,14 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/meal-plan": {
+    "/saved-recipes": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["MealPlanController_getUserMealPlan"];
+        get: operations["SavedRecipesController_getSavedRecipes"];
         put?: never;
         post?: never;
         delete?: never;
@@ -168,7 +168,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/meal-plan/remove": {
+    "/saved-recipes/remove": {
         parameters: {
             query?: never;
             header?: never;
@@ -177,14 +177,14 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["MealPlanController_removeMealFromMealPlan"];
+        post: operations["SavedRecipesController_removeFromSavedRecipes"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/meal-plan/add": {
+    "/saved-recipes/add": {
         parameters: {
             query?: never;
             header?: never;
@@ -193,7 +193,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["MealPlanController_addMealToPlan"];
+        post: operations["SavedRecipesController_addToSavedRecipes"];
         delete?: never;
         options?: never;
         head?: never;
@@ -455,6 +455,8 @@ export interface components {
             preferences: ("high_protein" | "high_fiber" | "low_carb" | "balanced" | "high_carb" | "low_fat" | "vegetarian" | "vegan" | "italian" | "mexican" | "mediterranean" | "american" | "french" | "indian" | "thai" | "chinese" | "japanese" | "middle_eastern" | "korean" | "african" | "breakfast" | "lunch" | "dinner" | "appetizer" | "dessert" | "snack" | "smoothie_drink" | "under_15" | "under_30" | "one_hour_max" | "slow_cook" | "chicken" | "beef" | "pork" | "fish" | "seafood" | "lamb" | "turkey" | "duck" | "tomatoes" | "onions" | "carrots" | "bell_peppers" | "broccoli" | "spinach" | "mushrooms" | "zucchini" | "potatoes" | "garlic" | "lettuce" | "cucumber")[];
             /** @default [] */
             exclude: ("high_protein" | "high_fiber" | "low_carb" | "balanced" | "high_carb" | "low_fat" | "vegetarian" | "vegan" | "italian" | "mexican" | "mediterranean" | "american" | "french" | "indian" | "thai" | "chinese" | "japanese" | "middle_eastern" | "korean" | "african" | "breakfast" | "lunch" | "dinner" | "appetizer" | "dessert" | "snack" | "smoothie_drink" | "under_15" | "under_30" | "one_hour_max" | "slow_cook" | "chicken" | "beef" | "pork" | "fish" | "seafood" | "lamb" | "turkey" | "duck" | "tomatoes" | "onions" | "carrots" | "bell_peppers" | "broccoli" | "spinach" | "mushrooms" | "zucchini" | "potatoes" | "garlic" | "lettuce" | "cucumber")[];
+            /** @default english */
+            language: string;
         };
         UpdateChatSessionResponseDto_Output: {
             /** Format: uuid */
@@ -473,16 +475,16 @@ export interface components {
             createdAt: string;
             updatedAt: string;
         };
-        RemoveFromMealPlanRequestDto: {
+        RemoveFromSavedRecipesRequestDto: {
             recipeId: string;
         };
-        AddMealToPlanRequestDto: {
+        AddToSavedRecipesRequestDto: {
             messageContent: string;
             messageId: string;
             /** @default english */
             language: string;
         };
-        AddMealToPlanResponseDto_Output: {
+        AddToSavedRecipesResponseDto_Output: {
             status: number;
             alreadyPresent: boolean;
         };
@@ -698,7 +700,7 @@ export interface operations {
             };
         };
     };
-    MealPlanController_getUserMealPlan: {
+    SavedRecipesController_getSavedRecipes: {
         parameters: {
             query?: never;
             header?: never;
@@ -715,7 +717,7 @@ export interface operations {
             };
         };
     };
-    MealPlanController_removeMealFromMealPlan: {
+    SavedRecipesController_removeFromSavedRecipes: {
         parameters: {
             query?: never;
             header?: never;
@@ -724,7 +726,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["RemoveFromMealPlanRequestDto"];
+                "application/json": components["schemas"]["RemoveFromSavedRecipesRequestDto"];
             };
         };
         responses: {
@@ -736,7 +738,7 @@ export interface operations {
             };
         };
     };
-    MealPlanController_addMealToPlan: {
+    SavedRecipesController_addToSavedRecipes: {
         parameters: {
             query?: never;
             header?: never;
@@ -745,7 +747,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["AddMealToPlanRequestDto"];
+                "application/json": components["schemas"]["AddToSavedRecipesRequestDto"];
             };
         };
         responses: {
@@ -754,7 +756,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AddMealToPlanResponseDto_Output"];
+                    "application/json": components["schemas"]["AddToSavedRecipesResponseDto_Output"];
                 };
             };
         };

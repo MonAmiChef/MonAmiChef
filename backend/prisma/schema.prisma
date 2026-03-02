@@ -28,34 +28,34 @@ model Ingredient {
 }
 
 model Recipe {
-  id           String       @id @default(uuid())
+  id           String        @id @default(uuid())
   name         String
-  description String?
   prepTimeMin  Int?
   servings     Int?
   difficulty   String?
-  instructions String[]
   calories     Float?
   proteins     Float?
   carbs        Float?
   fat          Float?
   fibers       Float?
-  isVegetarian Boolean      @default(false)
-  isVegan      Boolean      @default(false)
-  isGlutenFree Boolean      @default(false)
-  isDairyFree  Boolean      @default(false)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  userId       String       @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  isVegetarian Boolean       @default(false)
+  isVegan      Boolean       @default(false)
+  isGlutenFree Boolean       @default(false)
+  isDairyFree  Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  userId       String        @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   imagePath    String?
-  messageId    String?      @unique
+  messageId    String?       @unique
+  description  String?
+  instructions String[]
   ingredients  Ingredient[]
-  mealPlans    MealPlan[]
-  Message      Message?     @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  user         User         @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Message      Message?      @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  savedRecipes SavedRecipe[]
 }
 
-model MealPlan {
+model SavedRecipe {
   recipeId        String
   plannedFor      DateTime
   createdAt       DateTime @default(now())
@@ -69,13 +69,13 @@ model MealPlan {
 }
 
 model User {
-  username  String        @unique
-  createdAt DateTime?     @default(now()) @db.Date
-  updatedAt DateTime?     @db.Date
-  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  chats     ChatSession[]
-  mealPlan  MealPlan[]
-  recipes   Recipe[]
+  username     String        @unique
+  createdAt    DateTime?     @default(now()) @db.Date
+  updatedAt    DateTime?     @db.Date
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  chats        ChatSession[]
+  recipes      Recipe[]
+  savedRecipes SavedRecipe[]
 }
 
 model ChatSession {

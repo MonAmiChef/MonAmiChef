@@ -11,7 +11,7 @@ import { Pressable } from 'react-native';
 import { Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
-export default function MealPlanOptionsSheet({
+export default function SavedRecipesOptionsSheet({
   isOpen,
   onClose,
   handleDelete,
@@ -38,7 +38,7 @@ export default function MealPlanOptionsSheet({
             >
               <Trash2 size={20} color="#dc2626" />
               <Text className="text-red-600 font-inter-bold text-base">
-                {t('meal_plan.remove')}
+                {t('saved_recipes.remove')}
               </Text>
             </Pressable>
           </VStack>

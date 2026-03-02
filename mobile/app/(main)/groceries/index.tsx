@@ -122,7 +122,7 @@ export default function GroceriesPage() {
     <Box className="flex-1 bg-[#fffdfb]  p-4">
       {formattedData?.length > 0 && (
         <Text className="text-2xl px-4 text-black font-inter-medium">
-          {t('meal_plan.subtitle')}
+          {t('saved_recipes.subtitle')}
         </Text>
       )}
       <FlashList

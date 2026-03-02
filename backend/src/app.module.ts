@@ -43,9 +43,9 @@ import { PrismaService } from './prisma.service';
 import { UnsplashService } from './unsplash/unsplash.service';
 import { RecipesService } from './recipes/recipes.service';
 import { RecipesRepository } from './recipes/recipes.repository';
-import { MealPlanController } from './meal-plan/meal-plan.controller';
-import { MealPlanService } from './meal-plan/meal-plan.service';
-import { MealPlanRepository } from './meal-plan/meal-plan.repository';
+import { SavedRecipesController } from './saved-recipes/saved-recipes.controller';
+import { SavedRecipesService } from './saved-recipes/saved-recipes.service';
+import { SavedRecipesRepository } from './saved-recipes/saved-recipes.repository';
 import { GroceriesController } from './groceries/groceries.controller';
 import { GroceriesService } from './groceries/groceries.service';
 import { GroceriesRepository } from './groceries/groceries.repository';
@@ -115,7 +115,7 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     HealthController,
     CalculateCaloriesController,
     ChatSessionsController,
-    MealPlanController,
+    SavedRecipesController,
     GroceriesController,
     RecipesController,
   ],
@@ -123,7 +123,7 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     ParseGroceriesService,
     PrismaService,
     ChatSessionsRepository,
-    MealPlanRepository,
+    SavedRecipesRepository,
     RecipesRepository,
     GroceriesRepository,
     AiAssistantService,
@@ -151,7 +151,7 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     ChatSessionsService,
     UnsplashService,
     RecipesService,
-    MealPlanService,
+    SavedRecipesService,
     GroceriesService,
   ],
 })

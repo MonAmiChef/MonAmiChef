@@ -62,7 +62,7 @@ export class RecipesRepository {
     userId: string,
     recipeId: string,
   ): Promise<boolean> {
-    const result = await this.prismaService.mealPlan.findUnique({
+    const result = await this.prismaService.savedRecipe.findUnique({
       where: {
         recipeId_userId: {
           recipeId,
@@ -76,7 +76,7 @@ export class RecipesRepository {
 
   async addExistingRecipeToPlan(recipeId: string, userId: string) {
     try {
-      const entry = await this.prismaService.mealPlan.create({
+      const entry = await this.prismaService.savedRecipe.create({
         data: {
           recipeId,
           userId,
@@ -107,7 +107,7 @@ export class RecipesRepository {
     messageId: string;
     recipeData: Omit<
       Prisma.RecipeUncheckedCreateInput,
-      'userId' | 'messageId' | 'ingredients' | 'mealPlans' | 'id'
+      'userId' | 'messageId' | 'ingredients' | 'savedRecipes' | 'id'
     >;
     ingredients: Ingredient[];
   }) {
@@ -143,7 +143,7 @@ export class RecipesRepository {
           create: ingredientsWithRefs,
         },
 
-        mealPlans: {
+        savedRecipes: {
           create: {
             userId,
             plannedFor: new Date(),

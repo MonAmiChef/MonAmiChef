@@ -40,7 +40,7 @@
       "clause_1": "1. Information We Collect",
       "clause_1_text": "We collect information you provide directly to us, including your email address, profile details, and nutritional preferences (such as protein targets and dietary restrictions).",
       "clause_2": "2. How We Use Your Data",
-      "clause_2_text": "Your data is used to generate personalized meal plans, calculate macros per serving, and improve our AI's ability to suggest recipes tailored to your lifestyle.",
+      "clause_2_text": "Your data is used to generate personalized saved recipes, calculate macros per serving, and improve our AI's ability to suggest recipes tailored to your lifestyle.",
       "clause_3": "3. Local Data Storage",
       "clause_3_text": "Certain features, such as the ingredient checklist, are stored locally on your device and may be reset when you close the application.",
       "clause_4": "4. Data Security",
@@ -53,7 +53,7 @@
     "new_chat": "New Chat",
     "chats": "Chats",
     "failed_retrieving_sessions": "Failed to retrieve sessions",
-    "meal_plan": "Meal plan",
+    "saved_recipes": "Saved recipes",
     "groceries": "Grocery list"
   },
   "groceries": {
@@ -80,14 +80,14 @@
   "remove_modal": {
     "title": "Remove recipe",
     "confirm_text_groceries": "Are you sure you want to remove this item from the grocery list?",
-    "confirm_text_meal_plan": "Are you sure you want to remove this item from the meal plan?",
+    "confirm_text_saved_recipes": "Are you sure you want to remove this recipe from your saved recipes?",
     "cancel": "Cancel",
     "confirm": "Remove recipe"
   },
   "chat": {
     "chef_typing": "The chef is preparing...",
-    "add_to_meal_plan": "Add to meal plan",
-    "already_in_meal_plan": "Already in meal plan",
+    "add_to_saved_recipes": "Save recipe",
+    "already_saved": "Already saved",
     "cancel": "Cancel",
     "suggest_recipe": "Please suggest a recipe or cooking advice based on the following preferences: {{preferences}}",
     "suggest_recipe_exclusions": "and following exclusions {{exclusions}}",
@@ -100,12 +100,12 @@
       "spicy": "🌶️ Spicy recipe to impress guests"
     }
   },
-  "meal_plan": {
-    "title": "Meal plan",
+  "saved_recipes": {
+    "title": "Saved recipes",
     "subtitle": "Recipes",
-    "empty": "Your meal plan is empty, generate a recipe first",
+    "empty": "No saved recipes yet, generate one first",
     "go_to_chat": "Go to chat",
-    "remove": "Remove from meal plan"
+    "remove": "Remove from saved recipes"
   },
   "not_found": {
     "screen": "This screen doesn't exist.",
@@ -183,10 +183,10 @@
   "toast": {
     "success": "Success",
     "error": "An error occured",
-    "added_to_plan": "The recipe was added to the plan",
-    "error_added_to_plan": "The recipe was added to the plan",
-    "removed_from_plan": "The recipe was removed from plan",
-    "error_removed_from_plan": "The recipe was could not be removed from the plan",
+    "added_to_plan": "Recipe saved",
+    "error_added_to_plan": "Failed to save recipe",
+    "removed_from_plan": "Recipe removed",
+    "error_removed_from_plan": "Failed to remove recipe",
     "removed_from_groceries": "The recipe was removed from groceries",
     "error_toggling_item": "Failed updating item",
     "recipe_was": "The recipe",
