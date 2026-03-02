@@ -31,7 +31,7 @@ export default function SavedRecipesPage() {
     id: string;
     name: string;
   } | null>(null);
-  const { data, isLoading, refetch, isRefetching } = useQuery({
+  const { data, isLoading, isRefetching, refetch } = useQuery({
     queryKey: ['saved-recipes'],
     queryFn: () => savedRecipesApi.getSavedRecipes(session!),
     enabled: !!session,
@@ -41,7 +41,7 @@ export default function SavedRecipesPage() {
   const [showConfirmRemove, setShowConfirmRemove] = useState(false);
   const queryClient = useQueryClient();
 
-  const { data: recipesInGroceries, refetch: refetchGroceries } = useQuery({
+  const { data: recipesInGroceries } = useQuery({
     queryKey: ['groceries-recipes'],
     queryFn: () => savedRecipesApi.getGroceriesRecipes(session!),
     enabled: !!session,
@@ -54,7 +54,9 @@ export default function SavedRecipesPage() {
   const removeFromSavedMutation = useMutation({
     mutationFn: (recipeId: string) =>
       savedRecipesApi.removeFromSavedRecipes(session!, recipeId),
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['saved-recipes'] });
+      await queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
       Toast.show({
         text1: t('toast.success'),
         text2: t('toast.removed_from_plan'),
@@ -106,8 +108,6 @@ export default function SavedRecipesPage() {
     if (selectedRecipe) {
       removeFromSavedMutation.mutate(selectedRecipe.id);
       setShowSheet(false);
-      void refetch();
-      void refetchGroceries();
     }
   };
 
@@ -242,7 +242,6 @@ export default function SavedRecipesPage() {
             recipeId: selectedRecipe?.id ?? '',
             newState: false,
           });
-          void refetchGroceries();
         }}
       />
     </Box>

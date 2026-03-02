@@ -144,7 +144,8 @@ export default function RecipeDetailPage() {
       recipeId: string;
       newState: boolean;
     }) => savedRecipesApi.addToGroceries(session!, recipeId, newState),
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
       Toast.show({
         text1: t('toast.success'),
         text2: t('toast.add_grocery'),
@@ -235,7 +236,6 @@ export default function RecipeDetailPage() {
                     recipeId: id as string,
                     newState: true,
                   });
-                  void refetchGroceries();
                 }
               }}
             >
