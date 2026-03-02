@@ -76,7 +76,8 @@
     "added": "",
     "removed": "",
     "error_add_grocery": "",
-    "add_grocery": ""
+    "add_grocery": "",
+    "error_send_message": ""
   },
   "chat": {
     "already_in_meal_plan": "",

@@ -23,6 +23,7 @@ import { PreferencesQuickSelector } from '@/components/chat/PreferencesQuickSele
 import { PreferenceActionSheet } from '@/components/chat/PreferenceActionSheet';
 import Logo from '@/assets/images/monamichef_bg_less.png';
 import { ScrollView } from 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message';
 
 const default_prompts: Array<{
   text: string;
@@ -105,16 +106,29 @@ export default function NewChat() {
       setOptimisticMessage(null);
       router.replace(`/(main)/chat/${data.id}`);
     },
+    onError: () => {
+      setOptimisticMessage(null);
+      Toast.show({
+        text1: t('toast.error'),
+        text2: t('toast.error_send_message'),
+        type: 'error',
+      });
+    },
   });
 
   const handleSend = (msg: string) => {
     if (mutation.isPending) return;
 
     if (msg === '') {
-      if (i18n.language === 'en') {
-        msg = `Please suggest a recipe or cooking advice based on the following preferences: ${selectedPreferences.join(', ')} ${selectedExclude.length > 0 ? `and following exclusions ${selectedExclude.join(',')}` : ''}`;
-      } else if (i18n.language === 'fr') {
-        msg = `Peux-tu me suggérer une recette ou des conseils de cuisine basés sur les préférences suivantes: ${selectedPreferences.join(', ')} ${selectedExclude.length > 0 ? `et en excluant les ingrédients suivants ${selectedExclude.join(',')}` : ''}`;
+      msg = t('chat.suggest_recipe', {
+        preferences: selectedPreferences.join(', '),
+      });
+      if (selectedExclude.length > 0) {
+        msg +=
+          ' ' +
+          t('chat.suggest_recipe_exclusions', {
+            exclusions: selectedExclude.join(', '),
+          });
       }
     }
 
