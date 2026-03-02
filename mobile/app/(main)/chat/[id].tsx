@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
-  Platform,
   Pressable,
   Text,
   View,
@@ -23,6 +22,7 @@ import { ChatInput } from '@/components/chat/ChatInput';
 import { useEffect, useRef, useState } from 'react';
 import { components } from '@/types/api';
 import Drawer from 'expo-router/drawer';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { WaveText } from '@/components/chat/WaveText';
 import { HStack } from '@/components/ui/hstack';
 import { PreferenceTag } from '@/constants/PreferencesTags';
@@ -52,14 +52,7 @@ export default function ChatScreen() {
   const [message, setMessage] = useState('');
   const [selectedRecipeId, setSelectedRecipeId] = useState('');
   const [pendingAddId, setPendingAddId] = useState<string | null>(null);
-  const [kbKey, setKbKey] = useState(0);
-
-  useEffect(() => {
-    const hide = Keyboard.addListener('keyboardDidHide', () => {
-      setKbKey((k) => k + 1);
-    });
-    return () => hide.remove();
-  }, []);
+  const headerHeight = useHeaderHeight();
 
   const [selectedPreferences, setSelectedPreferences] = useState<
     PreferenceTag[]
@@ -254,125 +247,124 @@ export default function ChatScreen() {
 
   return (
     <>
-      <View className="flex-1 bg-base-bg pb-4">
-        <Drawer.Screen
-          options={{
-            headerTitle: data?.title || 'MonAmiChef',
-          }}
-        />
-        <FlashList
-          ref={flashListRef}
-          showsVerticalScrollIndicator={false}
-          data={data?.messages}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={{
-            paddingHorizontal: 16,
-            paddingVertical: 20,
-            backgroundColor: '#fffdfb',
-          }}
-          renderItem={({ item }) => {
-            const isModel = item.role === 'model';
-            const formattedContent = item.content.replace(/\n/g, '\n\n');
-            const messageDate = new Date(item.createdAt);
-            const isAlreadyInPlan = mealPlan?.find(
-              (meal: any) => meal.recipe.messageId === item.id,
-            );
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior="padding"
+        keyboardVerticalOffset={headerHeight}
+      >
+        <View className="flex-1 bg-base-bg pb-4">
+          <Drawer.Screen
+            options={{
+              headerTitle: data?.title || 'MonAmiChef',
+            }}
+          />
+          <FlashList
+            ref={flashListRef}
+            showsVerticalScrollIndicator={false}
+            data={data?.messages}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={{
+              paddingHorizontal: 16,
+              paddingVertical: 20,
+              backgroundColor: '#fffdfb',
+            }}
+            renderItem={({ item }) => {
+              const isModel = item.role === 'model';
+              const formattedContent = item.content.replace(/\n/g, '\n\n');
+              const messageDate = new Date(item.createdAt);
+              const isAlreadyInPlan = mealPlan?.find(
+                (meal: any) => meal.recipe.messageId === item.id,
+              );
 
-            if (item.id === 'temp-loading-id') {
+              if (item.id === 'temp-loading-id') {
+                return (
+                  <Box className="w-full py-6 flex-row gap-3 items-center">
+                    <ActivityIndicator size="small" color="#ff6900" />
+                    <WaveText
+                      text={t('chat.chef_typing')}
+                      color="#FF9800"
+                      fontSize={14}
+                    />
+                  </Box>
+                );
+              }
+
+              if (isModel) {
+                return (
+                  <Box className="w-full py-6">
+                    <Markdown mergeStyle={true} style={markdownStyles}>
+                      {formattedContent}
+                    </Markdown>
+                    {item.isRecipe &&
+                      (isAlreadyInPlan ? (
+                        <Pressable
+                          onPress={() => {
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                            setSelectedRecipeId(isAlreadyInPlan.recipeId);
+                            setShowConfirmRemove(true);
+                          }}
+                          className="mt-2 flex gap-2 flex-row w-full justify-center items-center rounded-xl border border-green-300 bg-green-100 py-2.5"
+                        >
+                          <Check size={18} color="#008236" />
+                          <Text className="font-inter-medium text-md text-green-700">
+                            {t('chat.already_in_meal_plan')}
+                          </Text>
+                        </Pressable>
+                      ) : (
+                        <Pressable
+                          onPress={() => {
+                            if (!pendingAddId) {
+                              addMealMutation.mutate({
+                                content: item.content,
+                                id: item.id,
+                              });
+                            }
+                          }}
+                          disabled={pendingAddId === item.id}
+                          className={`mt-2 flex gap-2 flex-row w-full justify-center items-center rounded-xl border py-2.5 ${
+                            pendingAddId === item.id
+                              ? 'border-gray-300 bg-gray-100 opacity-70'
+                              : 'border-green-300 bg-green-100 active:bg-green-200'
+                          }`}
+                        >
+                          {pendingAddId === item.id ? (
+                            <ActivityIndicator size="small" color="#008236" />
+                          ) : (
+                            <>
+                              <ShoppingCart size={18} color="#008236" />
+                              <Text className="font-inter-medium text-md text-green-700">
+                                {t('chat.add_to_meal_plan')}
+                              </Text>
+                            </>
+                          )}
+                        </Pressable>
+                      ))}
+                  </Box>
+                );
+              }
+
               return (
-                <Box className="w-full py-6 flex-row gap-3 items-center">
-                  <ActivityIndicator size="small" color="#ff6900" />
-                  <WaveText
-                    text={t('chat.chef_typing')}
-                    color="#FF9800"
-                    fontSize={14}
-                  />
+                <Box className="bg-orange-500 self-end gap-1 px-4 py-3 rounded-2xl rounded-tr-none mb-2 max-w-[80%]">
+                  <Text className="text-white text-[15px] font-medium">
+                    {item.content}
+                  </Text>
+                  <HStack className="self-end gap-1">
+                    <Text className="text-orange-200 self-end text-xs font-medium">
+                      {messageDate.toLocaleDateString(i18n.language)}
+                    </Text>
+                    <Text className="text-orange-200 self-end text-xs font-medium">
+                      {messageDate.toLocaleTimeString(i18n.language, {
+                        hour: 'numeric',
+                        minute: 'numeric',
+                      })}
+                    </Text>
+                  </HStack>
                 </Box>
               );
-            }
-
-            if (isModel) {
-              return (
-                <Box className="w-full py-6">
-                  <Markdown mergeStyle={true} style={markdownStyles}>
-                    {formattedContent}
-                  </Markdown>
-                  {item.isRecipe &&
-                    (isAlreadyInPlan ? (
-                      <Pressable
-                        onPress={() => {
-                          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                          setSelectedRecipeId(isAlreadyInPlan.recipeId);
-                          setShowConfirmRemove(true);
-                        }}
-                        className="mt-2 flex gap-2 flex-row w-full justify-center items-center rounded-xl border border-green-300 bg-green-100 py-2.5"
-                      >
-                        <Check size={18} color="#008236" />
-                        <Text className="font-inter-medium text-md text-green-700">
-                          {t('chat.already_in_meal_plan')}
-                        </Text>
-                      </Pressable>
-                    ) : (
-                      <Pressable
-                        onPress={() => {
-                          if (!pendingAddId) {
-                            addMealMutation.mutate({
-                              content: item.content,
-                              id: item.id,
-                            });
-                          }
-                        }}
-                        disabled={pendingAddId === item.id}
-                        className={`mt-2 flex gap-2 flex-row w-full justify-center items-center rounded-xl border py-2.5 ${
-                          pendingAddId === item.id
-                            ? 'border-gray-300 bg-gray-100 opacity-70'
-                            : 'border-green-300 bg-green-100 active:bg-green-200'
-                        }`}
-                      >
-                        {pendingAddId === item.id ? (
-                          <ActivityIndicator size="small" color="#008236" />
-                        ) : (
-                          <>
-                            <ShoppingCart size={18} color="#008236" />
-                            <Text className="font-inter-medium text-md text-green-700">
-                              {t('chat.add_to_meal_plan')}
-                            </Text>
-                          </>
-                        )}
-                      </Pressable>
-                    ))}
-                </Box>
-              );
-            }
-
-            return (
-              <Box className="bg-orange-500 self-end gap-1 px-4 py-3 rounded-2xl rounded-tr-none mb-2 max-w-[80%]">
-                <Text className="text-white text-[15px] font-medium">
-                  {item.content}
-                </Text>
-                <HStack className="self-end gap-1">
-                  <Text className="text-orange-200 self-end text-xs font-medium">
-                    {messageDate.toLocaleDateString(i18n.language)}
-                  </Text>
-                  <Text className="text-orange-200 self-end text-xs font-medium">
-                    {messageDate.toLocaleTimeString(i18n.language, {
-                      hour: 'numeric',
-                      minute: 'numeric',
-                    })}
-                  </Text>
-                </HStack>
-              </Box>
-            );
-          }}
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          onContentSizeChange={(w, h) => {}}
-        />
-
-        <KeyboardAvoidingView
-          key={kbKey}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'position'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 110 : 80}
-        >
+            }}
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            onContentSizeChange={(w, h) => {}}
+          />
           <PreferencesQuickSelector
             selectedPreferences={selectedPreferences}
             selectedExclude={selectedExclude}
@@ -389,8 +381,8 @@ export default function ChatScreen() {
             }}
             isLoading={mutation.isPending}
           />
-        </KeyboardAvoidingView>
-      </View>
+        </View>
+      </KeyboardAvoidingView>
       <PreferenceActionSheet
         selectedPreferences={selectedPreferences}
         selectedExclude={selectedExclude}

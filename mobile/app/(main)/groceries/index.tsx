@@ -132,7 +132,7 @@ export default function GroceriesPage() {
             ? `header-${item.title}`
             : `item-${item.ingredientIds.join('-')}`
         }
-        contentContainerStyle={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1 }}
         ListEmptyComponent={() => (
           <Box className="flex h-[75%] bg-[#fffdfb] px-2 justify-center items-center gap-6">
             <View className="w-24 h-24 bg-orange-50 rounded-full items-center justify-center">
