@@ -88,9 +88,13 @@ export class ChatSessionsRepository {
   async updateChat({
     chatId,
     messages,
+    preferences,
+    exclude,
   }: {
     chatId: string;
     messages: { content: string; role: MessageRole; isRecipe?: boolean }[];
+    preferences: PreferenceTag[];
+    exclude: PreferenceTag[];
   }): Promise<{ messages: Message[] }> {
     const formatedMessages = messages.map((msg) => ({
       chatId: chatId,
@@ -99,12 +103,18 @@ export class ChatSessionsRepository {
       isRecipe: msg.isRecipe ?? false,
     }));
 
-    const result = await this.prismaService.message.createManyAndReturn({
-      data: formatedMessages,
-    });
+    const [, result] = await this.prismaService.$transaction([
+      this.prismaService.chatSession.update({
+        where: { id: chatId },
+        data: { preferences, exclude },
+      }),
+      this.prismaService.message.createManyAndReturn({
+        data: formatedMessages,
+      }),
+    ]);
 
     return {
-      messages: result,
+      messages: result as Message[],
     };
   }
 }

@@ -146,6 +146,8 @@ export class ChatSessionsService {
         { content: message, role: 'user', isRecipe: false },
         { content: text, role: 'model', isRecipe },
       ],
+      preferences,
+      exclude,
     });
 
     return {
