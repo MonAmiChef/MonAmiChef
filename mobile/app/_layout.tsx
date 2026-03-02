@@ -19,6 +19,8 @@ import {
 import '../global.css';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { StatusBar } from 'expo-status-bar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { toastConfig } from '@/components/ToastConfig';
 import '../i18n';
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -60,6 +62,7 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const [colorMode] = useState<'light' | 'dark'>('light');
+  const insets = useSafeAreaInsets();
 
   return (
     <ThemeProvider value={DefaultTheme}>
@@ -87,7 +90,7 @@ function RootLayoutNav() {
             }}
           />
         </Stack>
-        <Toast />
+        <Toast config={toastConfig} topOffset={insets.top + 10} />
       </GluestackUIProvider>
     </ThemeProvider>
   );
