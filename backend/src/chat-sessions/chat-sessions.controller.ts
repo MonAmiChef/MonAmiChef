@@ -33,8 +33,8 @@ export class ChatSessionsController {
     status: 200,
     type: GetChatSessionResponseDto,
   })
-  async getChat(@Param('id') chatId: string) {
-    return this.chatSessionsService.getChat({ chatId });
+  async getChat(@Param('id') chatId: string, @Req() req: AuthenticatedRequest) {
+    return this.chatSessionsService.getChat({ chatId, userId: req.user.id });
   }
 
   @Get()
@@ -74,9 +74,11 @@ export class ChatSessionsController {
   async updateChat(
     @Param('id') chatId: string,
     @Body() body: UpdateChatSessionRequestDto,
+    @Req() req: AuthenticatedRequest,
   ) {
     return this.chatSessionsService.updateChat({
       chatId,
+      userId: req.user.id,
       message: body.message,
       preferences: body.preferences as PreferenceTag[],
       exclude: body.exclude as PreferenceTag[],
