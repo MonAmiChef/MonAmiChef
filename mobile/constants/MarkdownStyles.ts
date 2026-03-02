@@ -1,7 +1,7 @@
 export const markdownStyles = {
   body: {
-    color: '#1e293b',
-    fontSize: 16,
+    color: '#334155',
+    fontSize: 15,
     lineHeight: 24,
   },
   hr: {
@@ -9,37 +9,40 @@ export const markdownStyles = {
     marginVertical: 5,
   },
   strong: {
-    color: '#000',
-    fontFamily: 'Inter_500Medium',
+    color: '#1e293b',
+    fontFamily: 'Inter_600SemiBold',
   },
   paragraph: {
     marginBottom: 10,
     fontSize: 15,
-    lineHeight: 22,
+    lineHeight: 24,
     color: '#334155',
   },
   bullet_list: {
     marginBottom: 10,
   },
   list_item: {
-    marginBottom: 2,
+    marginBottom: 4,
   },
   heading1: {
-    marginBottom: 5,
+    marginTop: 8,
+    marginBottom: 6,
     fontSize: 20,
+    color: '#0f172a',
     fontFamily: 'Inter_700Bold',
   },
   heading2: {
-    marginTop: 5,
-    marginBottom: 10,
-    color: '#000',
-    fontSize: 18,
-    fontFamily: 'Inter_700Bold',
+    marginTop: 10,
+    marginBottom: 6,
+    fontSize: 17,
+    color: '#f97316',
+    fontFamily: 'Inter_600SemiBold',
   },
   heading3: {
-    marginVertical: 5,
-    color: '#000',
-    fontSize: 18,
-    fontFamily: 'Inter_600SemiBold',
+    marginTop: 8,
+    marginBottom: 4,
+    fontSize: 15,
+    color: '#1e293b',
+    fontFamily: 'Inter_500Medium',
   },
 };
