@@ -25,12 +25,15 @@ export class ChatSessionsRepository {
 
   async getChat({
     chatId,
+    userId,
   }: {
     chatId: string;
+    userId: string;
   }): Promise<(ChatSession & { messages: Message[] }) | null> {
     return this.prismaService.chatSession.findUnique({
       where: {
         id: chatId,
+        userId,
       },
       include: {
         messages: {

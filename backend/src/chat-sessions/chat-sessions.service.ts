@@ -35,10 +35,12 @@ export class ChatSessionsService {
 
   async getChat({
     chatId,
+    userId,
   }: {
     chatId: string;
+    userId: string;
   }): Promise<GetChatSessionResponse> {
-    const chat = await this.chatSessionsRepository.getChat({ chatId });
+    const chat = await this.chatSessionsRepository.getChat({ chatId, userId });
 
     if (!chat) {
       throw new NotFoundException(`Failed to retrieve chat with id ${chatId}`);
@@ -111,18 +113,20 @@ export class ChatSessionsService {
 
   async updateChat({
     chatId,
+    userId,
     message,
     preferences,
     exclude,
     language,
   }: {
     chatId: string;
+    userId: string;
     message: string;
     preferences: PreferenceTag[];
     exclude: PreferenceTag[];
     language: string;
   }): Promise<UpdateChatSessionResponse> {
-    const chat = await this.getChat({ chatId });
+    const chat = await this.getChat({ chatId, userId });
 
     if (!chat) {
       throw new NotFoundException(`Chat ${chatId} non trouvé`);
