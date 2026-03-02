@@ -144,10 +144,15 @@ export default function ChatScreen() {
       return { previousData };
     },
 
-    onError: (err, newMessage, context) => {
+    onError: (_err, _newMessage, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(['chat-session', id], context.previousData);
       }
+      Toast.show({
+        type: 'error',
+        text1: t('toast.error'),
+        text2: t('toast.error_send_message'),
+      });
     },
 
     onSettled: async () => {

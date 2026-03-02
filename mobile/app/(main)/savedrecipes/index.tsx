@@ -123,7 +123,7 @@ export default function SavedRecipesPage() {
       )}
       <FlatList
         data={data}
-        contentContainerStyle={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1 }}
         keyExtractor={(item) => item.recipeId}
         numColumns={1}
         showsVerticalScrollIndicator={false}

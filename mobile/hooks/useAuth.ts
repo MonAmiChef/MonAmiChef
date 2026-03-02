@@ -84,13 +84,28 @@ export const useAuth = () => {
         text1: t('toast.error_register'),
         text2: error.message,
       });
-    } else {
+      setLoading(false);
+      return;
+    }
+
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (signInError) {
       Toast.show({
         type: 'success',
         text1: t('toast.success_register'),
         text2: t('toast.please_login'),
       });
       router.replace('/(auth)/login');
+    } else {
+      Toast.show({
+        type: 'success',
+        text1: t('toast.success_register'),
+      });
+      router.replace('/(main)');
     }
     setLoading(false);
   };
