@@ -133,7 +133,7 @@ export default function ChatScreen() {
 
       const loadingMessage: ChatMessage = {
         id: 'temp-loading-id',
-        content: 'Le chef prépare sa réponse...',
+        content: t('chat.chef_typing'),
         role: 'model',
         isRecipe: false,
         createdAt: new Date().toISOString(),
@@ -184,10 +184,15 @@ export default function ChatScreen() {
     if (mutation.isPending) return;
 
     if (msg === '') {
-      if (i18n.language === 'en') {
-        msg = `Please suggest a recipe or cooking advice based on the following preferences: ${selectedPreferences.join(', ')} ${selectedExclude.length > 0 ? `and following exclusions ${selectedExclude.join(',')}` : ''}`;
-      } else if (i18n.language === 'fr') {
-        msg = `Peux-tu me suggérer une recette ou des conseils de cuisine basés sur les préférences suivantes: ${selectedPreferences.join(', ')} ${selectedExclude.length > 0 ? `et en excluant les ingrédients suivants ${selectedExclude.join(',')}` : ''}`;
+      msg = t('chat.suggest_recipe', {
+        preferences: selectedPreferences.join(', '),
+      });
+      if (selectedExclude.length > 0) {
+        msg +=
+          ' ' +
+          t('chat.suggest_recipe_exclusions', {
+            exclusions: selectedExclude.join(', '),
+          });
       }
     }
 
@@ -278,7 +283,7 @@ export default function ChatScreen() {
                 <Box className="w-full py-6 flex-row gap-3 items-center">
                   <ActivityIndicator size="small" color="#ff6900" />
                   <WaveText
-                    text="Le chef prépare sa réponse..."
+                    text={t('chat.chef_typing')}
                     color="#FF9800"
                     fontSize={14}
                   />
@@ -347,10 +352,10 @@ export default function ChatScreen() {
                 </Text>
                 <HStack className="self-end gap-1">
                   <Text className="text-orange-200 self-end text-xs font-medium">
-                    {messageDate.toLocaleDateString('fr-FR')}
+                    {messageDate.toLocaleDateString(i18n.language)}
                   </Text>
                   <Text className="text-orange-200 self-end text-xs font-medium">
-                    {messageDate.toLocaleTimeString('fr-FR', {
+                    {messageDate.toLocaleTimeString(i18n.language, {
                       hour: 'numeric',
                       minute: 'numeric',
                     })}

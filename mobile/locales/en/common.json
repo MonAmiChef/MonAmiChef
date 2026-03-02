@@ -89,6 +89,8 @@
     "add_to_meal_plan": "Add to meal plan",
     "already_in_meal_plan": "Already in meal plan",
     "cancel": "Cancel",
+    "suggest_recipe": "Please suggest a recipe or cooking advice based on the following preferences: {{preferences}}",
+    "suggest_recipe_exclusions": "and following exclusions {{exclusions}}",
     "default_prompts": {
       "title": "Don't know where to start? Try these!",
       "quick": "⏱️ Quick dinner in 20 minutes",
@@ -192,6 +194,7 @@
     "removed": "removed from grocery list",
     "add_grocery": "The recipe was added to the grocery list",
     "error_add_grocery": "An error occured while adding the recipe",
+    "error_send_message": "Failed to send message, please try again",
     "fail_guest": "Failed to log in as guest",
     "error_login": "Failed to login",
     "error_register": "Failed to register",

@@ -87,6 +87,8 @@
     "chef_typing": "Le chef prépare sa réponse...",
     "add_to_meal_plan": "Ajouter au plan de repas",
     "already_in_meal_plan": "Déjà dans le plan",
+    "suggest_recipe": "Peux-tu me suggérer une recette ou des conseils de cuisine basés sur les préférences suivantes: {{preferences}}",
+    "suggest_recipe_exclusions": "et en excluant les ingrédients suivants {{exclusions}}",
     "default_prompts": {
       "title": "Perdu? Essayez ca!",
       "quick": "⏱️ Dinner rapide en 20 minutes",
@@ -190,6 +192,7 @@
     "removed": "retirée de la liste de courses",
     "add_grocery": "Le recette a été ajoutée à la liste de courses",
     "error_add_grocery": "Impossible d'ajouter le repas",
+    "error_send_message": "Impossible d'envoyer le message, veuillez réessayer",
     "fail_guest": "Échec de la connexion anonyme",
     "error_login": "Échec de l'authentification",
     "error_register": "Échec de le création de compte",
