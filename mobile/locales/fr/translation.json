@@ -46,17 +46,17 @@
   "back": "back",
   "drawer": {
     "new_chat": "drawer.new_chat",
-    "meal_plan": "drawer.meal_plan",
+    "saved_recipes": "drawer.saved_recipes",
     "groceries": "drawer.groceries",
     "chats": "drawer.chats",
     "failed_retrieving_sessions": "drawer.failed_retrieving_sessions"
   },
-  "meal_plan": {
-    "title": "meal_plan.title",
-    "subtitle": "meal_plan.subtitle",
-    "empty": "meal_plan.empty",
-    "go_to_chat": "meal_plan.go_to_chat",
-    "remove": "meal_plan.remove"
+  "saved_recipes": {
+    "title": "saved_recipes.title",
+    "subtitle": "saved_recipes.subtitle",
+    "empty": "saved_recipes.empty",
+    "go_to_chat": "saved_recipes.go_to_chat",
+    "remove": "saved_recipes.remove"
   },
   "groceries": {
     "title": "groceries.title",
@@ -80,15 +80,15 @@
     "error_send_message": "toast.error_send_message"
   },
   "chat": {
-    "already_in_meal_plan": "chat.already_in_meal_plan",
-    "add_to_meal_plan": "chat.add_to_meal_plan",
+    "already_in_saved_recipes": "chat.already_in_saved_recipes",
+    "add_to_saved_recipes": "chat.add_to_saved_recipes",
     "chef_typing": "chat.chef_typing",
     "default_prompts": {
       "title": "chat.default_prompts.title"
     }
   },
   "remove_modal": {
-    "confirm_text_meal_plan": "remove_modal.confirm_text_meal_plan",
+    "confirm_text_saved_recipes": "remove_modal.confirm_text_saved_recipes",
     "confirm_text_groceries": "remove_modal.confirm_text_groceries",
     "title": "remove_modal.title",
     "cancel": "remove_modal.cancel",

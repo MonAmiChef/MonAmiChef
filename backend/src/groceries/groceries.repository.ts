@@ -15,7 +15,7 @@ export class GroceriesRepository {
     recipeId: string,
     newState: boolean,
   ) {
-    return this.prismaService.mealPlan.update({
+    return this.prismaService.savedRecipe.update({
       where: {
         recipeId_userId: {
           userId,
@@ -29,7 +29,7 @@ export class GroceriesRepository {
   }
 
   async getUserRecipesInGroceries(userId: string) {
-    return this.prismaService.mealPlan.findMany({
+    return this.prismaService.savedRecipe.findMany({
       where: {
         userId,
         isInGroceryList: true,
@@ -38,7 +38,7 @@ export class GroceriesRepository {
   }
 
   async getUserGroceries(userId: string) {
-    const mealPlans = await this.prismaService.mealPlan.findMany({
+    const savedRecipes = await this.prismaService.savedRecipe.findMany({
       where: {
         userId,
         isInGroceryList: true,
@@ -58,7 +58,7 @@ export class GroceriesRepository {
       },
     });
 
-    const mergedIngredients = mealPlans.reduce(
+    const mergedIngredients = savedRecipes.reduce(
       (acc, plan) => {
         const recipeName = plan.recipe.name;
         const planServings = Number(plan.servings || 2);

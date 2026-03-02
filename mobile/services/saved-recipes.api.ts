@@ -1,20 +1,26 @@
 import { components } from '@/types/api';
 import { Session } from '@supabase/supabase-js';
 
-type AddMealRequest = components['schemas']['AddMealToPlanRequestDto'];
-type AddMealResponse = components['schemas']['AddMealToPlanResponseDto_Output'];
+type AddToSavedRecipesRequest =
+  components['schemas']['AddToSavedRecipesRequestDto'];
+type AddToSavedRecipesResponse =
+  components['schemas']['AddToSavedRecipesResponseDto_Output'];
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-export const mealPlanApi = {
-  addMealToPlan: async (
+export const savedRecipesApi = {
+  addToSavedRecipes: async (
     language: string,
     messageContent: string,
     messageId: string,
     session: Session,
-  ): Promise<AddMealResponse> => {
-    const body: AddMealRequest = { messageContent, messageId, language };
-    const response = await fetch(`${API_URL}/meal-plan/add`, {
+  ): Promise<AddToSavedRecipesResponse> => {
+    const body: AddToSavedRecipesRequest = {
+      messageContent,
+      messageId,
+      language,
+    };
+    const response = await fetch(`${API_URL}/saved-recipes/add`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -23,13 +29,13 @@ export const mealPlanApi = {
       body: JSON.stringify(body),
     });
 
-    if (!response.ok) throw new Error('Failed to add meal to plan');
+    if (!response.ok) throw new Error('Failed to add to saved recipes');
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await response.json();
   },
 
-  removeFromMealPlan: async (session: Session, recipeId: string) => {
-    const response = await fetch(`${API_URL}/meal-plan/remove`, {
+  removeFromSavedRecipes: async (session: Session, recipeId: string) => {
+    const response = await fetch(`${API_URL}/saved-recipes/remove`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -40,7 +46,7 @@ export const mealPlanApi = {
       }),
     });
 
-    if (!response.ok) throw new Error('Failed to remove meal from plan');
+    if (!response.ok) throw new Error('Failed to remove from saved recipes');
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await response.json();
   },
@@ -67,8 +73,8 @@ export const mealPlanApi = {
     return await response.json();
   },
 
-  getMealPlan: async (session: Session) => {
-    const response = await fetch(`${API_URL}/meal-plan`, {
+  getSavedRecipes: async (session: Session) => {
+    const response = await fetch(`${API_URL}/saved-recipes`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -76,7 +82,7 @@ export const mealPlanApi = {
       },
     });
 
-    if (!response.ok) throw new Error('Failed to fetch meal plan');
+    if (!response.ok) throw new Error('Failed to fetch saved recipes');
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await response.json();
   },

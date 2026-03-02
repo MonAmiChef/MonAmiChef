@@ -12,7 +12,7 @@ export const recipeApi = {
       },
     });
 
-    if (!response.ok) throw new Error('Failed to fetch meal plan');
+    if (!response.ok) throw new Error('Failed to fetch saved recipes');
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await response.json();
   },

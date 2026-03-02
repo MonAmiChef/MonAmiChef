@@ -46,12 +46,12 @@
   "back": "",
   "drawer": {
     "new_chat": "",
-    "meal_plan": "",
+    "saved_recipes": "",
     "groceries": "",
     "chats": "",
     "failed_retrieving_sessions": ""
   },
-  "meal_plan": {
+  "saved_recipes": {
     "title": "",
     "subtitle": "",
     "empty": "",
@@ -80,15 +80,15 @@
     "error_send_message": ""
   },
   "chat": {
-    "already_in_meal_plan": "",
-    "add_to_meal_plan": "",
+    "already_in_saved_recipes": "",
+    "add_to_saved_recipes": "",
     "chef_typing": "",
     "default_prompts": {
       "title": ""
     }
   },
   "remove_modal": {
-    "confirm_text_meal_plan": "",
+    "confirm_text_saved_recipes": "",
     "confirm_text_groceries": "",
     "title": "",
     "cancel": "",

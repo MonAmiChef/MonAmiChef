@@ -31,10 +31,10 @@ import { PreferenceActionSheet } from '@/components/chat/PreferenceActionSheet';
 import { t } from 'i18next';
 import { ShoppingCart, Check } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
-import { mealPlanApi } from '@/services/meal-plan.api';
+import { savedRecipesApi } from '@/services/saved-recipes.api';
 import { useTranslation } from 'react-i18next';
 import { getLanguageName } from '@/utils/get-language-name';
-import ConfirmRemoveModal from '@/components/meal-plan/ConfirmRemoveModal';
+import ConfirmRemoveModal from '@/components/saved-recipes/ConfirmRemoveModal';
 
 type ChatSession = components['schemas']['GetChatSessionResponseDto_Output'];
 type ChatMessage = ChatSession['messages'][number];
@@ -66,9 +66,9 @@ export default function ChatScreen() {
     enabled: !!id && !!session,
   });
 
-  const { data: mealPlan } = useQuery({
-    queryKey: ['meal-plan'],
-    queryFn: () => mealPlanApi.getMealPlan(session!),
+  const { data: savedRecipes } = useQuery({
+    queryKey: ['saved-recipes'],
+    queryFn: () => savedRecipesApi.getSavedRecipes(session!),
     enabled: !!session,
   });
 
@@ -76,9 +76,9 @@ export default function ChatScreen() {
 
   const removeFromPlanMutation = useMutation({
     mutationFn: (recipeId: string) =>
-      mealPlanApi.removeFromMealPlan(session!, recipeId),
+      savedRecipesApi.removeFromSavedRecipes(session!, recipeId),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['meal-plan'] });
+      await queryClient.invalidateQueries({ queryKey: ['saved-recipes'] });
       await queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
       Toast.show({
         text1: t('toast.success'),
@@ -195,7 +195,7 @@ export default function ChatScreen() {
 
   const addMealMutation = useMutation({
     mutationFn: (item: { content: string; id: string }) =>
-      mealPlanApi.addMealToPlan(
+      savedRecipesApi.addToSavedRecipes(
         getLanguageName(i18n.language),
         item.content,
         item.id,
@@ -272,7 +272,7 @@ export default function ChatScreen() {
               const isModel = item.role === 'model';
               const formattedContent = item.content.replace(/\n/g, '\n\n');
               const messageDate = new Date(item.createdAt);
-              const isAlreadyInPlan = mealPlan?.find(
+              const isAlreadyInPlan = savedRecipes?.find(
                 (meal: any) => meal.recipe.messageId === item.id,
               );
 
@@ -307,7 +307,7 @@ export default function ChatScreen() {
                         >
                           <Check size={18} color="#008236" />
                           <Text className="font-inter-medium text-md text-green-700">
-                            {t('chat.already_in_meal_plan')}
+                            {t('chat.already_saved')}
                           </Text>
                         </Pressable>
                       ) : (
@@ -333,7 +333,7 @@ export default function ChatScreen() {
                             <>
                               <ShoppingCart size={18} color="#008236" />
                               <Text className="font-inter-medium text-md text-green-700">
-                                {t('chat.add_to_meal_plan')}
+                                {t('chat.add_to_saved_recipes')}
                               </Text>
                             </>
                           )}
@@ -396,7 +396,7 @@ export default function ChatScreen() {
         onClose={() => setShowPreferences(false)}
       />
       <ConfirmRemoveModal
-        bodyText={t('remove_modal.confirm_text_meal_plan')}
+        bodyText={t('remove_modal.confirm_text_saved_recipes')}
         showModal={showConfirmRemove}
         onClose={() => setShowConfirmRemove(false)}
         onConfirm={() => {

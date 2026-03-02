@@ -1,6 +1,6 @@
 import { Slot } from 'expo-router';
 
-export default function MealPlanLayout() {
+export default function SavedRecipesLayout() {
   return (
     <>
       <Slot />

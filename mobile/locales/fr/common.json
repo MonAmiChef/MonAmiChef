@@ -53,7 +53,7 @@
     "new_chat": "Nouveau Chat",
     "chats": "Conversations",
     "failed_retrieving_sessions": "Échec de récupération des conversations",
-    "meal_plan": "Plannificateur",
+    "saved_recipes": "Recettes sauvegardées",
     "groceries": "Liste de courses"
   },
   "groceries": {
@@ -79,14 +79,14 @@
   "remove_modal": {
     "title": "Retirer la recette",
     "confirm_text_groceries": "Voulez-vous vraiment retirer cette recette de la liste de courses?",
-    "confirm_text_meal_plan": "Voulez-vous vraiment retirer cette recette de la liste du plan?",
+    "confirm_text_saved_recipes": "Voulez-vous vraiment retirer cette recette de vos recettes sauvegardées?",
     "cancel": "Annuler",
     "confirm": "Retirer la recette"
   },
   "chat": {
     "chef_typing": "Le chef prépare sa réponse...",
-    "add_to_meal_plan": "Ajouter au plan de repas",
-    "already_in_meal_plan": "Déjà dans le plan",
+    "add_to_saved_recipes": "Sauvegarder la recette",
+    "already_saved": "Déjà sauvegardée",
     "suggest_recipe": "Peux-tu me suggérer une recette ou des conseils de cuisine basés sur les préférences suivantes: {{preferences}}",
     "suggest_recipe_exclusions": "et en excluant les ingrédients suivants {{exclusions}}",
     "default_prompts": {
@@ -98,12 +98,12 @@
       "spicy": "🌶️ Plat épicé pour improssiionner des invités"
     }
   },
-  "meal_plan": {
-    "title": "Plannificateur",
-    "subtitle": "Plats enregistrés",
-    "empty": "Votre plan est vide, générez une recette!",
+  "saved_recipes": {
+    "title": "Recettes sauvegardées",
+    "subtitle": "Sauvegardées",
+    "empty": "Aucune recette sauvegardée, générez-en une!",
     "go_to_chat": "Aller au chat",
-    "remove": "Retirer du plan"
+    "remove": "Retirer des sauvegardées"
   },
   "not_found": {
     "screen": "Cet écran n'existe pas.",
@@ -181,11 +181,11 @@
   "toast": {
     "success": "Succès",
     "error": "Une erreur est survenue",
-    "added_to_plan": "La recette à été ajoutée au programme",
-    "error_added_to_plan": "The recipe was added to the plan",
-    "removed_from_plan": "The recipe was removed from plan",
-    "error_removed_from_plan": "The recipe was could not be removed from the plan",
-    "removed_from_groceries": "The recipe was removed from groceries",
+    "added_to_plan": "Recette sauvegardée",
+    "error_added_to_plan": "Impossible de sauvegarder la recette",
+    "removed_from_plan": "Recette retirée",
+    "error_removed_from_plan": "Impossible de retirer la recette",
+    "removed_from_groceries": "La recette a été retirée de la liste de courses",
     "error_toggling_item": "Impossible de mettre à jour l'article",
     "recipe_was": "La recette",
     "added": "à été ajoutée à la liste de courses",

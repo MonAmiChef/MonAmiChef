@@ -180,46 +180,46 @@ paths:
               schema:
                 $ref: '#/components/schemas/UpdateChatSessionResponseDto_Output'
       tags: *ref_0
-  /meal-plan:
+  /saved-recipes:
     get:
-      operationId: MealPlanController_getUserMealPlan
+      operationId: SavedRecipesController_getSavedRecipes
       parameters: []
       responses:
         '200':
           description: ''
       tags: &ref_1
-        - MealPlan
-  /meal-plan/remove:
+        - SavedRecipes
+  /saved-recipes/remove:
     post:
-      operationId: MealPlanController_removeMealFromMealPlan
+      operationId: SavedRecipesController_removeFromSavedRecipes
       parameters: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RemoveFromMealPlanRequestDto'
+              $ref: '#/components/schemas/RemoveFromSavedRecipesRequestDto'
       responses:
         '201':
           description: ''
       tags: *ref_1
-  /meal-plan/add:
+  /saved-recipes/add:
     post:
-      operationId: MealPlanController_addMealToPlan
+      operationId: SavedRecipesController_addToSavedRecipes
       parameters: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddMealToPlanRequestDto'
+              $ref: '#/components/schemas/AddToSavedRecipesRequestDto'
       responses:
         '200':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AddMealToPlanResponseDto_Output'
+                $ref: '#/components/schemas/AddToSavedRecipesResponseDto_Output'
       tags: *ref_1
   /groceries/add:
     post:
@@ -1034,6 +1034,9 @@ components:
               - garlic
               - lettuce
               - cucumber
+        language:
+          default: english
+          type: string
       required:
         - message
     UpdateChatSessionResponseDto_Output:
@@ -1090,14 +1093,14 @@ components:
         - messages
         - createdAt
         - updatedAt
-    RemoveFromMealPlanRequestDto:
+    RemoveFromSavedRecipesRequestDto:
       type: object
       properties:
         recipeId:
           type: string
       required:
         - recipeId
-    AddMealToPlanRequestDto:
+    AddToSavedRecipesRequestDto:
       type: object
       properties:
         messageContent:
@@ -1110,7 +1113,7 @@ components:
       required:
         - messageContent
         - messageId
-    AddMealToPlanResponseDto_Output:
+    AddToSavedRecipesResponseDto_Output:
       type: object
       properties:
         status:

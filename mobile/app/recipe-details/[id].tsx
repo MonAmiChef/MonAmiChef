@@ -21,7 +21,7 @@ import {
   Timer,
   User,
 } from 'lucide-react-native';
-import { mealPlanApi } from '@/services/meal-plan.api';
+import { savedRecipesApi } from '@/services/saved-recipes.api';
 import Toast from 'react-native-toast-message';
 import { Divider } from '@/components/ui/divider';
 import {
@@ -34,8 +34,8 @@ import {
   AccordionContent,
   AccordionContentText,
 } from '@/components/ui/accordion';
-import MealPlanOptionsSheet from '@/components/meal-plan/MealPlanOptionsSheet';
-import ConfirmRemoveModal from '@/components/meal-plan/ConfirmRemoveModal';
+import SavedRecipesOptionsSheet from '@/components/saved-recipes/SavedRecipesOptionsSheet';
+import ConfirmRemoveModal from '@/components/saved-recipes/ConfirmRemoveModal';
 import { useTranslation } from 'react-i18next';
 
 const SpecItem = ({
@@ -101,7 +101,7 @@ export default function RecipeDetailPage() {
 
   const { data: recipesInGroceries, refetch: refetchGroceries } = useQuery({
     queryKey: ['groceries-recipes'],
-    queryFn: () => mealPlanApi.getGroceriesRecipes(session!),
+    queryFn: () => savedRecipesApi.getGroceriesRecipes(session!),
     enabled: !!session,
   });
 
@@ -111,7 +111,7 @@ export default function RecipeDetailPage() {
 
   const removeFromPlanMutation = useMutation({
     mutationFn: (recipeId: string) =>
-      mealPlanApi.removeFromMealPlan(session!, recipeId),
+      savedRecipesApi.removeFromSavedRecipes(session!, recipeId),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
       Toast.show({
@@ -143,7 +143,7 @@ export default function RecipeDetailPage() {
     }: {
       recipeId: string;
       newState: boolean;
-    }) => mealPlanApi.addToGroceries(session!, recipeId, newState),
+    }) => savedRecipesApi.addToGroceries(session!, recipeId, newState),
     onSuccess: () => {
       Toast.show({
         text1: t('toast.success'),
@@ -493,7 +493,7 @@ export default function RecipeDetailPage() {
           </Accordion>
         </ScrollView>
       </Box>
-      <MealPlanOptionsSheet
+      <SavedRecipesOptionsSheet
         isOpen={showSheet}
         onClose={() => setShowSheet(false)}
         handleDelete={handleDelete}

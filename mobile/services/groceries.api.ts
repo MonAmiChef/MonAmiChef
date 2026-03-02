@@ -79,7 +79,7 @@ export const groceriesApi = {
       },
     });
 
-    if (!response.ok) throw new Error('Failed to fetch meal plan');
+    if (!response.ok) throw new Error('Failed to fetch saved recipes');
     return await response.json();
   },
 };
