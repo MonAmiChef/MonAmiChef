@@ -51,6 +51,7 @@ export default function ChatScreen() {
   const [showConfirmRemove, setShowConfirmRemove] = useState(false);
   const [message, setMessage] = useState('');
   const [selectedRecipeId, setSelectedRecipeId] = useState('');
+  const [pendingAddId, setPendingAddId] = useState<string | null>(null);
   const [kbKey, setKbKey] = useState(0);
 
   useEffect(() => {
@@ -202,7 +203,11 @@ export default function ChatScreen() {
         item.id,
         session!,
       ),
+    onMutate: (item) => {
+      setPendingAddId(item.id);
+    },
     onSuccess: () => {
+      setPendingAddId(null);
       Toast.show({
         text1: t('toast.success'),
         text2: t('toast.added_to_plan'),
@@ -210,6 +215,7 @@ export default function ChatScreen() {
       });
     },
     onError: (error) => {
+      setPendingAddId(null);
       console.error(error);
       Toast.show({
         text1: t('toast.error'),
@@ -304,21 +310,21 @@ export default function ChatScreen() {
                     ) : (
                       <Pressable
                         onPress={() => {
-                          if (!addMealMutation.isPending) {
+                          if (!pendingAddId) {
                             addMealMutation.mutate({
                               content: item.content,
                               id: item.id,
                             });
                           }
                         }}
-                        disabled={addMealMutation.isPending}
+                        disabled={pendingAddId === item.id}
                         className={`mt-2 flex gap-2 flex-row w-full justify-center items-center rounded-xl border py-2.5 ${
-                          addMealMutation.isPending
+                          pendingAddId === item.id
                             ? 'border-gray-300 bg-gray-100 opacity-70'
                             : 'border-green-300 bg-green-100 active:bg-green-200'
                         }`}
                       >
-                        {addMealMutation.isPending ? (
+                        {pendingAddId === item.id ? (
                           <ActivityIndicator size="small" color="#008236" />
                         ) : (
                           <>
