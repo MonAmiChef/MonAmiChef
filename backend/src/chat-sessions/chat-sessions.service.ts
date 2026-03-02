@@ -132,7 +132,7 @@ export class ChatSessionsService {
       throw new NotFoundException(`Chat ${chatId} non trouvé`);
     }
 
-    const { text } = await this.aiAssistantService.updateChat({
+    const { text, isRecipe } = await this.aiAssistantService.updateChat({
       messages: chat.messages,
       newMessage: message,
       preferences,
@@ -143,8 +143,8 @@ export class ChatSessionsService {
     const result = await this.chatSessionsRepository.updateChat({
       chatId,
       messages: [
-        { content: message, role: 'user' },
-        { content: text, role: 'model' },
+        { content: message, role: 'user', isRecipe: false },
+        { content: text, role: 'model', isRecipe },
       ],
     });
 

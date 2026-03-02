@@ -90,12 +90,13 @@ export class ChatSessionsRepository {
     messages,
   }: {
     chatId: string;
-    messages: { content: string; role: MessageRole }[];
+    messages: { content: string; role: MessageRole; isRecipe?: boolean }[];
   }): Promise<{ messages: Message[] }> {
     const formatedMessages = messages.map((msg) => ({
       chatId: chatId,
       content: msg.content,
       role: msg.role,
+      isRecipe: msg.isRecipe ?? false,
     }));
 
     const result = await this.prismaService.message.createManyAndReturn({
