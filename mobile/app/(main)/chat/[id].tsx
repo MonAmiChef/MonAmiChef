@@ -105,7 +105,7 @@ export default function ChatScreen() {
         session!,
         selectedPreferences,
         selectedExclude,
-        i18n.language,
+        getLanguageName(i18n.language),
       ),
     onMutate: async (newMessage: string): Promise<MutationContext> => {
       await queryClient.cancelQueries({ queryKey: ['chat-session', id] });

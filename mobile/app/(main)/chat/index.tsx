@@ -17,6 +17,7 @@ import { Image } from 'expo-image';
 import { ChatInput } from '@/components/chat/ChatInput';
 import { WaveText } from '@/components/chat/WaveText';
 import { useTranslation } from 'react-i18next';
+import { getLanguageName } from '@/utils/get-language-name';
 import { PreferenceTag } from '@/constants/PreferencesTags';
 import { PreferencesQuickSelector } from '@/components/chat/PreferencesQuickSelector';
 import { PreferenceActionSheet } from '@/components/chat/PreferenceActionSheet';
@@ -90,7 +91,7 @@ export default function NewChat() {
         session,
         selectedPreferences,
         selectedExclude,
-        i18n.language,
+        getLanguageName(i18n.language),
       );
     },
     onSuccess: async (data) => {
