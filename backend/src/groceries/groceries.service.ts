@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { GroceriesRepository } from './groceries.repository';
+import {
+  AddRemoveMealToGroceriesResponse,
+  GetUserGroceriesResponse,
+  GetUserRecipesInGroceriesResponse,
+  ToggleIngredientsStatusResponse,
+} from './groceries.dto';
 
 @Injectable()
 export class GroceriesService {
@@ -9,7 +15,7 @@ export class GroceriesService {
     userId: string,
     recipeId: string,
     newState: boolean,
-  ) {
+  ): Promise<AddRemoveMealToGroceriesResponse> {
     return this.groceriesRepository.addRemoveMealToGroceries(
       userId,
       recipeId,
@@ -17,11 +23,13 @@ export class GroceriesService {
     );
   }
 
-  async getUserRecipesInGroceries(userId: string) {
+  async getUserRecipesInGroceries(
+    userId: string,
+  ): Promise<GetUserRecipesInGroceriesResponse> {
     return this.groceriesRepository.getUserRecipesInGroceries(userId);
   }
 
-  async getUserGroceries(userId: string) {
+  async getUserGroceries(userId: string): Promise<GetUserGroceriesResponse> {
     return this.groceriesRepository.getUserGroceries(userId);
   }
 
@@ -29,7 +37,7 @@ export class GroceriesService {
     userId: string,
     ingredientIds: string[],
     isBought: boolean,
-  ) {
+  ): Promise<ToggleIngredientsStatusResponse> {
     return this.groceriesRepository.toggleIngredientsStatus(
       userId,
       ingredientIds,

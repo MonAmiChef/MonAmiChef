@@ -2,12 +2,17 @@ import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import {
   SupabaseGuard,
   type AuthenticatedRequest,
-} from 'src/supabase-guard/supabase.guard';
+} from '../supabase-guard/supabase.guard';
 import {
   AddMealToGroceriesRequestDto,
+  AddRemoveMealToGroceriesResponseDto,
+  GetUserGroceriesResponseDto,
+  GetUserRecipesInGroceriesResponseDto,
   ToggleIngredientsStatusRequestDto,
+  ToggleIngredientsStatusResponseDto,
 } from './groceries.dto';
 import { GroceriesService } from './groceries.service';
+import { ZodResponse } from 'nestjs-zod';
 
 @Controller('groceries')
 @UseGuards(SupabaseGuard)
@@ -15,6 +20,7 @@ export class GroceriesController {
   constructor(private groceriesService: GroceriesService) {}
 
   @Post('add')
+  @ZodResponse({ status: 200, type: AddRemoveMealToGroceriesResponseDto })
   async addRemoveMealToGroceries(
     @Req() req: AuthenticatedRequest,
     @Body() body: AddMealToGroceriesRequestDto,
@@ -27,16 +33,19 @@ export class GroceriesController {
   }
 
   @Get('user-recipes')
+  @ZodResponse({ status: 200, type: GetUserRecipesInGroceriesResponseDto })
   async getUserRecipesInGroceries(@Req() req: AuthenticatedRequest) {
     return this.groceriesService.getUserRecipesInGroceries(req.user.id);
   }
 
   @Get()
+  @ZodResponse({ status: 200, type: GetUserGroceriesResponseDto })
   async getUserGroceries(@Req() req: AuthenticatedRequest) {
     return this.groceriesService.getUserGroceries(req.user.id);
   }
 
   @Post()
+  @ZodResponse({ status: 200, type: ToggleIngredientsStatusResponseDto })
   async toggleIngredientsStatus(
     @Req() req: AuthenticatedRequest,
     @Body() body: ToggleIngredientsStatusRequestDto,

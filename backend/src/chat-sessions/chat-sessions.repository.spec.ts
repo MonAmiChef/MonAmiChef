@@ -40,10 +40,13 @@ describe('ChatSessionsRepository', () => {
   });
 
   it('should return a specific chat', async () => {
-    const result = await repository.getChat({ chatId: 'test-chat' });
+    const result = await repository.getChat({
+      chatId: 'test-chat',
+      userId: 'test-user',
+    });
     expect(prismaService.chatSession.findUnique).toHaveBeenCalledWith({
-      where: { id: 'test-chat' },
-      include: { messages: true },
+      where: { id: 'test-chat', userId: 'test-user' },
+      include: { messages: { orderBy: { createdAt: 'asc' } } },
     });
     expect(result).toBeNull();
   });

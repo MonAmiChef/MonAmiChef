@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ParseRecipeResponse } from './recipes.types';
-import { AiAssistantService } from 'src/ai-assistant/ai-assistant.service';
+import { AiAssistantService } from '../ai-assistant/ai-assistant.service';
 import { RecipesRepository } from './recipes.repository';
+import { GetRecipeResponse } from './recipes.dto';
 
 @Injectable()
 export class RecipesService {
@@ -10,11 +11,18 @@ export class RecipesService {
     private recipesRepository: RecipesRepository,
   ) {}
 
-  async findRecipeWithIngredientsById(userId: string, recipeId: string) {
-    return this.recipesRepository.findRecipeWithIngredientsById(
+  async findRecipeWithIngredientsById(
+    userId: string,
+    recipeId: string,
+  ): Promise<GetRecipeResponse> {
+    const recipe = await this.recipesRepository.findRecipeWithIngredientsById(
       userId,
       recipeId,
     );
+    if (!recipe) {
+      throw new NotFoundException(`Recipe ${recipeId} not found`);
+    }
+    return recipe;
   }
 
   async parseRecipe({

@@ -26,11 +26,11 @@ import {
   CreateChatWithTitleServiceResponseSchema,
   UpdateChatResponse,
   UpdateChatSessionResponseJson,
-} from 'src/chat-sessions/chat-sessions.dto';
+} from '../chat-sessions/chat-sessions.dto';
 import {
   ParseRecipeResponseJson,
   ParseRecipeResponseSchema,
-} from 'src/recipes/recipes.types';
+} from '../recipes/recipes.types';
 
 const DEFAULT_GEMINI_MODEL = 'gemini-3-flash-preview';
 

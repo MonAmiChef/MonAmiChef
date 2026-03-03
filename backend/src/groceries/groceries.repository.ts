@@ -1,10 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../prisma.service';
+import { GetUserGroceriesResponse } from './groceries.dto';
 
 @Injectable()
 export class GroceriesRepository {
@@ -96,10 +92,10 @@ export class GroceriesRepository {
 
         return acc;
       },
-      {} as Record<string, any>,
+      {} as Record<string, GetUserGroceriesResponse[number]>,
     );
 
-    return Object.values(mergedIngredients).sort((a: any, b: any) =>
+    return Object.values(mergedIngredients).sort((a, b) =>
       (a.category || '').localeCompare(b.category || ''),
     );
   }

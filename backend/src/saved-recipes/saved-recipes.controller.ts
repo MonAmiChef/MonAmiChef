@@ -3,11 +3,13 @@ import { SavedRecipesService } from './saved-recipes.service';
 import {
   SupabaseGuard,
   type AuthenticatedRequest,
-} from 'src/supabase-guard/supabase.guard';
+} from '../supabase-guard/supabase.guard';
 import {
   AddToSavedRecipesRequestDto,
   AddToSavedRecipesResponseDto,
+  GetSavedRecipesResponseDto,
   RemoveFromSavedRecipesRequestDto,
+  RemoveFromSavedRecipesResponseDto,
 } from './saved-recipes.dto';
 import { ZodResponse } from 'nestjs-zod';
 
@@ -17,11 +19,13 @@ export class SavedRecipesController {
   constructor(private savedRecipesService: SavedRecipesService) {}
 
   @Get()
+  @ZodResponse({ status: 200, type: GetSavedRecipesResponseDto })
   async getSavedRecipes(@Req() req: AuthenticatedRequest) {
     return this.savedRecipesService.getSavedRecipes(req.user.id);
   }
 
   @Post('remove')
+  @ZodResponse({ status: 200, type: RemoveFromSavedRecipesResponseDto })
   async removeFromSavedRecipes(
     @Req() req: AuthenticatedRequest,
     @Body() body: RemoveFromSavedRecipesRequestDto,

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Ingredient, Prisma } from '@prisma/client';
-import { PrismaService } from 'src/prisma.service';
-import { UnsplashService } from 'src/unsplash/unsplash.service';
+import { PrismaService } from '../prisma.service';
+import { UnsplashService } from '../unsplash/unsplash.service';
 
 @Injectable()
 export class RecipesRepository {

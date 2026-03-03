@@ -18,8 +18,8 @@ export const RecipeSchema = z.object({
   isVegan: z.boolean(),
   isGlutenFree: z.boolean(),
   isDairyFree: z.boolean(),
-  createdAt: z.coerce.string(),
-  updatedAt: z.coerce.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
   userId: z.string(),
   imagePath: z.string().nullable(),
   messageId: z.string().nullable(),
@@ -42,7 +42,7 @@ const IngredientSchema = z.object({
   category: z.string(),
   referenceId: z.string().nullable(),
   isBought: z.boolean(),
-  reference: IngredientReferenceSchema,
+  reference: IngredientReferenceSchema.optional(),
 });
 
 const GetRecipeResponseSchema = RecipeSchema.extend({
