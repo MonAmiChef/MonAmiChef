@@ -153,13 +153,16 @@ export class AiAssistantService {
       };
     } catch (e) {
       console.error('Erreur parsing JSON AI:', e);
-      return {
-        text: result.text ?? 'Error',
-        isRecipe: false,
-        imagePrompt: '',
-        ingredients: [],
-        servings: undefined,
-      };
+      try {
+        const raw = JSON.parse(result.text ?? '{}') as Record<string, unknown>;
+        const text =
+          typeof raw.text === 'string' && raw.text.length > 0
+            ? raw.text
+            : 'Error';
+        return { text, isRecipe: false, imagePrompt: '', ingredients: [], servings: undefined };
+      } catch {
+        return { text: 'Error', isRecipe: false, imagePrompt: '', ingredients: [], servings: undefined };
+      }
     }
   }
 
