@@ -251,6 +251,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserGroceriesResponseDto_Output'
       tags: *ref_2
     post:
       operationId: GroceriesController_toggleIngredientsStatus
@@ -262,8 +266,12 @@ paths:
             schema:
               $ref: '#/components/schemas/ToggleIngredientsStatusRequestDto'
       responses:
-        '201':
+        '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToggleIngredientsStatusResponseDto_Output'
       tags: *ref_2
   /recipes/{id}:
     get:
@@ -277,6 +285,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRecipeResponseDto_Output'
       tags:
         - Recipes
 info:
@@ -1135,6 +1147,48 @@ components:
       required:
         - recipeId
         - newState
+    GetUserGroceriesResponseDto_Output:
+      type: object
+      properties:
+        root:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              totalQuantity:
+                type: number
+              unit:
+                type: string
+              category:
+                type: string
+              recipes:
+                type: array
+                items:
+                  type: string
+              isBought:
+                type: boolean
+              ingredientIds:
+                type: array
+                items:
+                  type: string
+              image:
+                anyOf:
+                  - type: string
+                  - type: 'null'
+            required:
+              - name
+              - totalQuantity
+              - unit
+              - category
+              - recipes
+              - isBought
+              - ingredientIds
+              - image
+            additionalProperties: false
+          x-nestjs_zod-unwrap-root: true
+          x-nestjs_zod-has-null: true
     ToggleIngredientsStatusRequestDto:
       type: object
       properties:
@@ -1147,5 +1201,211 @@ components:
       required:
         - ingredientIds
         - isBought
+    ToggleIngredientsStatusResponseDto_Output:
+      type: object
+      properties:
+        count:
+          type: number
+          x-nestjs_zod-parent-additional-properties: false
+      required:
+        - count
+    GetRecipeResponseDto_Output:
+      type: object
+      properties:
+        id:
+          type: string
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-parent-additional-properties: false
+        name:
+          type: string
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-parent-additional-properties: false
+        description:
+          anyOf:
+            - type: string
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        prepTimeMin:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        servings:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        difficulty:
+          anyOf:
+            - type: string
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        instructions:
+          type: array
+          items:
+            type: string
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-parent-additional-properties: false
+        calories:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        proteins:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        carbs:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        fat:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        fibers:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        isVegetarian:
+          type: boolean
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-parent-additional-properties: false
+        isVegan:
+          type: boolean
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-parent-additional-properties: false
+        isGlutenFree:
+          type: boolean
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-parent-additional-properties: false
+        isDairyFree:
+          type: boolean
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-parent-additional-properties: false
+        createdAt:
+          type: string
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-parent-additional-properties: false
+        updatedAt:
+          type: string
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-parent-additional-properties: false
+        userId:
+          type: string
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-parent-additional-properties: false
+        imagePath:
+          anyOf:
+            - type: string
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        messageId:
+          anyOf:
+            - type: string
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        ingredients:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              quantity:
+                type: number
+              unit:
+                type: string
+              recipeId:
+                type: string
+              category:
+                type: string
+              referenceId:
+                anyOf:
+                  - type: string
+                  - type: 'null'
+              isBought:
+                type: boolean
+              reference:
+                anyOf:
+                  - type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      imageUrl:
+                        anyOf:
+                          - type: string
+                          - type: 'null'
+                    required:
+                      - id
+                      - name
+                      - imageUrl
+                    additionalProperties: false
+                  - type: 'null'
+            required:
+              - id
+              - name
+              - quantity
+              - unit
+              - recipeId
+              - category
+              - referenceId
+              - isBought
+            additionalProperties: false
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-parent-additional-properties: false
+      required:
+        - id
+        - name
+        - description
+        - prepTimeMin
+        - servings
+        - difficulty
+        - instructions
+        - calories
+        - proteins
+        - carbs
+        - fat
+        - fibers
+        - isVegetarian
+        - isVegan
+        - isGlutenFree
+        - isDairyFree
+        - createdAt
+        - updatedAt
+        - userId
+        - imagePath
+        - messageId
+        - ingredients
 security:
   - X-API-KEY: []

@@ -492,9 +492,62 @@ export interface components {
             recipeId: string;
             newState: boolean;
         };
+        GetUserGroceriesResponseDto_Output: {
+            root?: {
+                name: string;
+                totalQuantity: number;
+                unit: string;
+                category: string;
+                recipes: string[];
+                isBought: boolean;
+                ingredientIds: string[];
+                image: string | null;
+            }[];
+        };
         ToggleIngredientsStatusRequestDto: {
             ingredientIds: string[];
             isBought: boolean;
+        };
+        ToggleIngredientsStatusResponseDto_Output: {
+            count: number;
+        };
+        GetRecipeResponseDto_Output: {
+            id: string;
+            name: string;
+            description: string | null;
+            prepTimeMin: number | null;
+            servings: number | null;
+            difficulty: string | null;
+            instructions: string[];
+            calories: number | null;
+            proteins: number | null;
+            carbs: number | null;
+            fat: number | null;
+            fibers: number | null;
+            isVegetarian: boolean;
+            isVegan: boolean;
+            isGlutenFree: boolean;
+            isDairyFree: boolean;
+            createdAt: string;
+            updatedAt: string;
+            userId: string;
+            imagePath: string | null;
+            messageId: string | null;
+            ingredients: {
+                id: string;
+                name: string;
+                quantity: number;
+                unit: string;
+                recipeId: string;
+                category: string;
+                referenceId: string | null;
+                isBought: boolean;
+                reference?: {
+                    id: string;
+                    name: string;
+                    imageUrl: string | null;
+                } | null;
+            }[];
         };
     };
     responses: never;
@@ -812,7 +865,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetUserGroceriesResponseDto_Output"];
+                };
             };
         };
     };
@@ -829,11 +884,13 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ToggleIngredientsStatusResponseDto_Output"];
+                };
             };
         };
     };
@@ -852,7 +909,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GetRecipeResponseDto_Output"];
+                };
             };
         };
     };

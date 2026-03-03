@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { GroceriesRepository } from './groceries.repository';
+import {
+  GetUserGroceriesResponse,
+  ToggleIngredientsStatusResponse,
+} from './groceries.dto';
 
 @Injectable()
 export class GroceriesService {
@@ -21,7 +25,7 @@ export class GroceriesService {
     return this.groceriesRepository.getUserRecipesInGroceries(userId);
   }
 
-  async getUserGroceries(userId: string) {
+  async getUserGroceries(userId: string): Promise<GetUserGroceriesResponse> {
     return this.groceriesRepository.getUserGroceries(userId);
   }
 
@@ -29,7 +33,7 @@ export class GroceriesService {
     userId: string,
     ingredientIds: string[],
     isBought: boolean,
-  ) {
+  ): Promise<ToggleIngredientsStatusResponse> {
     return this.groceriesRepository.toggleIngredientsStatus(
       userId,
       ingredientIds,

@@ -42,7 +42,7 @@ const IngredientSchema = z.object({
   category: z.string(),
   referenceId: z.string().nullable(),
   isBought: z.boolean(),
-  reference: IngredientReferenceSchema,
+  reference: IngredientReferenceSchema.optional(),
 });
 
 const GetRecipeResponseSchema = RecipeSchema.extend({

@@ -3,7 +3,7 @@ import { SavedRecipesService } from './saved-recipes.service';
 import {
   SupabaseGuard,
   type AuthenticatedRequest,
-} from 'src/supabase-guard/supabase.guard';
+} from '../supabase-guard/supabase.guard';
 import {
   AddToSavedRecipesRequestDto,
   AddToSavedRecipesResponseDto,

@@ -1,11 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import { SavedRecipesRepository } from './saved-recipes.repository';
-import { RecipesService } from 'src/recipes/recipes.service';
-import { RecipesRepository } from 'src/recipes/recipes.repository';
-import { UnsplashService } from 'src/unsplash/unsplash.service';
-
+import { RecipesService } from '../recipes/recipes.service';
+import { RecipesRepository } from '../recipes/recipes.repository';
+import { UnsplashService } from '../unsplash/unsplash.service';
 @Injectable()
 export class SavedRecipesService {
   constructor(
@@ -55,6 +52,7 @@ export class SavedRecipesService {
       imagePath: '',
       recipeData: aiData.recipe,
       messageId,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ingredients: aiData.ingredients as any[],
     });
 
