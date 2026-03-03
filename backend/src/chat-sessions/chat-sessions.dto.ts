@@ -23,11 +23,38 @@ export const ChatIngredientSchema = z.object({
 });
 export type ChatIngredient = z.output<typeof ChatIngredientSchema>;
 
+// Lenient version used only when parsing raw AI output — never fails,
+// filters out items with missing name or non-positive quantity afterward.
+const AiIngredientParseSchema = z
+  .array(
+    z.object({
+      name: z.string().catch(''),
+      quantity: z.number().catch(0),
+      unit: z.string().catch(''),
+      category: z
+        .enum([
+          'FRUITS',
+          'VEGETABLES',
+          'MEAT',
+          'FISH',
+          'DAIRY',
+          'PANTRY',
+          'BAKERY',
+          'FROZEN',
+          'DRINKS',
+          'OTHER',
+        ])
+        .catch('OTHER'),
+    }),
+  )
+  .catch([])
+  .transform((items) => items.filter((i) => i.quantity > 0 && i.name.length > 0));
+
 export const CreateChatWithTitleServiceResponseSchema = z.object({
   title: z.string(),
   text: z.string(),
   isRecipe: z.boolean(),
-  ingredients: z.array(ChatIngredientSchema).optional().default([]),
+  ingredients: AiIngredientParseSchema.optional().default([]),
   servings: z.number().int().positive().optional(),
 });
 
@@ -125,7 +152,7 @@ export const chatResponseSchema = z.object({
   text: z.string().min(1, 'Error: text is empty'),
   isRecipe: z.boolean().default(false),
   imagePrompt: z.string().default(''),
-  ingredients: z.array(ChatIngredientSchema).optional().default([]),
+  ingredients: AiIngredientParseSchema.optional().default([]),
   servings: z.number().int().positive().optional(),
 });
 
