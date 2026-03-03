@@ -14,11 +14,15 @@ export const savedRecipesApi = {
     messageContent: string,
     messageId: string,
     session: Session,
+    ingredients?: AddToSavedRecipesRequest['ingredients'],
+    servings?: number,
   ): Promise<AddToSavedRecipesResponse> => {
-    const body: AddToSavedRecipesRequest = {
+    const body = {
       messageContent,
       messageId,
       language,
+      ...(ingredients?.length ? { ingredients } : {}),
+      ...(servings !== undefined ? { servings } : {}),
     };
     const response = await fetch(`${API_URL}/saved-recipes/add`, {
       method: 'POST',

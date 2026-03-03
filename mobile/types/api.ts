@@ -448,6 +448,14 @@ export interface components {
             }[];
             createdAt: string;
             updatedAt: string;
+            ingredients?: {
+                name: string;
+                quantity: number;
+                unit: string;
+                /** @enum {string} */
+                category: "FRUITS" | "VEGETABLES" | "MEAT" | "FISH" | "DAIRY" | "PANTRY" | "BAKERY" | "FROZEN" | "DRINKS" | "OTHER";
+            }[];
+            servings?: number;
         };
         UpdateChatSessionRequestDto: {
             message: string;
@@ -474,6 +482,14 @@ export interface components {
             }[];
             createdAt: string;
             updatedAt: string;
+            ingredients?: {
+                name: string;
+                quantity: number;
+                unit: string;
+                /** @enum {string} */
+                category: "FRUITS" | "VEGETABLES" | "MEAT" | "FISH" | "DAIRY" | "PANTRY" | "BAKERY" | "FROZEN" | "DRINKS" | "OTHER";
+            }[];
+            servings?: number;
         };
         RemoveFromSavedRecipesRequestDto: {
             recipeId: string;
@@ -483,6 +499,14 @@ export interface components {
             messageId: string;
             /** @default english */
             language: string;
+            ingredients?: {
+                name: string;
+                quantity: number;
+                unit: string;
+                /** @enum {string} */
+                category: "FRUITS" | "VEGETABLES" | "MEAT" | "FISH" | "DAIRY" | "PANTRY" | "BAKERY" | "FROZEN" | "DRINKS" | "OTHER";
+            }[];
+            servings?: number;
         };
         AddToSavedRecipesResponseDto_Output: {
             status: number;

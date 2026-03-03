@@ -46,6 +46,8 @@ export class SavedRecipesController {
       messageId: body.messageId,
       messageContent: body.messageContent,
       userId: req.user.id,
+      ingredients: body.ingredients,
+      servings: body.servings,
     });
   }
 }

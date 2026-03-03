@@ -3,6 +3,7 @@ import { SavedRecipesRepository } from './saved-recipes.repository';
 import { RecipesService } from '../recipes/recipes.service';
 import { RecipesRepository } from '../recipes/recipes.repository';
 import { UnsplashService } from '../unsplash/unsplash.service';
+import { ChatIngredient } from '../chat-sessions/chat-sessions.dto';
 @Injectable()
 export class SavedRecipesService {
   constructor(
@@ -25,11 +26,15 @@ export class SavedRecipesService {
     messageId,
     messageContent,
     userId,
+    ingredients: providedIngredients,
+    servings: providedServings,
   }: {
     language: string;
     messageId: string;
     messageContent: string;
     userId: string;
+    ingredients?: ChatIngredient[];
+    servings?: number;
   }) {
     const existingRecipe =
       await this.recipesRepository.findByMessageId(messageId);
@@ -47,13 +52,20 @@ export class SavedRecipesService {
       text: messageContent,
     });
 
+    const finalIngredients = providedIngredients?.length
+      ? providedIngredients
+      : aiData.ingredients;
+
     await this.recipesRepository.createFullRecipeContext({
       userId,
       imagePath: '',
-      recipeData: aiData.recipe,
+      recipeData: {
+        ...aiData.recipe,
+        servings: providedServings ?? aiData.recipe.servings,
+      },
       messageId,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ingredients: aiData.ingredients as any[],
+      ingredients: finalIngredients as any[],
     });
 
     return { status: 200, alreadyPresent: false };
