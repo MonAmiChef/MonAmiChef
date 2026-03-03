@@ -1,11 +1,14 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 import { RecipeSchema } from '../recipes/recipes.dto';
+import { ChatIngredientSchema } from '../chat-sessions/chat-sessions.dto';
 
 const AddToSavedRecipesRequestSchema = z.object({
   messageContent: z.string(),
   messageId: z.string(),
   language: z.string().default('english'),
+  ingredients: z.array(ChatIngredientSchema).optional(),
+  servings: z.number().int().positive().optional(),
 });
 
 export class AddToSavedRecipesRequestDto extends createZodDto(

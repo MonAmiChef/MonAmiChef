@@ -4,10 +4,31 @@ import { PreferenceTag } from '@prisma/client';
 
 // SERVICE
 
+export const ChatIngredientSchema = z.object({
+  name: z.string(),
+  quantity: z.number().positive(),
+  unit: z.string(),
+  category: z.enum([
+    'FRUITS',
+    'VEGETABLES',
+    'MEAT',
+    'FISH',
+    'DAIRY',
+    'PANTRY',
+    'BAKERY',
+    'FROZEN',
+    'DRINKS',
+    'OTHER',
+  ]),
+});
+export type ChatIngredient = z.output<typeof ChatIngredientSchema>;
+
 export const CreateChatWithTitleServiceResponseSchema = z.object({
   title: z.string(),
   text: z.string(),
   isRecipe: z.boolean(),
+  ingredients: z.array(ChatIngredientSchema).optional().default([]),
+  servings: z.number().int().positive().optional(),
 });
 
 export type CreateChatWithTitleServiceResponse = z.output<
@@ -46,6 +67,8 @@ const CreateChatSessionResponseSchema = z.object({
   messages: z.array(ChatMessageSchema),
   createdAt: z.string(),
   updatedAt: z.string(),
+  ingredients: z.array(ChatIngredientSchema).optional(),
+  servings: z.number().int().positive().optional(),
 });
 
 export const CreateChatSessionResponseJson = {
@@ -55,6 +78,34 @@ export const CreateChatSessionResponseJson = {
     text: { type: 'string' },
     isRecipe: { type: 'boolean' },
     imagePrompt: { type: 'string' },
+    servings: { type: 'integer' },
+    ingredients: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          quantity: { type: 'number' },
+          unit: { type: 'string' },
+          category: {
+            type: 'string',
+            enum: [
+              'FRUITS',
+              'VEGETABLES',
+              'MEAT',
+              'FISH',
+              'DAIRY',
+              'PANTRY',
+              'BAKERY',
+              'FROZEN',
+              'DRINKS',
+              'OTHER',
+            ],
+          },
+        },
+        required: ['name', 'quantity', 'unit', 'category'],
+      },
+    },
   },
   required: ['title', 'text', 'isRecipe'],
 };
@@ -74,12 +125,16 @@ export const chatResponseSchema = z.object({
   text: z.string().min(1, 'Error: text is empty'),
   isRecipe: z.boolean().default(false),
   imagePrompt: z.string().default(''),
+  ingredients: z.array(ChatIngredientSchema).optional().default([]),
+  servings: z.number().int().positive().optional(),
 });
 
 export const updateChatResponseSchema = z.object({
   text: z.string(),
   isRecipe: z.boolean().default(false),
   imagePrompt: z.string().default(''),
+  ingredients: z.array(ChatIngredientSchema).optional().default([]),
+  servings: z.number().int().positive().optional(),
 });
 
 export type UpdateChatResponse = z.output<typeof updateChatResponseSchema>;
@@ -90,6 +145,34 @@ export const UpdateChatSessionResponseJson = {
     text: { type: 'string' },
     isRecipe: { type: 'boolean' },
     imagePrompt: { type: 'string' },
+    servings: { type: 'integer' },
+    ingredients: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          quantity: { type: 'number' },
+          unit: { type: 'string' },
+          category: {
+            type: 'string',
+            enum: [
+              'FRUITS',
+              'VEGETABLES',
+              'MEAT',
+              'FISH',
+              'DAIRY',
+              'PANTRY',
+              'BAKERY',
+              'FROZEN',
+              'DRINKS',
+              'OTHER',
+            ],
+          },
+        },
+        required: ['name', 'quantity', 'unit', 'category'],
+      },
+    },
   },
   required: ['text', 'isRecipe'],
 };
@@ -111,6 +194,8 @@ const UpdateChatSessionResponseSchema = z.object({
   messages: z.array(ChatMessageSchema),
   createdAt: z.string(),
   updatedAt: z.string(),
+  ingredients: z.array(ChatIngredientSchema).optional(),
+  servings: z.number().int().positive().optional(),
 });
 
 export type UpdateChatSessionResponse = z.output<

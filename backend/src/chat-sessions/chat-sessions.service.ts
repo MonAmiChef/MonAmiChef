@@ -77,6 +77,8 @@ export class ChatSessionsService {
       text,
       title,
       isRecipe: isResponseRecipe,
+      ingredients,
+      servings,
     } = await this.aiAssistantService.createChatWithTitle({
       message,
       preferences,
@@ -108,6 +110,8 @@ export class ChatSessionsService {
         role: msg.role.toLowerCase() as 'user' | 'model',
         createdAt: msg.createdAt?.toISOString() ?? new Date().toISOString(),
       })),
+      ingredients: isResponseRecipe ? ingredients : undefined,
+      servings: isResponseRecipe ? servings : undefined,
     };
   }
 
@@ -132,13 +136,14 @@ export class ChatSessionsService {
       throw new NotFoundException(`Chat ${chatId} non trouvé`);
     }
 
-    const { text, isRecipe } = await this.aiAssistantService.updateChat({
-      messages: chat.messages,
-      newMessage: message,
-      preferences,
-      exclude,
-      language,
-    });
+    const { text, isRecipe, ingredients, servings } =
+      await this.aiAssistantService.updateChat({
+        messages: chat.messages,
+        newMessage: message,
+        preferences,
+        exclude,
+        language,
+      });
 
     const result = await this.chatSessionsRepository.updateChat({
       chatId,
@@ -160,6 +165,8 @@ export class ChatSessionsService {
       })),
       createdAt: chat?.createdAt ?? new Date().toISOString(),
       updatedAt: chat?.updatedAt ?? new Date().toISOString(),
+      ingredients: isRecipe ? ingredients : undefined,
+      servings: isRecipe ? servings : undefined,
     };
   }
 }

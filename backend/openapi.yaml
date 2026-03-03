@@ -921,6 +921,43 @@ components:
         updatedAt:
           type: string
           x-nestjs_zod-parent-additional-properties: false
+        ingredients:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              quantity:
+                type: number
+                exclusiveMinimum: 0
+              unit:
+                type: string
+              category:
+                type: string
+                enum:
+                  - FRUITS
+                  - VEGETABLES
+                  - MEAT
+                  - FISH
+                  - DAIRY
+                  - PANTRY
+                  - BAKERY
+                  - FROZEN
+                  - DRINKS
+                  - OTHER
+            required:
+              - name
+              - quantity
+              - unit
+              - category
+            additionalProperties: false
+          x-nestjs_zod-parent-additional-properties: false
+        servings:
+          type: integer
+          exclusiveMinimum: 0
+          maximum: 9007199254740991
+          x-nestjs_zod-parent-additional-properties: false
       required:
         - id
         - title
@@ -1099,6 +1136,43 @@ components:
         updatedAt:
           type: string
           x-nestjs_zod-parent-additional-properties: false
+        ingredients:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              quantity:
+                type: number
+                exclusiveMinimum: 0
+              unit:
+                type: string
+              category:
+                type: string
+                enum:
+                  - FRUITS
+                  - VEGETABLES
+                  - MEAT
+                  - FISH
+                  - DAIRY
+                  - PANTRY
+                  - BAKERY
+                  - FROZEN
+                  - DRINKS
+                  - OTHER
+            required:
+              - name
+              - quantity
+              - unit
+              - category
+            additionalProperties: false
+          x-nestjs_zod-parent-additional-properties: false
+        servings:
+          type: integer
+          exclusiveMinimum: 0
+          maximum: 9007199254740991
+          x-nestjs_zod-parent-additional-properties: false
       required:
         - id
         - title
@@ -1122,6 +1196,40 @@ components:
         language:
           default: english
           type: string
+        ingredients:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              quantity:
+                type: number
+                exclusiveMinimum: 0
+              unit:
+                type: string
+              category:
+                type: string
+                enum:
+                  - FRUITS
+                  - VEGETABLES
+                  - MEAT
+                  - FISH
+                  - DAIRY
+                  - PANTRY
+                  - BAKERY
+                  - FROZEN
+                  - DRINKS
+                  - OTHER
+            required:
+              - name
+              - quantity
+              - unit
+              - category
+        servings:
+          type: integer
+          exclusiveMinimum: 0
+          maximum: 9007199254740991
       required:
         - messageContent
         - messageId

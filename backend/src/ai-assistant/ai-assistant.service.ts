@@ -55,6 +55,7 @@ export class AiAssistantService {
         responseMimeType: 'application/json',
         systemInstruction: process.env.PARSE_RECIPE_PROMPT,
         responseJsonSchema: ParseRecipeResponseJson,
+        temperature: 0.3,
       },
     });
 
@@ -92,6 +93,7 @@ export class AiAssistantService {
         responseMimeType: 'application/json',
         systemInstruction: `${process.env.GENERATE_CHAT_WITH_TITLE_PROMPT}${languageRule}\nUser Context:${prefContext}`,
         responseJsonSchema: CreateChatSessionResponseJson,
+        temperature: 0.3,
       },
     });
 
@@ -134,6 +136,7 @@ export class AiAssistantService {
         responseMimeType: 'application/json',
         systemInstruction: `${process.env.GENERATE_CHAT_RESPONSE_PROMPT}${languageRule}\nUser Context:\n${prefContext}`,
         responseJsonSchema: UpdateChatSessionResponseJson,
+        temperature: 0.3,
       },
     });
 
@@ -145,6 +148,8 @@ export class AiAssistantService {
         text: jsonResponse.text ?? 'Error',
         isRecipe: jsonResponse.isRecipe ?? false,
         imagePrompt: jsonResponse.imagePrompt ?? '',
+        ingredients: jsonResponse.ingredients ?? [],
+        servings: jsonResponse.servings,
       };
     } catch (e) {
       console.error('Erreur parsing JSON AI:', e);
@@ -152,6 +157,8 @@ export class AiAssistantService {
         text: result.text ?? 'Error',
         isRecipe: false,
         imagePrompt: '',
+        ingredients: [],
+        servings: undefined,
       };
     }
   }

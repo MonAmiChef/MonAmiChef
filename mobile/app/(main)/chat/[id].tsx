@@ -38,6 +38,8 @@ import ConfirmRemoveModal from '@/components/saved-recipes/ConfirmRemoveModal';
 
 type ChatSession = components['schemas']['GetChatSessionResponseDto_Output'];
 type ChatMessage = ChatSession['messages'][number];
+type SendMessageResponse =
+  components['schemas']['UpdateChatSessionResponseDto_Output'];
 
 interface MutationContext {
   previousData?: ChatSession;
@@ -60,6 +62,15 @@ export default function ChatScreen() {
   const [selectedExclude, setSelectedExclude] = useState<PreferenceTag[]>([]);
 
   const flashListRef = useRef<FlashListRef<ChatMessage> | null>(null);
+  const freshRecipeDataRef = useRef<
+    Map<
+      string,
+      {
+        ingredients: NonNullable<SendMessageResponse['ingredients']>;
+        servings?: number;
+      }
+    >
+  >(new Map());
   const { data, isLoading } = useQuery({
     queryKey: ['chat-session', id],
     queryFn: () => chatApi.getSession(id, session!),
@@ -97,7 +108,12 @@ export default function ChatScreen() {
     },
   });
 
-  const mutation = useMutation<any, Error, string, MutationContext>({
+  const mutation = useMutation<
+    SendMessageResponse,
+    Error,
+    string,
+    MutationContext
+  >({
     mutationFn: (message: string) =>
       chatApi.sendMessageToSession(
         id,
@@ -142,6 +158,20 @@ export default function ChatScreen() {
       });
 
       return { previousData };
+    },
+
+    onSuccess: (responseData) => {
+      if (responseData?.ingredients?.length) {
+        const lastModelMsg = [...(responseData.messages ?? [])]
+          .reverse()
+          .find((m) => m.role === 'model');
+        if (lastModelMsg) {
+          freshRecipeDataRef.current.set(lastModelMsg.id, {
+            ingredients: responseData.ingredients,
+            servings: responseData.servings,
+          });
+        }
+      }
     },
 
     onError: (_err, _newMessage, context) => {
@@ -199,13 +229,17 @@ export default function ChatScreen() {
   };
 
   const addMealMutation = useMutation({
-    mutationFn: (item: { content: string; id: string }) =>
-      savedRecipesApi.addToSavedRecipes(
+    mutationFn: (item: { content: string; id: string }) => {
+      const freshData = freshRecipeDataRef.current.get(item.id);
+      return savedRecipesApi.addToSavedRecipes(
         getLanguageName(i18n.language),
         item.content,
         item.id,
         session!,
-      ),
+        freshData?.ingredients,
+        freshData?.servings,
+      );
+    },
     onMutate: (item) => {
       setPendingAddId(item.id);
     },
