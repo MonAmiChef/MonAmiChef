@@ -10,11 +10,11 @@ import { useLocalSearchParams } from 'expo-router';
 import {
   ActivityIndicator,
   Keyboard,
-  KeyboardAvoidingView,
   Pressable,
   Text,
   View,
 } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
 import Markdown from 'react-native-markdown-display';
 import { markdownStyles } from '@/constants/MarkdownStyles';
@@ -287,7 +287,7 @@ export default function ChatScreen() {
   return (
     <>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={{ flex: 1, backgroundColor: '#fffdfb' }}
         behavior="padding"
         keyboardVerticalOffset={headerHeight}
       >

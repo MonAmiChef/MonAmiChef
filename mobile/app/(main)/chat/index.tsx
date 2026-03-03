@@ -3,11 +3,11 @@ import React, { useState } from 'react';
 import {
   View,
   Keyboard,
-  KeyboardAvoidingView,
   ActivityIndicator,
   TouchableWithoutFeedback,
   Pressable,
 } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Text } from '@/components/ui/text';
 import { chatApi } from '@/services/chat.api';
@@ -148,7 +148,7 @@ export default function NewChat() {
   return (
     <>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={{ flex: 1, backgroundColor: '#fffdfb' }}
         behavior="padding"
         keyboardVerticalOffset={headerHeight}
       >
@@ -199,6 +199,7 @@ export default function NewChat() {
                       gap: 16,
                       padding: 4,
                       marginLeft: 50,
+                      paddingRight: 80,
                     }}
                     horizontal={true}
                   >
