@@ -229,6 +229,13 @@ export default function MainLayout() {
             title: t('groceries.title'),
           }}
         />
+
+        <Drawer.Screen
+          name="recipe-details"
+          options={{
+            drawerItemStyle: { display: 'none' },
+          }}
+        />
       </Drawer>
       <ProfileActionSheet
         isOpen={showProfile}

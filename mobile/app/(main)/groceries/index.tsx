@@ -4,13 +4,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
-import { ActivityIndicator, Pressable, View } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
+import { ActivityIndicator, Pressable, RefreshControl, View } from 'react-native';
 import {
   CheckCircle2,
   ChevronDown,
@@ -22,6 +21,12 @@ import Toast from 'react-native-toast-message';
 import { groceriesApi, MergedIngredient } from '@/services/groceries.api';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
+import Animated, {
+  LinearTransition,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 export const capitalizeFull = (str: string): string => {
   if (!str) return '';
@@ -72,6 +77,83 @@ const formatData = (items: MergedIngredient[], expandedSections: string[]) => {
   return flatList;
 };
 
+type GroceryItemProps = {
+  item: any;
+  onToggle: () => void;
+};
+
+function GroceryItem({ item, onToggle }: GroceryItemProps) {
+  const strikeProgress = useSharedValue(item.isBought ? 1 : 0);
+  const opacity = useSharedValue(item.isBought ? 0.4 : 1);
+
+  useEffect(() => {
+    strikeProgress.value = withTiming(item.isBought ? 1 : 0, { duration: 280 });
+    opacity.value = withTiming(item.isBought ? 0.4 : 1, { duration: 280 });
+  }, [item.isBought]);
+
+  const strikeStyle = useAnimatedStyle(() => ({
+    width: `${strikeProgress.value * 100}%`,
+  }));
+
+  const containerStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
+  return (
+    <Pressable onPress={onToggle}>
+      <Animated.View style={containerStyle} className="flex-row items-center py-3 px-2">
+        <Box className="mr-3">
+          {item.isBought ? (
+            <CheckCircle2 size={22} color="#f97316" />
+          ) : (
+            <Circle size={22} color="#cbd5e1" />
+          )}
+        </Box>
+        <Box className="flex-1">
+          <View style={{ position: 'relative' }}>
+            <Text
+              className={`text-base font-inter-medium ${item.isBought ? 'text-slate-400' : 'text-slate-800'}`}
+            >
+              {capitalizeFull(item.name)}
+            </Text>
+            <Animated.View
+              style={[
+                {
+                  position: 'absolute',
+                  height: 1.5,
+                  backgroundColor: '#94a3b8',
+                  top: '50%',
+                  left: 0,
+                },
+                strikeStyle,
+              ]}
+            />
+          </View>
+
+          <Box className="flex-row flex-wrap mt-1">
+            {item.recipes.map((recipeName: string, index: number) => (
+              <Box
+                key={index}
+                className="bg-slate-100 px-2 py-0.5 rounded-md mr-1 mb-1 border border-slate-200"
+              >
+                <Text
+                  className="text-[9px] text-slate-500 font-inter-medium italic"
+                  numberOfLines={1}
+                >
+                  {recipeName}
+                </Text>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+        <Text className="text-orange-600 font-inter-bold text-sm bg-orange-50 px-2 py-1 rounded-lg">
+          {Math.round(item.totalQuantity * 100) / 100} {item.unit}
+        </Text>
+      </Animated.View>
+    </Pressable>
+  );
+}
+
 export default function GroceriesPage() {
   const { session } = useAuth();
   const queryClient = useQueryClient();
@@ -81,6 +163,7 @@ export default function GroceriesPage() {
     'dairy',
     'pantry',
   ]);
+  const [isManualRefreshing, setIsManualRefreshing] = useState(false);
 
   const toggleSection = (title: string) => {
     setExpandedSections((prev) =>
@@ -88,7 +171,7 @@ export default function GroceriesPage() {
     );
   };
 
-  const { data, isLoading, isRefetching } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ['groceries'],
     queryFn: () => groceriesApi.getUserGroceries(session!),
     enabled: !!session,
@@ -103,36 +186,61 @@ export default function GroceriesPage() {
   const toggleMutation = useMutation({
     mutationFn: ({ ids, bought }: { ids: string[]; bought: boolean }) =>
       groceriesApi.toggleIngredientsStatus(session!, ids, bought),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['groceries'] });
+    onMutate: async ({ ids, bought }) => {
+      await queryClient.cancelQueries({ queryKey: ['groceries'] });
+      const previousData = queryClient.getQueryData<MergedIngredient[]>(['groceries']);
+      queryClient.setQueryData<MergedIngredient[]>(['groceries'], (old) =>
+        old?.map((item) =>
+          item.ingredientIds.some((id) => ids.includes(id))
+            ? { ...item, isBought: bought }
+            : item,
+        ) ?? [],
+      );
+      return { previousData };
     },
-    onError: () => {
+    onError: (_err, _vars, context) => {
+      queryClient.setQueryData(['groceries'], context?.previousData);
       Toast.show({
         text1: t('toast.error'),
         text2: t('toast.error_togling_item'),
         type: 'error',
       });
     },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ['groceries'] });
+    },
   });
 
-  if (isLoading && !isRefetching)
+  if (isLoading)
     return <ActivityIndicator className="flex-1" color="#ff6900" />;
 
   return (
-    <Box className="flex-1 bg-[#fffdfb]  p-4">
+    <Box className="flex-1 bg-[#fffdfb] p-4">
       {formattedData?.length > 0 && (
         <Text className="text-2xl px-4 text-black font-inter-medium">
           {t('saved_recipes.subtitle')}
         </Text>
       )}
-      <FlashList
+      <Animated.FlatList
         data={formattedData}
-        keyExtractor={(item) =>
+        keyExtractor={(item: any) =>
           item.type === 'HEADER'
             ? `header-${item.title}`
             : `item-${item.ingredientIds.join('-')}`
         }
+        itemLayoutAnimation={LinearTransition}
         contentContainerStyle={{ flexGrow: 1 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isManualRefreshing}
+            onRefresh={async () => {
+              setIsManualRefreshing(true);
+              await refetch();
+              setIsManualRefreshing(false);
+            }}
+            colors={['#ff6900']}
+          />
+        }
         ListEmptyComponent={() => (
           <Box className="flex h-[75%] bg-[#fffdfb] px-2 justify-center items-center gap-6">
             <View className="w-24 h-24 bg-orange-50 rounded-full items-center justify-center">
@@ -153,7 +261,7 @@ export default function GroceriesPage() {
             </Pressable>
           </Box>
         )}
-        renderItem={({ item }) => {
+        renderItem={({ item }: { item: any }) => {
           if (item.type === 'HEADER') {
             return (
               <Pressable
@@ -196,53 +304,17 @@ export default function GroceriesPage() {
           }
 
           return (
-            <Pressable
-              onPress={() =>
+            <GroceryItem
+              item={item}
+              onToggle={() =>
                 toggleMutation.mutate({
                   ids: item.ingredientIds,
                   bought: !item.isBought,
                 })
               }
-              className={`flex-row items-center py-3 px-2 ${item.isBought ? 'opacity-40' : ''}`}
-            >
-              <Box className="mr-3">
-                {item.isBought ? (
-                  <CheckCircle2 size={22} color="#f97316" />
-                ) : (
-                  <Circle size={22} color="#cbd5e1" />
-                )}
-              </Box>
-              <Box className="flex-1">
-                <Text
-                  className={`text-base font-inter-medium ${item.isBought ? 'line-through text-slate-400' : 'text-slate-800'}`}
-                >
-                  {capitalizeFull(item.name)}
-                </Text>
-
-                <Box className="flex-row flex-wrap mt-1">
-                  {item.recipes.map((recipeName: string, index: number) => (
-                    <Box
-                      key={index}
-                      className="bg-slate-100 px-2 py-0.5 rounded-md mr-1 mb-1 border border-slate-200"
-                    >
-                      <Text
-                        className="text-[9px] text-slate-500 font-inter-medium italic"
-                        numberOfLines={1}
-                      >
-                        {recipeName}
-                      </Text>
-                    </Box>
-                  ))}
-                </Box>
-              </Box>
-              <Text className="text-orange-600 font-inter-bold text-sm bg-orange-50 px-2 py-1 rounded-lg">
-                {Math.round(item.totalQuantity * 100) / 100} {item.unit}
-              </Text>
-            </Pressable>
+            />
           );
         }}
-        getItemType={(item) => item.type}
-        // estimatedItemSize={60}
       />
     </Box>
   );

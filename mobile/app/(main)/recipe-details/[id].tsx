@@ -37,6 +37,7 @@ import {
 import SavedRecipesOptionsSheet from '@/components/saved-recipes/SavedRecipesOptionsSheet';
 import ConfirmRemoveModal from '@/components/saved-recipes/ConfirmRemoveModal';
 import { useTranslation } from 'react-i18next';
+import Drawer from 'expo-router/drawer';
 
 const SpecItem = ({
   icon,
@@ -202,7 +203,8 @@ export default function RecipeDetailPage() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#fffdfb]">
+    <SafeAreaView edges={['bottom']} className="flex-1 bg-[#fffdfb]">
+      <Drawer.Screen options={{ headerTitle: data.name }} />
       <Box className="p-4 flex-1 bg-transparent">
         <ScrollView
           contentContainerStyle={{ gap: 24 }}
