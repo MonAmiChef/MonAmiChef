@@ -75,19 +75,22 @@ export class AiAssistantService {
     const userQuery =
       message.trim().length > 0
         ? message
-        : `Please suggest a recipe or cooking advice based on my preferences in the language: ${fallbackLanguage}.`;
+        : `Please suggest a recipe or cooking advice based on my preferences.`;
 
     const prefContext = `
+      RESPONSE_LANGUAGE: ${fallbackLanguage}
       PREFERENCES: ${preferences?.join(', ') ?? 'None'}
       EXCLUDE: ${exclude?.join(', ') ?? 'None'}
     `;
+
+    const languageRule = `\nLANGUAGE RULE: You MUST write the 'text' field entirely in ${fallbackLanguage}. This is a hard constraint — do not switch to another language unless the user explicitly asks you to in their message.\n`;
 
     const result = await this.ai.models.generateContent({
       model: process.env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL,
       contents: userQuery,
       config: {
         responseMimeType: 'application/json',
-        systemInstruction: `${process.env.GENERATE_CHAT_WITH_TITLE_PROMPT}\n\nUser Context:${prefContext}`,
+        systemInstruction: `${process.env.GENERATE_CHAT_WITH_TITLE_PROMPT}${languageRule}\nUser Context:${prefContext}`,
         responseJsonSchema: CreateChatSessionResponseJson,
       },
     });
@@ -111,10 +114,12 @@ export class AiAssistantService {
     language: string;
   }): Promise<UpdateChatResponse> {
     const prefContext = `
-    TARGET_LANGUAGE: ${language}
+    RESPONSE_LANGUAGE: ${language}
     PREFERENCES: ${preferences?.join(', ') || 'None'}
     EXCLUDE: ${exclude?.join(', ') || 'None'}
   `;
+
+    const languageRule = `\nLANGUAGE RULE: You MUST write the 'text' field entirely in ${language}. This is a hard constraint — do not switch to another language unless the user explicitly asks you to in their message.\n`;
 
     const result = await this.ai.models.generateContent({
       model: process.env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL,
@@ -127,7 +132,7 @@ export class AiAssistantService {
       ],
       config: {
         responseMimeType: 'application/json',
-        systemInstruction: `${process.env.GENERATE_CHAT_RESPONSE_PROMPT}\n\nUser Context:\n${prefContext}`,
+        systemInstruction: `${process.env.GENERATE_CHAT_RESPONSE_PROMPT}${languageRule}\nUser Context:\n${prefContext}`,
         responseJsonSchema: UpdateChatSessionResponseJson,
       },
     });

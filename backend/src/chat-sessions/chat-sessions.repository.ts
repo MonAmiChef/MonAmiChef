@@ -62,6 +62,7 @@ export class ChatSessionsRepository {
     exclude: PreferenceTag[];
     isResponseRecipe: boolean;
   }) {
+    const now = new Date();
     return this.prismaService.chatSession.create({
       data: {
         userId,
@@ -70,17 +71,25 @@ export class ChatSessionsRepository {
         exclude,
         messages: {
           create: [
-            { content: userMessage, role: 'user', isRecipe: false },
+            {
+              content: userMessage,
+              role: 'user',
+              isRecipe: false,
+              createdAt: now,
+            },
             {
               content: modelResponse,
               role: 'model',
               isRecipe: isResponseRecipe,
+              createdAt: new Date(now.getTime() + 1),
             },
           ],
         },
       },
       include: {
-        messages: true,
+        messages: {
+          orderBy: { createdAt: 'asc' },
+        },
       },
     });
   }
@@ -96,11 +105,13 @@ export class ChatSessionsRepository {
     preferences: PreferenceTag[];
     exclude: PreferenceTag[];
   }): Promise<{ messages: Message[] }> {
-    const formatedMessages = messages.map((msg) => ({
+    const now = new Date();
+    const formatedMessages = messages.map((msg, index) => ({
       chatId: chatId,
       content: msg.content,
       role: msg.role,
       isRecipe: msg.isRecipe ?? false,
+      createdAt: new Date(now.getTime() + index),
     }));
 
     const [, result] = await this.prismaService.$transaction([
