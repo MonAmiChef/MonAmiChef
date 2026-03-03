@@ -51,28 +51,6 @@ export const savedRecipesApi = {
     return await response.json();
   },
 
-  addToGroceries: async (
-    session: Session,
-    recipeId: string,
-    newState: boolean,
-  ) => {
-    const response = await fetch(`${API_URL}/groceries/add`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${session?.access_token}`,
-      },
-      body: JSON.stringify({
-        recipeId,
-        newState,
-      }),
-    });
-
-    if (!response.ok) throw new Error('Failed to add recipe to groceries');
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return await response.json();
-  },
-
   getSavedRecipes: async (session: Session) => {
     const response = await fetch(`${API_URL}/saved-recipes`, {
       method: 'GET',
@@ -87,17 +65,4 @@ export const savedRecipesApi = {
     return await response.json();
   },
 
-  getGroceriesRecipes: async (session: Session) => {
-    const response = await fetch(`${API_URL}/groceries/user-recipes`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${session?.access_token}`,
-      },
-    });
-
-    if (!response.ok) throw new Error('Failed to fetch recipes in groceries');
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return await response.json();
-  },
 };

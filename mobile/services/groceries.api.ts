@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Session } from '@supabase/supabase-js';
 
 export interface MergedIngredient {
@@ -9,7 +8,7 @@ export interface MergedIngredient {
   recipes: string[];
   isBought: boolean;
   ingredientIds: string[];
-  image?: string;
+  image: string | null;
 }
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -32,7 +31,7 @@ export const groceriesApi = {
     session: Session,
     ingredientIds: string[],
     isBought: boolean,
-  ) => {
+  ): Promise<{ count: number }> => {
     const response = await fetch(`${API_URL}/groceries`, {
       method: 'POST',
       headers: {
@@ -46,14 +45,14 @@ export const groceriesApi = {
     });
 
     if (!response.ok) throw new Error('Failed to toggle ingredients status');
-    return await response.json();
+    return response.json() as Promise<{ count: number }>;
   },
 
   updateRecipeInGroceries: async (
     session: Session,
     recipeId: string,
     newState: boolean,
-  ) => {
+  ): Promise<void> => {
     const response = await fetch(`${API_URL}/groceries/add`, {
       method: 'POST',
       headers: {
@@ -67,10 +66,11 @@ export const groceriesApi = {
     });
 
     if (!response.ok) throw new Error('Failed to update recipe in groceries');
-    return await response.json();
   },
 
-  getGroceriesRecipes: async (session: Session) => {
+  getGroceriesRecipes: async (
+    session: Session,
+  ): Promise<{ recipeId: string }[]> => {
     const response = await fetch(`${API_URL}/groceries/user-recipes`, {
       method: 'GET',
       headers: {
@@ -80,6 +80,6 @@ export const groceriesApi = {
     });
 
     if (!response.ok) throw new Error('Failed to fetch saved recipes');
-    return await response.json();
+    return response.json() as Promise<{ recipeId: string }[]>;
   },
 };

@@ -1,9 +1,15 @@
+import { components } from '@/types/api';
 import { Session } from '@supabase/supabase-js';
+
+type GetRecipeResponse = components['schemas']['GetRecipeResponseDto_Output'];
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export const recipeApi = {
-  getRecipe: async (session: Session, recipeId: string) => {
+  getRecipe: async (
+    session: Session,
+    recipeId: string,
+  ): Promise<GetRecipeResponse> => {
     const response = await fetch(`${API_URL}/recipes/${recipeId}`, {
       method: 'GET',
       headers: {
@@ -12,8 +18,7 @@ export const recipeApi = {
       },
     });
 
-    if (!response.ok) throw new Error('Failed to fetch saved recipes');
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return await response.json();
+    if (!response.ok) throw new Error('Failed to fetch recipe');
+    return response.json() as Promise<GetRecipeResponse>;
   },
 };

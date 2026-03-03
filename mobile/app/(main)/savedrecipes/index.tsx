@@ -1,9 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useState } from 'react';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
@@ -20,6 +16,7 @@ import { t } from 'i18next';
 import { Check, Ellipsis, Notebook, ShoppingCart } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
 import { savedRecipesApi } from '@/services/saved-recipes.api';
+import { groceriesApi } from '@/services/groceries.api';
 import { capitalizeFull } from '../groceries';
 import { useRouter } from 'expo-router';
 import SavedRecipesOptionsSheet from '@/components/saved-recipes/SavedRecipesOptionsSheet';
@@ -43,12 +40,12 @@ export default function SavedRecipesPage() {
 
   const { data: recipesInGroceries } = useQuery({
     queryKey: ['groceries-recipes'],
-    queryFn: () => savedRecipesApi.getGroceriesRecipes(session!),
+    queryFn: () => groceriesApi.getGroceriesRecipes(session!),
     enabled: !!session,
   });
 
   const isAlreadyInGroceries = (recipeId: string) => {
-    return recipesInGroceries?.some((item: any) => item.recipeId === recipeId);
+    return recipesInGroceries?.some((item) => item.recipeId === recipeId);
   };
 
   const removeFromSavedMutation = useMutation({
@@ -80,7 +77,7 @@ export default function SavedRecipesPage() {
     }: {
       recipeId: string;
       newState: boolean;
-    }) => savedRecipesApi.addToGroceries(session!, recipeId, newState),
+    }) => groceriesApi.updateRecipeInGroceries(session!, recipeId, newState),
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
       Toast.show({
