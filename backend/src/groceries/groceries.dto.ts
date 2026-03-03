@@ -24,8 +24,8 @@ export class ToggleIngredientsStatusRequestDto extends createZodDto(
 const SavedRecipeBaseSchema = z.object({
   recipeId: z.string(),
   userId: z.string(),
-  plannedFor: z.date(),
-  createdAt: z.date(),
+  plannedFor: z.coerce.string(),
+  createdAt: z.coerce.string(),
   isInGroceryList: z.boolean(),
   servings: z.number(),
 });

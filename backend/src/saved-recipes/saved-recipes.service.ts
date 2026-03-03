@@ -3,11 +3,6 @@ import { SavedRecipesRepository } from './saved-recipes.repository';
 import { RecipesService } from '../recipes/recipes.service';
 import { RecipesRepository } from '../recipes/recipes.repository';
 import { UnsplashService } from '../unsplash/unsplash.service';
-import {
-  GetSavedRecipesResponse,
-  RemoveFromSavedRecipesResponse,
-} from './saved-recipes.dto';
-
 @Injectable()
 export class SavedRecipesService {
   constructor(
@@ -17,14 +12,11 @@ export class SavedRecipesService {
     private unsplashService: UnsplashService,
   ) {}
 
-  async getSavedRecipes(userId: string): Promise<GetSavedRecipesResponse> {
+  async getSavedRecipes(userId: string) {
     return this.savedRecipesRepository.getSavedRecipes(userId);
   }
 
-  async removeFromSavedRecipes(
-    userId: string,
-    recipeId: string,
-  ): Promise<RemoveFromSavedRecipesResponse> {
+  async removeFromSavedRecipes(userId: string, recipeId: string) {
     return this.savedRecipesRepository.removeFromSavedRecipes(userId, recipeId);
   }
 

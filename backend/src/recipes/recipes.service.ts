@@ -22,7 +22,11 @@ export class RecipesService {
     if (!recipe) {
       throw new NotFoundException(`Recipe ${recipeId} not found`);
     }
-    return recipe;
+    return {
+      ...recipe,
+      createdAt: recipe.createdAt.toISOString(),
+      updatedAt: recipe.updatedAt.toISOString(),
+    };
   }
 
   async parseRecipe({
