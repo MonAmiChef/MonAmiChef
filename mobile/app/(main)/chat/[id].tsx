@@ -243,8 +243,9 @@ export default function ChatScreen() {
     onMutate: (item) => {
       setPendingAddId(item.id);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       setPendingAddId(null);
+      await queryClient.invalidateQueries({ queryKey: ['saved-recipes'] });
       Toast.show({
         text1: t('toast.success'),
         text2: t('toast.added_to_plan'),
