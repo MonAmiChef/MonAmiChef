@@ -60,6 +60,7 @@ model SavedRecipe {
   createdAt       DateTime @default(now())
   userId          String   @db.Uuid
   isInGroceryList Boolean  @default(false)
+  isFavorite      Boolean  @default(false)
   servings        Int      @default(1)
   recipe          Recipe   @relation(fields: [recipeId], references: [id])
   user            User     @relation(fields: [userId], references: [id])

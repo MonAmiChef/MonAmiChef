@@ -38,6 +38,7 @@ const SavedRecipeBaseSchema = z.object({
   plannedFor: z.coerce.string(),
   createdAt: z.coerce.string(),
   isInGroceryList: z.boolean(),
+  isFavorite: z.boolean(),
   servings: z.number(),
 });
 
@@ -68,4 +69,13 @@ const UpdateServingsRequestSchema = z.object({
 
 export class UpdateServingsRequestDto extends createZodDto(
   UpdateServingsRequestSchema,
+) {}
+
+const UpdateFavoriteRequestSchema = z.object({
+  recipeId: z.string(),
+  isFavorite: z.boolean(),
+});
+
+export class UpdateFavoriteRequestDto extends createZodDto(
+  UpdateFavoriteRequestSchema,
 ) {}

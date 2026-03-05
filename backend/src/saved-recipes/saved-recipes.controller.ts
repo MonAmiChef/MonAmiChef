@@ -8,6 +8,7 @@ import {
   AddToSavedRecipesRequestDto,
   AddToSavedRecipesResponseDto,
   RemoveFromSavedRecipesRequestDto,
+  UpdateFavoriteRequestDto,
   UpdateServingsRequestDto,
 } from './saved-recipes.dto';
 import { ZodResponse } from 'nestjs-zod';
@@ -42,6 +43,18 @@ export class SavedRecipesController {
       req.user.id,
       body.recipeId,
       body.servings,
+    );
+  }
+
+  @Patch('favorite')
+  updateFavorite(
+    @Body() body: UpdateFavoriteRequestDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.savedRecipesService.updateFavorite(
+      req.user.id,
+      body.recipeId,
+      body.isFavorite,
     );
   }
 

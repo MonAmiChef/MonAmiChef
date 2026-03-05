@@ -25,6 +25,10 @@ export class SavedRecipesService {
     return this.savedRecipesRepository.updateServings(userId, recipeId, servings);
   }
 
+  async updateFavorite(userId: string, recipeId: string, isFavorite: boolean) {
+    return this.savedRecipesRepository.updateFavorite(userId, recipeId, isFavorite);
+  }
+
   async addToSavedRecipes({
     language,
     messageId,

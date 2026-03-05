@@ -36,4 +36,16 @@ export class SavedRecipesRepository {
       data: { servings },
     });
   }
+
+  async updateFavorite(userId: string, recipeId: string, isFavorite: boolean) {
+    return this.prismaService.savedRecipe.update({
+      where: {
+        recipeId_userId: {
+          recipeId,
+          userId,
+        },
+      },
+      data: { isFavorite },
+    });
+  }
 }
