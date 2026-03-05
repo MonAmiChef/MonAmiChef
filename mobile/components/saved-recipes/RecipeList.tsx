@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import React, { useState } from 'react';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
@@ -12,18 +13,33 @@ import {
   Pressable,
   View,
 } from 'react-native';
-import { t } from 'i18next';
-import { Check, Ellipsis, Notebook, ShoppingCart, User } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import {
+  Check,
+  Ellipsis,
+  Heart,
+  Notebook,
+  ShoppingCart,
+  User,
+} from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
 import { savedRecipesApi } from '@/services/saved-recipes.api';
 import { groceriesApi } from '@/services/groceries.api';
-import { capitalizeFull } from '../groceries';
-import { useRouter } from 'expo-router';
+import { capitalizeFull } from '@/utils/text';
+import { useRouter, usePathname } from 'expo-router';
 import SavedRecipesOptionsSheet from '@/components/saved-recipes/SavedRecipesOptionsSheet';
 import ConfirmRemoveModal from '@/components/saved-recipes/ConfirmRemoveModal';
 
-export default function SavedRecipesPage() {
+interface RecipeListProps {
+  filterFavorites?: boolean;
+}
+
+export default function RecipeList({ filterFavorites = false }: RecipeListProps) {
   const { session } = useAuth();
+  const { t } = useTranslation();
+  const router = useRouter();
+  const pathname = usePathname();
+  const isFavorites = pathname.endsWith('/favorites');
   const [selectedRecipe, setSelectedRecipe] = useState<{
     id: string;
     name: string;
@@ -34,7 +50,6 @@ export default function SavedRecipesPage() {
     enabled: !!session,
   });
   const [showSheet, setShowSheet] = useState(false);
-  const router = useRouter();
   const [showConfirmRemove, setShowConfirmRemove] = useState(false);
   const queryClient = useQueryClient();
   const [localServings, setLocalServings] = useState<Record<string, number>>({});
@@ -94,7 +109,7 @@ export default function SavedRecipesPage() {
     },
   });
 
-  const addTogroceriesMutation = useMutation({
+  const addToGroceriesMutation = useMutation({
     mutationFn: ({
       recipeId,
       newState,
@@ -120,6 +135,31 @@ export default function SavedRecipesPage() {
     },
   });
 
+  const updateFavoriteMutation = useMutation({
+    mutationFn: ({
+      recipeId,
+      isFavorite,
+    }: {
+      recipeId: string;
+      isFavorite: boolean;
+    }) => savedRecipesApi.updateFavorite(session!, recipeId, isFavorite),
+    onMutate: async ({ recipeId, isFavorite }) => {
+      await queryClient.cancelQueries({ queryKey: ['saved-recipes'] });
+      const previous = queryClient.getQueryData(['saved-recipes']);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      queryClient.setQueryData(['saved-recipes'], (old: any) =>
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        old?.map((item: { recipeId: string }) =>
+          item.recipeId === recipeId ? { ...item, isFavorite } : item,
+        ),
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      queryClient.setQueryData(['saved-recipes'], context?.previous);
+    },
+  });
+
   const handleOpenMenu = (id: string, name: string) => {
     setSelectedRecipe({ id, name });
     setShowSheet(true);
@@ -132,18 +172,63 @@ export default function SavedRecipesPage() {
     }
   };
 
-  if (isLoading)
-    return <ActivityIndicator className="flex-1" color="#ff6900" />;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  const favoriteCount: number =
+    data?.filter((item: { isFavorite: boolean }) => item.isFavorite).length ?? 0;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  const displayData: typeof data = filterFavorites
+    ? data?.filter((item: { isFavorite: boolean }) => item.isFavorite) ?? []
+    : data ?? [];
+
+  if (isLoading) return <ActivityIndicator className="flex-1" color="#ff6900" />;
 
   return (
-    <Box className="flex-1 bg-[#fffdfb] p-4 gap-8">
-      {data?.length > 0 && (
-        <Text className="text-2xl px-4 text-black font-inter-medium">
-          {t('saved_recipes.subtitle')}
-        </Text>
-      )}
+    <Box className="flex-1 bg-[#fffdfb]">
+      {/* Tab bar */}
+      <View className="px-4 pt-4">
+        <View className="flex-row bg-slate-100 rounded-xl p-1 gap-1">
+          <Pressable
+            onPress={() => router.replace('/recipes/saved')}
+            className={`flex-1 py-2 rounded-lg items-center ${!isFavorites ? 'bg-white shadow-sm' : ''}`}
+          >
+            <Text
+              className={`font-inter-semibold text-sm ${!isFavorites ? 'text-slate-900' : 'text-slate-400'}`}
+            >
+              {t('saved_recipes.all')}
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.replace('/recipes/favorites')}
+            className={`flex-1 py-2 rounded-lg items-center flex-row justify-center gap-1 ${isFavorites ? 'bg-white shadow-sm' : ''}`}
+          >
+            <Heart
+              size={13}
+              color={isFavorites ? '#ef4444' : '#94a3b8'}
+              fill={isFavorites ? '#ef4444' : 'none'}
+            />
+            <Text
+              className={`font-inter-semibold text-sm ${isFavorites ? 'text-slate-900' : 'text-slate-400'}`}
+            >
+              {t('saved_recipes.favorites')}
+            </Text>
+            {favoriteCount > 0 && (
+              <View
+                className={`rounded-full px-1.5 py-0.5 min-w-[18px] items-center ${isFavorites ? 'bg-red-100' : 'bg-slate-200'}`}
+              >
+                <Text
+                  className={`text-[10px] font-inter-semibold ${isFavorites ? 'text-red-500' : 'text-slate-400'}`}
+                >
+                  {favoriteCount}
+                </Text>
+              </View>
+            )}
+          </Pressable>
+        </View>
+      </View>
+      <Box className="flex-1 p-4">
       <FlatList
-        data={data}
+        data={displayData}
         contentContainerStyle={{ flexGrow: 1 }}
         keyExtractor={(item) => item.recipeId}
         numColumns={1}
@@ -157,31 +242,43 @@ export default function SavedRecipesPage() {
             colors={['#ff6900']}
           />
         }
-        ListEmptyComponent={() => (
-          <Box className="flex h-[75%] bg-[#fffdfb] px-2 justify-center items-center gap-6">
-            <View className="w-24 h-24 bg-orange-50 rounded-full items-center justify-center">
-              <Notebook size={48} color="#f97316" strokeWidth={1.5} />
-            </View>
-
-            <Text className="font-inter-bold text-2xl text-slate-900 text-center">
-              {t('saved_recipes.empty')}
-            </Text>
-
-            <Pressable
-              onPress={() => router.push('/(main)/chat')}
-              className="bg-orange-500 px-8 py-4 rounded-2xl active:bg-orange-600 shadow-sm shadow-orange-200"
-            >
-              <Text className="font-inter-semibold text-white text-lg">
-                {t('saved_recipes.go_to_chat')}
-              </Text>
-            </Pressable>
-          </Box>
-        )}
+        ListEmptyComponent={
+          filterFavorites
+            ? () => (
+                <Box className="flex h-[75%] bg-[#fffdfb] px-2 justify-center items-center gap-6">
+                  <View className="w-24 h-24 bg-red-50 rounded-full items-center justify-center">
+                    <Heart size={48} color="#ef4444" strokeWidth={1.5} />
+                  </View>
+                  <Text className="font-inter-bold text-2xl text-slate-900 text-center">
+                    {t('saved_recipes.favorites_empty')}
+                  </Text>
+                </Box>
+              )
+            : () => (
+                <Box className="flex h-[75%] bg-[#fffdfb] px-2 justify-center items-center gap-6">
+                  <View className="w-24 h-24 bg-orange-50 rounded-full items-center justify-center">
+                    <Notebook size={48} color="#f97316" strokeWidth={1.5} />
+                  </View>
+                  <Text className="font-inter-bold text-2xl text-slate-900 text-center">
+                    {t('saved_recipes.empty')}
+                  </Text>
+                  <Pressable
+                    onPress={() => router.push('/(main)/chat')}
+                    className="bg-orange-500 px-8 py-4 rounded-2xl active:bg-orange-600 shadow-sm shadow-orange-200"
+                  >
+                    <Text className="font-inter-semibold text-white text-lg">
+                      {t('saved_recipes.go_to_chat')}
+                    </Text>
+                  </Pressable>
+                </Box>
+              )
+        }
         ItemSeparatorComponent={() => <View className="h-3" />}
         renderItem={({ item }) => {
           const r = item.recipe;
           const isInGroceries = isAlreadyInGroceries(item.recipeId);
           const servings = localServings[item.recipeId] ?? item.servings ?? 1;
+          const isFavorite = item.isFavorite as boolean;
 
           const accentColor = r.isVegan
             ? '#10b981'
@@ -198,7 +295,6 @@ export default function SavedRecipesPage() {
               }
               className="bg-white mx-1 rounded-2xl shadow-sm shadow-slate-100 overflow-hidden"
             >
-              {/* Color accent strip */}
               <View
                 style={{
                   width: 4,
@@ -210,9 +306,7 @@ export default function SavedRecipesPage() {
                 }}
               />
 
-              {/* Card body */}
               <View className="pl-4 pr-3 pt-3 pb-0">
-                {/* Header row */}
                 <View className="flex-row justify-between items-start mb-3">
                   <View className="flex-1 mr-3">
                     <Text
@@ -227,7 +321,6 @@ export default function SavedRecipesPage() {
                     </Text>
                   </View>
 
-                  {/* Dietary badges */}
                   <View className="flex-row flex-wrap gap-1 justify-end max-w-[110px]">
                     {r.isVegan && (
                       <View className="rounded-full bg-green-50 px-2 py-0.5">
@@ -260,10 +353,8 @@ export default function SavedRecipesPage() {
                   </View>
                 </View>
 
-                {/* Divider */}
                 <View className="h-px bg-slate-100 mb-3" />
 
-                {/* Macro row */}
                 <View className="flex-row mb-3">
                   {[
                     { value: r.calories, label: 'kcal' },
@@ -273,23 +364,18 @@ export default function SavedRecipesPage() {
                   ].map((macro, idx) => (
                     <View key={idx} className="flex-1 items-center">
                       <Text className="font-inter-semibold text-sm text-slate-800">
-                        {/* eslint-disable-next-line i18next/no-literal-string */}
                         {macro.value}
                       </Text>
                       <Text className="text-[10px] text-slate-400 uppercase tracking-wide">
-                        {/* eslint-disable-next-line i18next/no-literal-string */}
                         {macro.label}
                       </Text>
                     </View>
                   ))}
                 </View>
 
-                {/* Divider */}
                 <View className="h-px bg-slate-100 mb-2" />
 
-                {/* Footer */}
                 <View className="flex-row items-center justify-between py-1">
-                  {/* Servings stepper */}
                   <View className="flex-row items-center bg-slate-50 rounded-full px-1">
                     <Pressable
                       onPress={(e) => {
@@ -321,8 +407,23 @@ export default function SavedRecipesPage() {
                     </Pressable>
                   </View>
 
-                  {/* Cart + options */}
                   <View className="flex-row items-center">
+                    <Pressable
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        updateFavoriteMutation.mutate({
+                          recipeId: item.recipeId,
+                          isFavorite: !isFavorite,
+                        });
+                      }}
+                      className="p-2 active:bg-red-50 rounded-full"
+                    >
+                      <Heart
+                        size={20}
+                        color={isFavorite ? '#ef4444' : '#cbd5e1'}
+                        fill={isFavorite ? '#ef4444' : 'none'}
+                      />
+                    </Pressable>
                     {isInGroceries ? (
                       <Pressable
                         onPress={(e) => {
@@ -341,7 +442,7 @@ export default function SavedRecipesPage() {
                       <Pressable
                         onPress={(e) => {
                           e.stopPropagation();
-                          addTogroceriesMutation.mutate({
+                          addToGroceriesMutation.mutate({
                             recipeId: item.recipeId,
                             newState: true,
                           });
@@ -354,7 +455,10 @@ export default function SavedRecipesPage() {
                     <Pressable
                       onPress={(e) => {
                         e.stopPropagation();
-                        handleOpenMenu(item.recipeId as string, r.name as string);
+                        handleOpenMenu(
+                          item.recipeId as string,
+                          r.name as string,
+                        );
                       }}
                       className="p-2 active:bg-slate-100 rounded-full"
                     >
@@ -377,12 +481,13 @@ export default function SavedRecipesPage() {
         showModal={showConfirmRemove}
         onClose={() => setShowConfirmRemove(false)}
         onConfirm={() => {
-          addTogroceriesMutation.mutate({
+          addToGroceriesMutation.mutate({
             recipeId: selectedRecipe?.id ?? '',
             newState: false,
           });
         }}
       />
+      </Box>
     </Box>
   );
 }

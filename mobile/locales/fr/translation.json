@@ -57,7 +57,10 @@
     "empty": "saved_recipes.empty",
     "go_to_chat": "saved_recipes.go_to_chat",
     "remove": "saved_recipes.remove",
-    "servings": "saved_recipes.servings"
+    "servings": "saved_recipes.servings",
+    "all": "saved_recipes.all",
+    "favorites": "saved_recipes.favorites",
+    "favorites_empty": "saved_recipes.favorites_empty"
   },
   "diet": {
     "vegan": "diet.vegan",

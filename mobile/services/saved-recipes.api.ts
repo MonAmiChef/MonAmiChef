@@ -84,4 +84,19 @@ export const savedRecipesApi = {
     return await response.json();
   },
 
+  updateFavorite: async (session: Session, recipeId: string, isFavorite: boolean) => {
+    const response = await fetch(`${API_URL}/saved-recipes/favorite`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+      body: JSON.stringify({ recipeId, isFavorite }),
+    });
+
+    if (!response.ok) throw new Error('Failed to update favorite');
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return await response.json();
+  },
+
 };

@@ -41,19 +41,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import ConfirmRemoveModal from '@/components/saved-recipes/ConfirmRemoveModal';
 import SavedRecipesOptionsSheet from '@/components/saved-recipes/SavedRecipesOptionsSheet';
+import { capitalizeFull } from '@/utils/text';
 
-export const capitalizeFull = (str: string): string => {
-  if (!str) return '';
-
-  return str
-    .toLowerCase()
-    .split(/([ -])/)
-    .map((word) => {
-      if (word === ' ' || word === '-') return word;
-      return word.charAt(0).toUpperCase() + word.slice(1);
-    })
-    .join('');
-};
+export { capitalizeFull };
 
 const formatData = (
   items: MergedIngredient[],

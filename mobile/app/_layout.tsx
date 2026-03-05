@@ -69,10 +69,7 @@ function RootLayoutNav() {
       <StatusBar style="dark" />
       <GluestackUIProvider mode={colorMode}>
         <Stack>
-          <Stack.Screen
-            name="index"
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen
             name="(main)"
             options={{ animation: 'fade', headerShown: false }}

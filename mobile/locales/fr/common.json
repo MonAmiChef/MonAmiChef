@@ -108,7 +108,10 @@
     }
   },
   "saved_recipes": {
-    "title": "Recettes sauvegardées",
+    "all": "Sauvegardées",
+    "favorites": "Favorites",
+    "favorites_empty": "Aucun favoris",
+    "title": "Recettes",
     "subtitle": "Sauvegardées",
     "empty": "Aucune recette sauvegardée, générez-en une!",
     "go_to_chat": "Aller au chat",

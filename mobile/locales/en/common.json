@@ -110,7 +110,10 @@
     }
   },
   "saved_recipes": {
-    "title": "Saved recipes",
+    "all": "Saved",
+    "favorites": "Favorites",
+    "favorites_empty": "No favorites yet",
+    "title": "Recipes",
     "subtitle": "Recipes",
     "empty": "No saved recipes yet, generate one first",
     "go_to_chat": "Go to chat",
