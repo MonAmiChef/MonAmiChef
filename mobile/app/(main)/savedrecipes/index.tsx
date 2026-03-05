@@ -70,6 +70,21 @@ export default function SavedRecipesPage() {
     },
   });
 
+  const updateServingsMutation = useMutation({
+    mutationFn: ({ recipeId, servings }: { recipeId: string; servings: number }) =>
+      savedRecipesApi.updateServings(session!, recipeId, servings),
+    onMutate: ({ recipeId, servings }) => {
+      queryClient.setQueryData(['saved-recipes'], (old: typeof data) =>
+        old?.map((item) =>
+          item.recipeId === recipeId ? { ...item, servings } : item,
+        ),
+      );
+    },
+    onError: () => {
+      void queryClient.invalidateQueries({ queryKey: ['saved-recipes'] });
+    },
+  });
+
   const addTogroceriesMutation = useMutation({
     mutationFn: ({
       recipeId,
@@ -159,7 +174,7 @@ export default function SavedRecipesPage() {
 
           return (
             <Pressable
-              onPress={() => router.push(`/recipe-details/${item.recipeId}`)}
+              onPress={() => router.push(`/recipe-details/${item.recipeId}?savedServings=${item.servings}`)}
               className="flex-row items-center bg-white py-3 px-4 border-b border-slate-50"
             >
               <Box className="h-12 w-12 bg-slate-700 rounded-xl items-center justify-center mr-4">
@@ -187,9 +202,36 @@ export default function SavedRecipesPage() {
               </Box>
 
               <Box className="flex-row items-center gap-1">
+                <Box className="flex-row items-center">
+                  <Pressable
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      const next = Math.max(1, (item.servings || 1) - 1);
+                      updateServingsMutation.mutate({ recipeId: item.recipeId, servings: next });
+                    }}
+                    className="w-7 h-7 items-center justify-center active:bg-slate-100 rounded-full"
+                  >
+                    <Text className="text-slate-500 text-lg font-inter-medium">−</Text>
+                  </Pressable>
+                  <Text className="text-slate-700 font-inter-medium text-sm w-4 text-center">
+                    {item.servings || 1}
+                  </Text>
+                  <Pressable
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      const next = (item.servings || 1) + 1;
+                      updateServingsMutation.mutate({ recipeId: item.recipeId, servings: next });
+                    }}
+                    className="w-7 h-7 items-center justify-center active:bg-slate-100 rounded-full"
+                  >
+                    <Text className="text-slate-500 text-lg font-inter-medium">+</Text>
+                  </Pressable>
+                </Box>
+
                 {isInGroceries ? (
                   <Pressable
-                    onPress={() => {
+                    onPress={(e) => {
+                      e.stopPropagation();
                       setSelectedRecipe({
                         id: item.recipeId,
                         name: r.name,
@@ -202,12 +244,13 @@ export default function SavedRecipesPage() {
                   </Pressable>
                 ) : (
                   <Pressable
-                    onPress={() =>
+                    onPress={(e) => {
+                      e.stopPropagation();
                       addTogroceriesMutation.mutate({
                         recipeId: item.recipeId,
                         newState: true,
-                      })
-                    }
+                      });
+                    }}
                     className="p-3 active:bg-orange-50 rounded-full"
                   >
                     <ShoppingCart size={20} color="#f97316" />
@@ -215,7 +258,10 @@ export default function SavedRecipesPage() {
                 )}
 
                 <Pressable
-                  onPress={() => handleOpenMenu(item.recipeId, r.name)}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    handleOpenMenu(item.recipeId, r.name);
+                  }}
                   className="p-2 active:bg-slate-100 rounded-full"
                 >
                   <Ellipsis size={20} color="#94a3b8" />

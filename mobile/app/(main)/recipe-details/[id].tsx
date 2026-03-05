@@ -22,6 +22,7 @@ import {
   User,
 } from 'lucide-react-native';
 import { savedRecipesApi } from '@/services/saved-recipes.api';
+import { groceriesApi } from '@/services/groceries.api';
 import Toast from 'react-native-toast-message';
 import { Divider } from '@/components/ui/divider';
 import {
@@ -80,7 +81,8 @@ const MacroItem = ({
 };
 
 export default function RecipeDetailPage() {
-  const { id } = useLocalSearchParams();
+  const { id, savedServings: savedServingsParam } = useLocalSearchParams();
+  const savedServings = savedServingsParam ? Number(savedServingsParam) : 1;
   const { session } = useAuth();
   const router = useRouter();
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
@@ -102,7 +104,7 @@ export default function RecipeDetailPage() {
 
   const { data: recipesInGroceries, refetch: refetchGroceries } = useQuery({
     queryKey: ['groceries-recipes'],
-    queryFn: () => savedRecipesApi.getGroceriesRecipes(session!),
+    queryFn: () => groceriesApi.getGroceriesRecipes(session!),
     enabled: !!session,
   });
 
@@ -144,7 +146,7 @@ export default function RecipeDetailPage() {
     }: {
       recipeId: string;
       newState: boolean;
-    }) => savedRecipesApi.addToGroceries(session!, recipeId, newState),
+    }) => groceriesApi.updateRecipeInGroceries(session!, recipeId, newState),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
       Toast.show({
@@ -356,7 +358,7 @@ export default function RecipeDetailPage() {
                         icon={<Shapes size={36} color="#ff6900" />}
                       />
                       <SpecItem
-                        value={data.servings}
+                        value={String(savedServings)}
                         icon={<User size={36} color="#ff6900" />}
                         suffix="servings"
                       />
@@ -414,7 +416,7 @@ export default function RecipeDetailPage() {
                               <Text
                                 className={`text-lg text-orange-600 font-inter-medium shrink-0 ${isIngredientCompleted && 'text-green-500'}`}
                               >
-                                {ing.quantity} {ing.unit}
+                                {parseFloat((ing.quantity * savedServings).toFixed(2))} {ing.unit}
                               </Text>
                             </Box>
 

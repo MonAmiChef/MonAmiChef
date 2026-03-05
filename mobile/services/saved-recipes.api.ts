@@ -69,4 +69,19 @@ export const savedRecipesApi = {
     return await response.json();
   },
 
+  updateServings: async (session: Session, recipeId: string, servings: number) => {
+    const response = await fetch(`${API_URL}/saved-recipes/servings`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+      body: JSON.stringify({ recipeId, servings }),
+    });
+
+    if (!response.ok) throw new Error('Failed to update servings');
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return await response.json();
+  },
+
 };
