@@ -70,6 +70,8 @@
     "empty": "groceries.empty",
     "go_to_chat": "groceries.go_to_chat",
     "complete": "groceries.complete",
+    "recipes_section": "Recettes",
+    "ingredients_section": "Ingrédients",
     "categories": {
       "fruits": "Fruits",
       "vegetables": "Légumes",

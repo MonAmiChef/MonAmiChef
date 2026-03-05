@@ -9,16 +9,28 @@ import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
-import { ActivityIndicator, Pressable, RefreshControl, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  RefreshControl,
+  View,
+} from 'react-native';
 import {
   CheckCircle2,
   ChevronDown,
   ChevronRight,
   Circle,
+  Eye,
+  EyeOff,
+  MoreHorizontal,
+  RotateCcw,
   ShoppingCart,
+  User,
+  UtensilsCrossed,
 } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
 import { groceriesApi, MergedIngredient } from '@/services/groceries.api';
+import { savedRecipesApi } from '@/services/saved-recipes.api';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import Animated, {
@@ -27,6 +39,8 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import ConfirmRemoveModal from '@/components/saved-recipes/ConfirmRemoveModal';
+import SavedRecipesOptionsSheet from '@/components/saved-recipes/SavedRecipesOptionsSheet';
 
 export const capitalizeFull = (str: string): string => {
   if (!str) return '';
@@ -41,7 +55,45 @@ export const capitalizeFull = (str: string): string => {
     .join('');
 };
 
-const formatData = (items: MergedIngredient[], expandedSections: string[]) => {
+const formatData = (
+  items: MergedIngredient[],
+  expandedSections: string[],
+  recipesSectionExpanded: boolean,
+  groceryRecipes: {
+    name: string;
+    recipeId: string;
+    servings: number | undefined;
+  }[],
+  allData: MergedIngredient[],
+  hiddenRecipes: Set<string>,
+) => {
+  const flatList: any[] = [];
+
+  flatList.push({
+    type: 'RECIPES_SECTION_HEADER',
+    isExpanded: recipesSectionExpanded,
+    count: groceryRecipes.length,
+  });
+
+  if (recipesSectionExpanded) {
+    groceryRecipes.forEach(({ name, recipeId, servings }) => {
+      const hasAnyBought = allData.some(
+        (item) => item.recipes.includes(name) && item.isBought,
+      );
+      const isHidden = hiddenRecipes.has(name);
+      flatList.push({
+        type: 'RECIPE_ITEM',
+        name,
+        recipeId,
+        hasAnyBought,
+        isHidden,
+        servings,
+      });
+    });
+  }
+
+  flatList.push({ type: 'INGREDIENTS_SUBTITLE' });
+
   const groups = items.reduce(
     (acc, item) => {
       const cat = item.category || 'AUTRE';
@@ -52,7 +104,6 @@ const formatData = (items: MergedIngredient[], expandedSections: string[]) => {
     {} as Record<string, MergedIngredient[]>,
   );
 
-  const flatList: any[] = [];
   Object.keys(groups)
     .sort()
     .forEach((cat) => {
@@ -74,6 +125,7 @@ const formatData = (items: MergedIngredient[], expandedSections: string[]) => {
         );
       }
     });
+
   return flatList;
 };
 
@@ -101,7 +153,10 @@ function GroceryItem({ item, onToggle }: GroceryItemProps) {
 
   return (
     <Pressable onPress={onToggle}>
-      <Animated.View style={containerStyle} className="flex-row items-center py-3 px-2">
+      <Animated.View
+        style={containerStyle}
+        className="flex-row items-center py-3 px-2"
+      >
         <Box className="mr-3">
           {item.isBought ? (
             <CheckCircle2 size={22} color="#f97316" />
@@ -154,6 +209,64 @@ function GroceryItem({ item, onToggle }: GroceryItemProps) {
   );
 }
 
+type RecipeRowProps = {
+  name: string;
+  recipeId: string;
+  hasAnyBought: boolean;
+  isHidden: boolean;
+  servings?: number;
+  onToggleVisibility: () => void;
+  onReset: () => void;
+  onEllipsis: () => void;
+};
+
+function RecipeRow({
+  name,
+  hasAnyBought,
+  isHidden,
+  servings,
+  onToggleVisibility,
+  onReset,
+  onEllipsis,
+}: RecipeRowProps) {
+  return (
+    <View
+      className="flex-row items-center px-3 py-3"
+      style={{ opacity: isHidden ? 0.4 : 1 }}
+    >
+      <Text
+        className="flex-1 font-inter-medium text-slate-800"
+        numberOfLines={1}
+      >
+        {name}
+      </Text>
+      {servings != null && (
+        <View className="flex-row items-center gap-1 mr-3">
+          <User size={12} color="#94a3b8" />
+          <Text className="text-slate-500 font-inter-medium text-xs">
+            {servings}
+          </Text>
+        </View>
+      )}
+      <Pressable onPress={onToggleVisibility} className="p-1">
+        {isHidden ? (
+          <EyeOff size={20} color="#64748b" />
+        ) : (
+          <Eye size={20} color="#94a3b8" />
+        )}
+      </Pressable>
+      {hasAnyBought && (
+        <Pressable onPress={onReset} className="p-1 ml-1">
+          <RotateCcw size={20} color="#94a3b8" />
+        </Pressable>
+      )}
+      <Pressable onPress={onEllipsis} className="p-1 ml-1">
+        <MoreHorizontal size={20} color="#94a3b8" />
+      </Pressable>
+    </View>
+  );
+}
+
 export default function GroceriesPage() {
   const { session } = useAuth();
   const queryClient = useQueryClient();
@@ -164,6 +277,14 @@ export default function GroceriesPage() {
     'pantry',
   ]);
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
+  const [recipesSectionExpanded, setRecipesSectionExpanded] = useState(false);
+  const [hiddenRecipes, setHiddenRecipes] = useState<Set<string>>(new Set());
+  const [ellipsisOpenRecipeId, setEllipsisOpenRecipeId] = useState<
+    string | null
+  >(null);
+  const [confirmRemoveRecipeId, setConfirmRemoveRecipeId] = useState<
+    string | null
+  >(null);
 
   const toggleSection = (title: string) => {
     setExpandedSections((prev) =>
@@ -177,24 +298,67 @@ export default function GroceriesPage() {
     enabled: !!session,
   });
 
+  const { data: savedRecipes } = useQuery({
+    queryKey: ['saved-recipes'],
+    queryFn: () => savedRecipesApi.getSavedRecipes(session!),
+    enabled: !!session,
+  });
+
   const router = useRouter();
-
-  const formattedData = data ? formatData(data, expandedSections) : [];
-
   const { t } = useTranslation();
+
+  const uniqueRecipeNames = [...new Set(data?.flatMap((i) => i.recipes) ?? [])];
+  const groceryRecipes = uniqueRecipeNames
+    .map((name) => {
+      const match = savedRecipes?.find((r: any) => r.recipe.name === name);
+      return {
+        name,
+        recipeId: match?.recipeId as string | undefined,
+        servings: match?.servings as number | undefined,
+      };
+    })
+    .filter(
+      (
+        r,
+      ): r is {
+        name: string;
+        recipeId: string;
+        servings: number | undefined;
+      } => !!r.recipeId,
+    );
+
+  const visibleIngredients = (data ?? []).filter(
+    (item) => !item.recipes.every((name) => hiddenRecipes.has(name)),
+  );
+
+  const formattedData =
+    (data?.length ?? 0) === 0
+      ? []
+      : formatData(
+          visibleIngredients,
+          expandedSections,
+          recipesSectionExpanded,
+          groceryRecipes,
+          data ?? [],
+          hiddenRecipes,
+        );
 
   const toggleMutation = useMutation({
     mutationFn: ({ ids, bought }: { ids: string[]; bought: boolean }) =>
       groceriesApi.toggleIngredientsStatus(session!, ids, bought),
     onMutate: async ({ ids, bought }) => {
       await queryClient.cancelQueries({ queryKey: ['groceries'] });
-      const previousData = queryClient.getQueryData<MergedIngredient[]>(['groceries']);
-      queryClient.setQueryData<MergedIngredient[]>(['groceries'], (old) =>
-        old?.map((item) =>
-          item.ingredientIds.some((id) => ids.includes(id))
-            ? { ...item, isBought: bought }
-            : item,
-        ) ?? [],
+      const previousData = queryClient.getQueryData<MergedIngredient[]>([
+        'groceries',
+      ]);
+      queryClient.setQueryData<MergedIngredient[]>(
+        ['groceries'],
+        (old) =>
+          old?.map((item) =>
+            item.ingredientIds.some((id) => ids.includes(id))
+              ? { ...item, isBought: bought }
+              : item,
+          ) ?? [],
       );
       return { previousData };
     },
@@ -211,32 +375,47 @@ export default function GroceriesPage() {
     },
   });
 
+  const removeRecipeMutation = useMutation({
+    mutationFn: (recipeId: string) =>
+      groceriesApi.updateRecipeInGroceries(session!, recipeId, false),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ['groceries'] });
+      void queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
+    },
+  });
+
+  const resetRecipeIngredients = (recipeName: string) => {
+    const ids = (data ?? [])
+      .filter((item) => item.recipes.includes(recipeName))
+      .flatMap((item) => item.ingredientIds);
+    if (ids.length) toggleMutation.mutate({ ids, bought: false });
+  };
+
   if (isLoading)
     return <ActivityIndicator className="flex-1" color="#ff6900" />;
 
   return (
     <Box className="flex-1 bg-[#fffdfb] p-4">
-      {formattedData?.length > 0 && (
-        <Text className="text-2xl px-4 text-black font-inter-medium">
-          {t('saved_recipes.subtitle')}
-        </Text>
-      )}
       <Animated.FlatList
         data={formattedData}
-        keyExtractor={(item: any) =>
-          item.type === 'HEADER'
-            ? `header-${item.title}`
-            : `item-${item.ingredientIds.join('-')}`
-        }
+        keyExtractor={(item: any) => {
+          if (item.type === 'RECIPES_SECTION_HEADER')
+            return 'recipes-section-header';
+          if (item.type === 'RECIPE_ITEM')
+            return `recipe-item-${item.recipeId}`;
+          if (item.type === 'INGREDIENTS_SUBTITLE')
+            return 'ingredients-subtitle';
+          if (item.type === 'HEADER') return `header-${item.title}`;
+          return `item-${item.ingredientIds.join('-')}`;
+        }}
         itemLayoutAnimation={LinearTransition}
         contentContainerStyle={{ flexGrow: 1 }}
         refreshControl={
           <RefreshControl
             refreshing={isManualRefreshing}
-            onRefresh={async () => {
+            onRefresh={() => {
               setIsManualRefreshing(true);
-              await refetch();
-              setIsManualRefreshing(false);
+              void refetch().then(() => setIsManualRefreshing(false));
             }}
             colors={['#ff6900']}
           />
@@ -262,6 +441,65 @@ export default function GroceriesPage() {
           </Box>
         )}
         renderItem={({ item }: { item: any }) => {
+          if (item.type === 'RECIPES_SECTION_HEADER') {
+            return (
+              <Pressable
+                onPress={() => setRecipesSectionExpanded((prev) => !prev)}
+                className="flex-row items-center p-3 rounded-xl mt-4 mb-2 bg-orange-50 border border-orange-100"
+              >
+                <UtensilsCrossed size={15} color="#f97316" />
+                <Text className="ml-2 font-inter-bold text-xs uppercase tracking-wider text-orange-500 flex-1">
+                  {t('groceries.recipes_section')}
+                </Text>
+                {item.count > 0 && (
+                  <Box className="bg-orange-100 px-2 py-0.5 rounded-full mr-2">
+                    <Text className="text-[10px] text-orange-600 font-inter-bold">
+                      {item.count}
+                    </Text>
+                  </Box>
+                )}
+                {item.isExpanded ? (
+                  <ChevronDown size={18} color="#f97316" />
+                ) : (
+                  <ChevronRight size={18} color="#f97316" />
+                )}
+              </Pressable>
+            );
+          }
+
+          if (item.type === 'RECIPE_ITEM') {
+            return (
+              <RecipeRow
+                name={item.name}
+                recipeId={item.recipeId}
+                hasAnyBought={item.hasAnyBought}
+                isHidden={item.isHidden}
+                servings={item.servings}
+                onToggleVisibility={() => {
+                  setHiddenRecipes((prev) => {
+                    const next = new Set(prev);
+                    if (next.has(item.name)) {
+                      next.delete(item.name);
+                    } else {
+                      next.add(item.name);
+                    }
+                    return next;
+                  });
+                }}
+                onReset={() => resetRecipeIngredients(item.name)}
+                onEllipsis={() => setEllipsisOpenRecipeId(item.recipeId)}
+              />
+            );
+          }
+
+          if (item.type === 'INGREDIENTS_SUBTITLE') {
+            return (
+              <Text className="mt-6 mb-1 px-1 font-inter-bold text-xs uppercase tracking-wider text-slate-400">
+                {t('groceries.ingredients_section')}
+              </Text>
+            );
+          }
+
           if (item.type === 'HEADER') {
             return (
               <Pressable
@@ -315,6 +553,23 @@ export default function GroceriesPage() {
             />
           );
         }}
+      />
+      <SavedRecipesOptionsSheet
+        isOpen={!!ellipsisOpenRecipeId}
+        onClose={() => setEllipsisOpenRecipeId(null)}
+        handleDelete={() => {
+          setConfirmRemoveRecipeId(ellipsisOpenRecipeId);
+          setEllipsisOpenRecipeId(null);
+        }}
+      />
+      <ConfirmRemoveModal
+        showModal={!!confirmRemoveRecipeId}
+        onClose={() => setConfirmRemoveRecipeId(null)}
+        onConfirm={() => {
+          if (confirmRemoveRecipeId)
+            removeRecipeMutation.mutate(confirmRemoveRecipeId);
+        }}
+        bodyText={t('remove_modal.confirm_text_groceries')}
       />
     </Box>
   );

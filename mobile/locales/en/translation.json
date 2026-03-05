@@ -70,6 +70,8 @@
     "empty": "",
     "go_to_chat": "",
     "complete": "",
+    "recipes_section": "Recipes",
+    "ingredients_section": "Ingredients",
     "categories": {
       "fruits": "Fruits",
       "vegetables": "Vegetables",

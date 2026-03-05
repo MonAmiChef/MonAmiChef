@@ -60,6 +60,8 @@
     "title": "Liste de courses",
     "empty": "Votre liste de course est vide, générez une recette d'abord!",
     "go_to_chat": "Aller au chat",
+    "recipes_section": "Recettes",
+    "ingredients_section": "Ingrédients",
     "categories": {
       "fruits": "FRUITS",
       "vegetables": "LÉGUMES",

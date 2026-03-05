@@ -82,7 +82,9 @@ const MacroItem = ({
 
 export default function RecipeDetailPage() {
   const { id, savedServings: savedServingsParam } = useLocalSearchParams();
-  const savedServings = savedServingsParam ? Number(savedServingsParam) : 1;
+  const [servings, setServings] = useState(
+    savedServingsParam ? Number(savedServingsParam) : 1,
+  );
   const { session } = useAuth();
   const router = useRouter();
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
@@ -164,6 +166,23 @@ export default function RecipeDetailPage() {
       });
     },
   });
+
+  const updateServingsMutation = useMutation({
+    mutationFn: ({ next }: { next: number; prev: number }) =>
+      savedRecipesApi.updateServings(session!, id as string, next),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['saved-recipes'] });
+    },
+    onError: (_err, { prev }) => {
+      setServings(prev);
+    },
+  });
+
+  const changeServings = (delta: number) => {
+    const next = Math.max(1, servings + delta);
+    updateServingsMutation.mutate({ next, prev: servings });
+    setServings(next);
+  };
 
   const handleToggleStep = (index: number) => {
     setCompletedSteps((prev) =>
@@ -357,11 +376,38 @@ export default function RecipeDetailPage() {
                         value={data.difficulty}
                         icon={<Shapes size={36} color="#ff6900" />}
                       />
-                      <SpecItem
-                        value={String(savedServings)}
-                        icon={<User size={36} color="#ff6900" />}
-                        suffix="servings"
-                      />
+                      {savedServingsParam ? (
+                        <Box className="flex flex-1 gap-2 items-center justify-center">
+                          <User size={36} color="#ff6900" />
+                          <Box className="flex-row items-center bg-slate-50 rounded-full px-1">
+                            <Pressable
+                              onPress={() => changeServings(-1)}
+                              className="w-8 h-8 items-center justify-center"
+                            >
+                              <Text className="text-xl font-inter-semibold text-slate-600">
+                                −
+                              </Text>
+                            </Pressable>
+                            <Text className="text-lg font-inter-medium w-5 text-center">
+                              {servings}
+                            </Text>
+                            <Pressable
+                              onPress={() => changeServings(1)}
+                              className="w-8 h-8 items-center justify-center"
+                            >
+                              <Text className="text-xl font-inter-semibold text-slate-600">
+                                +
+                              </Text>
+                            </Pressable>
+                          </Box>
+                        </Box>
+                      ) : (
+                        <SpecItem
+                          value={String(servings)}
+                          icon={<User size={36} color="#ff6900" />}
+                          suffix="servings"
+                        />
+                      )}
                     </Box>
                   </AccordionContentText>
                 </Box>
@@ -416,7 +462,7 @@ export default function RecipeDetailPage() {
                               <Text
                                 className={`text-lg text-orange-600 font-inter-medium shrink-0 ${isIngredientCompleted && 'text-green-500'}`}
                               >
-                                {parseFloat((ing.quantity * savedServings).toFixed(2))} {ing.unit}
+                                {parseFloat((ing.quantity * servings).toFixed(2))} {ing.unit}
                               </Text>
                             </Box>
 

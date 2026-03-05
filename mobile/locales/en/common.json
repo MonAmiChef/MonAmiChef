@@ -60,6 +60,8 @@
     "title": "Grocery list",
     "empty": "Your grocery list is empty, let's generate a recipe first!",
     "go_to_chat": "Go to chat",
+    "recipes_section": "Recipes",
+    "ingredients_section": "Ingredients",
     "categories": {
       "fruits": "FRUITS",
       "vegetables": "VEGETABLES",
