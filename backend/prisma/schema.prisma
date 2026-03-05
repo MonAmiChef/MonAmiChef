@@ -31,7 +31,6 @@ model Recipe {
   id           String        @id @default(uuid())
   name         String
   prepTimeMin  Int?
-  servings     Int?
   difficulty   String?
   calories     Float?
   proteins     Float?
@@ -61,7 +60,7 @@ model SavedRecipe {
   createdAt       DateTime @default(now())
   userId          String   @db.Uuid
   isInGroceryList Boolean  @default(false)
-  servings        Int      @default(0)
+  servings        Int      @default(1)
   recipe          Recipe   @relation(fields: [recipeId], references: [id])
   user            User     @relation(fields: [userId], references: [id])
 

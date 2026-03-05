@@ -43,7 +43,6 @@ export class GroceriesRepository {
         recipe: {
           select: {
             name: true,
-            servings: true,
             ingredients: {
               include: {
                 reference: true,
@@ -57,9 +56,7 @@ export class GroceriesRepository {
     const mergedIngredients = savedRecipes.reduce(
       (acc, plan) => {
         const recipeName = plan.recipe.name;
-        const planServings = Number(plan.servings || 2);
-        const recipeServings = plan.recipe.servings || 2;
-        const servingsFactor = planServings / recipeServings;
+        const servingsFactor = Number(plan.servings || 1);
 
         plan.recipe.ingredients.forEach((ing) => {
           const key = `${ing.name.toLowerCase().trim()}_${ing.unit.toLowerCase().trim()}`;

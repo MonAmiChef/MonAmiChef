@@ -6,7 +6,6 @@ export const RecipeSchema = z.object({
   name: z.string(),
   description: z.string().nullable(),
   prepTimeMin: z.number().nullable(),
-  servings: z.number().nullable(),
   difficulty: z.string().nullable(),
   instructions: z.array(z.string()),
   calories: z.number().nullable(),

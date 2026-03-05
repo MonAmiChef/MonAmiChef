@@ -24,4 +24,16 @@ export class SavedRecipesRepository {
       },
     });
   }
+
+  async updateServings(userId: string, recipeId: string, servings: number) {
+    return this.prismaService.savedRecipe.update({
+      where: {
+        recipeId_userId: {
+          recipeId,
+          userId,
+        },
+      },
+      data: { servings },
+    });
+  }
 }

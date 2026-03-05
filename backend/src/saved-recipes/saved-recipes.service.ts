@@ -21,20 +21,22 @@ export class SavedRecipesService {
     return this.savedRecipesRepository.removeFromSavedRecipes(userId, recipeId);
   }
 
+  async updateServings(userId: string, recipeId: string, servings: number) {
+    return this.savedRecipesRepository.updateServings(userId, recipeId, servings);
+  }
+
   async addToSavedRecipes({
     language,
     messageId,
     messageContent,
     userId,
     ingredients: providedIngredients,
-    servings: providedServings,
   }: {
     language: string;
     messageId: string;
     messageContent: string;
     userId: string;
     ingredients?: ChatIngredient[];
-    servings?: number;
   }) {
     const existingRecipe =
       await this.recipesRepository.findByMessageId(messageId);
@@ -61,7 +63,6 @@ export class SavedRecipesService {
       imagePath: '',
       recipeData: {
         ...aiData.recipe,
-        servings: providedServings ?? aiData.recipe.servings,
       },
       messageId,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

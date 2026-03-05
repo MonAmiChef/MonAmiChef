@@ -27,7 +27,6 @@ export const ParseRecipeResponseSchema = z.object({
     description: z.string().nullable(),
     instructions: z.array(z.string()),
     prepTimeMin: z.number().int(),
-    servings: z.number().int(),
     difficulty: z.string(),
     calories: z.number(),
     proteins: z.number(),
@@ -52,7 +51,6 @@ export const ParseRecipeResponseJson = {
         name: { type: 'string' },
         description: { type: 'string' },
         prepTimeMin: { type: 'integer' },
-        servings: { type: 'integer' },
         instructions: {
           type: 'array',
           items: { type: 'string' },
@@ -81,7 +79,6 @@ export const ParseRecipeResponseJson = {
         'name',
         'instructions',
         'prepTimeMin',
-        'servings',
         'difficulty',
         'proteins',
         'calories',

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { SavedRecipesService } from './saved-recipes.service';
 import {
   SupabaseGuard,
@@ -8,6 +8,7 @@ import {
   AddToSavedRecipesRequestDto,
   AddToSavedRecipesResponseDto,
   RemoveFromSavedRecipesRequestDto,
+  UpdateServingsRequestDto,
 } from './saved-recipes.dto';
 import { ZodResponse } from 'nestjs-zod';
 
@@ -32,6 +33,18 @@ export class SavedRecipesController {
     );
   }
 
+  @Patch('servings')
+  updateServings(
+    @Body() body: UpdateServingsRequestDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.savedRecipesService.updateServings(
+      req.user.id,
+      body.recipeId,
+      body.servings,
+    );
+  }
+
   @Post('add')
   @ZodResponse({
     status: 200,
@@ -47,7 +60,6 @@ export class SavedRecipesController {
       messageContent: body.messageContent,
       userId: req.user.id,
       ingredients: body.ingredients,
-      servings: body.servings,
     });
   }
 }

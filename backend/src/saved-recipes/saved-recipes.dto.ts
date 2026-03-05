@@ -60,3 +60,12 @@ export type RemoveFromSavedRecipesResponse = z.output<
 export class RemoveFromSavedRecipesResponseDto extends createZodDto(
   SavedRecipeBaseSchema,
 ) {}
+
+const UpdateServingsRequestSchema = z.object({
+  recipeId: z.string(),
+  servings: z.number().int().min(1),
+});
+
+export class UpdateServingsRequestDto extends createZodDto(
+  UpdateServingsRequestSchema,
+) {}
