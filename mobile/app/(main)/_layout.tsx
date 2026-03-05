@@ -76,7 +76,9 @@ function CustomDrawerContent(props: any) {
         >
           <Text
             className={`text-lg font-inter-medium ${
-              pathname === '/savedrecipes' ? 'text-orange-600' : 'text-slate-700'
+              pathname === '/savedrecipes'
+                ? 'text-orange-600'
+                : 'text-slate-700'
             }`}
           >
             {t('drawer.saved_recipes')}
@@ -118,34 +120,38 @@ function CustomDrawerContent(props: any) {
             {t('drawer.chats')}
           </Text>
         </Box>
-        {isLoading ? (
-          <ActivityIndicator className="mt-4" />
-        ) : sessions ? (
-          sessions.map((chat, index) => {
-            return (
-              <Box key={index}>
-                <Pressable
-                  key={chat.id}
-                  onPress={() => {
-                    router.navigate(`/chat/${chat.id}`);
-                  }}
-                  className={`px-5 py-3`}
-                >
-                  <Text
-                    numberOfLines={1}
-                    className={`${pathname.split('/')[2] === chat.id ? 'bg-orange-100 border border-orange-300 rounded-lg text-orange-600' : 'text-slate-600'} px-5 py-3 font-inter-medium`}
+        <Box>
+          {isLoading ? (
+            <ActivityIndicator className="mt-4" />
+          ) : sessions ? (
+            sessions.map((chat, index) => {
+              const active = pathname.split('/')[2] === chat.id;
+
+              return (
+                <Box key={index}>
+                  <Pressable
+                    key={chat.id}
+                    onPress={() => {
+                      router.navigate(`/chat/${chat.id}`);
+                    }}
+                    className={`px-5 py-1.5`}
                   >
-                    {chat.title || 'Nouvelle discussion'}
-                  </Text>
-                </Pressable>
-              </Box>
-            );
-          })
-        ) : (
-          <Box className="flex-1 justify-center items-center">
-            <Text>{t('drawer.failed_retrieving_sessions')}</Text>
-          </Box>
-        )}
+                    <Text
+                      numberOfLines={1}
+                      className={`${active ? 'bg-orange-100 rounded-lg text-orange-600 pl-3' : 'text-slate-600'} pr-3 py-3 font-inter-medium`}
+                    >
+                      {chat.title || 'Nouvelle discussion'}
+                    </Text>
+                  </Pressable>
+                </Box>
+              );
+            })
+          ) : (
+            <Box className="flex-1 justify-center items-center">
+              <Text>{t('drawer.failed_retrieving_sessions')}</Text>
+            </Box>
+          )}
+        </Box>
       </Box>
     </DrawerContentScrollView>
   );

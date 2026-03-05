@@ -61,10 +61,17 @@
     "empty": "Votre liste de course est vide, générez une recette d'abord!",
     "go_to_chat": "Aller au chat",
     "categories": {
-      "vegetables": "LEGUMES",
-      "meat": "VIANDE",
-      "pantry": "CONDIMENTS",
-      "dairy": "PRODUITS LAITIERS"
+      "fruits": "FRUITS",
+      "vegetables": "LÉGUMES",
+      "meat": "VIANDES",
+      "fish": "POISSONS",
+      "dairy": "PRODUITS LAITIERS",
+      "pantry": "ÉPICERIE",
+      "bakery": "BOULANGERIE",
+      "frozen": "SURGELÉS",
+      "drinks": "BOISSONS",
+      "other": "AUTRES",
+      "autre": "AUTRES"
     },
     "complete": "COMPLET"
   },
@@ -103,7 +110,14 @@
     "subtitle": "Sauvegardées",
     "empty": "Aucune recette sauvegardée, générez-en une!",
     "go_to_chat": "Aller au chat",
-    "remove": "Retirer des sauvegardées"
+    "remove": "Retirer des sauvegardées",
+    "servings": "Personnes"
+  },
+  "diet": {
+    "vegan": "Vegan",
+    "vegetarian": "Végétarien",
+    "gluten_free": "Sans gluten",
+    "dairy_free": "Sans lactose"
   },
   "not_found": {
     "screen": "Cet écran n'existe pas.",

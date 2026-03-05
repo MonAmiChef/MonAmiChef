@@ -56,13 +56,33 @@
     "subtitle": "saved_recipes.subtitle",
     "empty": "saved_recipes.empty",
     "go_to_chat": "saved_recipes.go_to_chat",
-    "remove": "saved_recipes.remove"
+    "remove": "saved_recipes.remove",
+    "servings": "saved_recipes.servings"
+  },
+  "diet": {
+    "vegan": "diet.vegan",
+    "vegetarian": "diet.vegetarian",
+    "gluten_free": "diet.gluten_free",
+    "dairy_free": "diet.dairy_free"
   },
   "groceries": {
     "title": "groceries.title",
     "empty": "groceries.empty",
     "go_to_chat": "groceries.go_to_chat",
-    "complete": "groceries.complete"
+    "complete": "groceries.complete",
+    "categories": {
+      "fruits": "Fruits",
+      "vegetables": "Légumes",
+      "meat": "Viandes",
+      "fish": "Poissons",
+      "dairy": "Produits laitiers",
+      "pantry": "Épicerie",
+      "bakery": "Boulangerie",
+      "frozen": "Surgelés",
+      "drinks": "Boissons",
+      "other": "Autres",
+      "autre": "Autres"
+    }
   },
   "toast": {
     "success": "toast.success",

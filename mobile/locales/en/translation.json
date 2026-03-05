@@ -56,13 +56,33 @@
     "subtitle": "",
     "empty": "",
     "go_to_chat": "",
-    "remove": ""
+    "remove": "",
+    "servings": ""
+  },
+  "diet": {
+    "vegan": "",
+    "vegetarian": "",
+    "gluten_free": "",
+    "dairy_free": ""
   },
   "groceries": {
     "title": "",
     "empty": "",
     "go_to_chat": "",
-    "complete": ""
+    "complete": "",
+    "categories": {
+      "fruits": "Fruits",
+      "vegetables": "Vegetables",
+      "meat": "Meat",
+      "fish": "Fish",
+      "dairy": "Dairy",
+      "pantry": "Pantry",
+      "bakery": "Bakery",
+      "frozen": "Frozen",
+      "drinks": "Drinks",
+      "other": "Other",
+      "autre": "Other"
+    }
   },
   "toast": {
     "success": "",

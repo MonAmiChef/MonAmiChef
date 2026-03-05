@@ -61,10 +61,17 @@
     "empty": "Your grocery list is empty, let's generate a recipe first!",
     "go_to_chat": "Go to chat",
     "categories": {
+      "fruits": "FRUITS",
       "vegetables": "VEGETABLES",
       "meat": "MEAT",
+      "fish": "FISH",
+      "dairy": "DAIRY",
       "pantry": "PANTRY",
-      "dairy": "DAIRY"
+      "bakery": "BAKERY",
+      "frozen": "FROZEN",
+      "drinks": "DRINKS",
+      "other": "OTHER",
+      "autre": "OTHER"
     },
     "complete": "COMPLETE"
   },
@@ -105,7 +112,14 @@
     "subtitle": "Recipes",
     "empty": "No saved recipes yet, generate one first",
     "go_to_chat": "Go to chat",
-    "remove": "Remove from saved recipes"
+    "remove": "Remove from saved recipes",
+    "servings": "Servings"
+  },
+  "diet": {
+    "vegan": "Vegan",
+    "vegetarian": "Vegetarian",
+    "gluten_free": "Gluten-free",
+    "dairy_free": "Dairy-free"
   },
   "not_found": {
     "screen": "This screen doesn't exist.",
