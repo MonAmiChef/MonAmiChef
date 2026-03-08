@@ -78,8 +78,11 @@
     "complete": "COMPLET"
   },
   "recipe_details": {
+    "title": "Recette",
     "loading": "Chargement de la recette...",
     "fail_loading": "Oups! Impossible de charger la recette.",
+    "add_to_groceries": "Ajouter à la liste de courses",
+    "added_to_groceries": "Ajouté à la liste de courses",
     "about": "À propos",
     "ingredients": "Ingrédients",
     "steps": "Étapes de préparation",

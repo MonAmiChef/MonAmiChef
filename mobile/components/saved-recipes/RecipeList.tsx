@@ -297,7 +297,7 @@ export default function RecipeList({
                 onPress={() => {
                   console.log('teeest', router);
                   router.push(
-                    `/recipe-details/${item.recipeId}?savedServings=${servings}`,
+                    `/recipe-details/${item.recipeId}?savedServings=${servings}&isFavorite=${item.isFavorite ? '1' : '0'}`,
                   );
                 }}
                 className="bg-white mx-1 rounded-2xl shadow-xs shadow-slate-100 overflow-hidden"

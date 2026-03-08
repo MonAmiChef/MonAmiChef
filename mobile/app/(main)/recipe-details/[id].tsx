@@ -16,6 +16,7 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   Ellipsis,
+  Heart,
   Shapes,
   ShoppingCart,
   Timer,
@@ -81,10 +82,11 @@ const MacroItem = ({
 };
 
 export default function RecipeDetailPage() {
-  const { id, savedServings: savedServingsParam } = useLocalSearchParams();
+  const { id, savedServings: savedServingsParam, isFavorite: isFavoriteParam } = useLocalSearchParams();
   const [servings, setServings] = useState(
     savedServingsParam ? Number(savedServingsParam) : 1,
   );
+  const [isFavorite, setIsFavorite] = useState(isFavoriteParam === '1');
   const { session } = useAuth();
   const router = useRouter();
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
@@ -178,6 +180,20 @@ export default function RecipeDetailPage() {
     },
   });
 
+  const updateFavoriteMutation = useMutation({
+    mutationFn: (newState: boolean) =>
+      savedRecipesApi.updateFavorite(session!, id as string, newState),
+    onMutate: (newState) => {
+      setIsFavorite(newState);
+    },
+    onError: (_err, newState) => {
+      setIsFavorite(!newState);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['saved-recipes'] });
+    },
+  });
+
   const changeServings = (delta: number) => {
     const next = Math.max(1, servings + delta);
     updateServingsMutation.mutate({ next, prev: servings });
@@ -225,7 +241,7 @@ export default function RecipeDetailPage() {
 
   return (
     <SafeAreaView edges={['bottom']} className="flex-1 bg-[#fffdfb]">
-      <Drawer.Screen options={{ headerTitle: data.name }} />
+      <Drawer.Screen options={{ headerTitle: ' ' }} />
       <Box className="p-4 flex-1 bg-transparent">
         <ScrollView
           contentContainerStyle={{ gap: 24 }}
@@ -249,32 +265,47 @@ export default function RecipeDetailPage() {
               {data.description}
             </Text>
 
-            <Pressable
-              className={`flex-row flex-1 ${isAlreadyInGroceries ? 'border-[1.5px] border-green-600' : 'bg-black'} px-2 py-3 text-center items-center justify-center gap-2 rounded-full`}
-              onPress={() => {
-                if (isAlreadyInGroceries) {
-                  setShowConfirmRemove(true);
-                } else {
-                  addTogroceriesMutation.mutate({
-                    recipeId: id as string,
-                    newState: true,
-                  });
-                }
-              }}
-            >
-              {isAlreadyInGroceries ? (
-                <Check strokeWidth={3} size={18} color="#00a63e" />
-              ) : (
-                <ShoppingCart strokeWidth={3} size={18} color="#fff" />
-              )}
-              <Text
-                className={`font-inter-semibold ${isAlreadyInGroceries ? 'text-[#00a63e]' : 'text-white'}`}
+            <Box className="flex gap-2 flex-row">
+              <Pressable
+                className={`flex-row flex-1 ${isAlreadyInGroceries ? 'border-[1.5px] border-green-600' : 'bg-black'} px-2 py-3 text-center items-center justify-center gap-2 rounded-full`}
+                onPress={() => {
+                  if (isAlreadyInGroceries) {
+                    setShowConfirmRemove(true);
+                  } else {
+                    addTogroceriesMutation.mutate({
+                      recipeId: id as string,
+                      newState: true,
+                    });
+                  }
+                }}
               >
-                {isAlreadyInGroceries
-                  ? 'Ajouté à la liste de courses'
-                  : 'Ajouter à la liste de courses'}
-              </Text>
-            </Pressable>
+                {isAlreadyInGroceries ? (
+                  <Check strokeWidth={3} size={18} color="#00a63e" />
+                ) : (
+                  <ShoppingCart strokeWidth={3} size={18} color="#fff" />
+                )}
+                <Text
+                  className={`font-inter-semibold ${isAlreadyInGroceries ? 'text-[#00a63e]' : 'text-white'}`}
+                >
+                  {isAlreadyInGroceries
+                    ? t('recipe_details.added_to_groceries')
+                    : t('recipe_details.add_to_groceries')}
+                </Text>
+              </Pressable>
+              {savedServingsParam && (
+                <Pressable
+                  onPress={() => updateFavoriteMutation.mutate(!isFavorite)}
+                  className={`p-3 rounded-full border-2 ${isFavorite ? 'border-red-500 bg-red-50' : 'border-slate-200'}`}
+                >
+                  <Heart
+                    strokeWidth={2.5}
+                    size={18}
+                    color={isFavorite ? '#ef4444' : '#94a3b8'}
+                    fill={isFavorite ? '#ef4444' : 'none'}
+                  />
+                </Pressable>
+              )}
+            </Box>
           </Box>
 
           <Divider />
@@ -462,7 +493,10 @@ export default function RecipeDetailPage() {
                               <Text
                                 className={`text-lg text-orange-600 font-inter-medium shrink-0 ${isIngredientCompleted && 'text-green-500'}`}
                               >
-                                {parseFloat((ing.quantity * servings).toFixed(2))} {ing.unit}
+                                {parseFloat(
+                                  (ing.quantity * servings).toFixed(2),
+                                )}{' '}
+                                {ing.unit}
                               </Text>
                             </Box>
 
