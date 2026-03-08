@@ -13,6 +13,11 @@ import {
   Pressable,
   View,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  withSpring,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import {
   Check,
@@ -29,6 +34,223 @@ import { capitalizeFull } from '@/utils/text';
 import { useRouter, usePathname } from 'expo-router';
 import SavedRecipesOptionsSheet from '@/components/saved-recipes/SavedRecipesOptionsSheet';
 import ConfirmRemoveModal from '@/components/saved-recipes/ConfirmRemoveModal';
+
+interface RecipeCardProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  item: any;
+  servings: number;
+  isFavorite: boolean;
+  isInGroceries: boolean | undefined;
+  onPress: () => void;
+  onFavoritePress: () => void;
+  onServingChange: (delta: number) => void;
+  onGroceryPress: () => void;
+  onGroceryRemovePress: () => void;
+  onMenuPress: () => void;
+  t: (key: string) => string;
+}
+
+function RecipeCard({
+  item,
+  servings,
+  isFavorite,
+  isInGroceries,
+  onPress,
+  onFavoritePress,
+  onServingChange,
+  onGroceryPress,
+  onGroceryRemovePress,
+  onMenuPress,
+  t,
+}: RecipeCardProps) {
+  const r = item.recipe;
+  const scale = useSharedValue(1);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handleFavoritePress = () => {
+    scale.value = withSpring(isFavorite ? 1 : 1.05, {
+      damping: 300,
+    });
+    onFavoritePress();
+  };
+
+  const accentColor = r.isVegan
+    ? '#10b981'
+    : r.isVegetarian
+      ? '#4ade80'
+      : '#fb923c';
+
+  return (
+    <Pressable
+      onPress={onPress}
+      className="bg-white mx-1 rounded-2xl shadow-xs shadow-slate-100 overflow-hidden"
+    >
+      <View
+        style={{
+          width: 4,
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          backgroundColor: accentColor,
+        }}
+      />
+
+      <View className="pl-4 pr-3 pt-3 pb-0">
+        <View className="flex-row justify-between items-start mb-3">
+          <View className="flex-1 mr-3">
+            <Text
+              numberOfLines={2}
+              className="font-inter-semibold text-slate-900 text-base leading-snug"
+            >
+              {capitalizeFull(r.name)}
+            </Text>
+            <Text className="text-slate-400 text-xs mt-0.5">
+              {/* eslint-disable-next-line i18next/no-literal-string */}
+              {r.prepTimeMin} min • {capitalizeFull(r.difficulty ?? '')}
+            </Text>
+          </View>
+
+          <View className="flex-row flex-wrap gap-1 justify-end max-w-[110px]">
+            {r.isVegan && (
+              <View className="rounded-full bg-green-50 px-2 py-0.5">
+                <Text className="text-green-700 text-[10px]">
+                  {t('diet.vegan')}
+                </Text>
+              </View>
+            )}
+            {r.isVegetarian && !r.isVegan && (
+              <View className="rounded-full bg-green-50 px-2 py-0.5">
+                <Text className="text-green-700 text-[10px]">
+                  {t('diet.vegetarian')}
+                </Text>
+              </View>
+            )}
+            {r.isGlutenFree && (
+              <View className="rounded-full bg-amber-50 px-2 py-0.5">
+                <Text className="text-amber-700 text-[10px]">
+                  {t('diet.gluten_free')}
+                </Text>
+              </View>
+            )}
+            {r.isDairyFree && (
+              <View className="rounded-full bg-sky-50 px-2 py-0.5">
+                <Text className="text-sky-700 text-[10px]">
+                  {t('diet.dairy_free')}
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+
+        <View className="h-px bg-slate-100 mb-3" />
+
+        <View className="flex-row mb-3">
+          {[
+            { value: r.calories, label: 'kcal' },
+            { value: `${r.proteins}g`, label: 'prot' },
+            { value: `${r.carbs}g`, label: 'carbs' },
+            { value: `${r.fat}g`, label: 'fat' },
+          ].map((macro, idx) => (
+            <View key={idx} className="flex-1 items-center">
+              <Text className="font-inter-semibold text-sm text-slate-800">
+                {macro.value}
+              </Text>
+              <Text className="text-[10px] text-slate-400 uppercase tracking-wide">
+                {macro.label}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+        <View className="h-px bg-slate-100 mb-2" />
+
+        <View className="flex-row items-center justify-between py-1">
+          <View className="flex-row items-center bg-slate-50 rounded-full px-1">
+            <Pressable
+              onPress={(e) => {
+                e.stopPropagation();
+                onServingChange(-1);
+              }}
+              className="w-8 h-8 items-center justify-center active:bg-slate-200 rounded-full"
+            >
+              <Text className="text-slate-500 text-lg font-inter-medium">
+                −
+              </Text>
+            </Pressable>
+            <View className="flex-row items-center gap-1 w-16 justify-center">
+              <User size={12} color="#64748b" />
+              <Text className="text-slate-700 font-inter-semibold text-sm">
+                {servings}
+              </Text>
+            </View>
+            <Pressable
+              onPress={(e) => {
+                e.stopPropagation();
+                onServingChange(+1);
+              }}
+              className="w-8 h-8 items-center justify-center active:bg-slate-200 rounded-full"
+            >
+              <Text className="text-slate-500 text-lg font-inter-medium">
+                +
+              </Text>
+            </Pressable>
+          </View>
+
+          <View className="flex-row items-center">
+            <Pressable
+              onPress={(e) => {
+                e.stopPropagation();
+                handleFavoritePress();
+              }}
+              className="p-2 active:bg-red-50 rounded-full"
+            >
+              <Animated.View style={animatedStyle}>
+                <Heart
+                  size={20}
+                  color={isFavorite ? '#ef4444' : '#cbd5e1'}
+                  fill={isFavorite ? '#ef4444' : 'none'}
+                />
+              </Animated.View>
+            </Pressable>
+            {isInGroceries ? (
+              <Pressable
+                onPress={(e) => {
+                  e.stopPropagation();
+                  onGroceryRemovePress();
+                }}
+                className="p-2 active:bg-green-50 rounded-full"
+              >
+                <Check size={20} color="#16a34a" />
+              </Pressable>
+            ) : (
+              <Pressable
+                onPress={(e) => {
+                  e.stopPropagation();
+                  onGroceryPress();
+                }}
+                className="p-2 active:bg-orange-50 rounded-full"
+              >
+                <ShoppingCart size={20} color="#f97316" />
+              </Pressable>
+            )}
+            <Pressable
+              onPress={(e) => {
+                e.stopPropagation();
+                onMenuPress();
+              }}
+              className="p-2 active:bg-slate-100 rounded-full"
+            >
+              <Ellipsis size={20} color="#94a3b8" />
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    </Pressable>
+  );
+}
 
 interface RecipeListProps {
   filterFavorites?: boolean;
@@ -281,201 +503,52 @@ export default function RecipeList({
           }
           ItemSeparatorComponent={() => <View className="h-3" />}
           renderItem={({ item }) => {
-            const r = item.recipe;
             const isInGroceries = isAlreadyInGroceries(item.recipeId);
             const servings = localServings[item.recipeId] ?? item.servings ?? 1;
             const isFavorite = item.isFavorite as boolean;
 
-            const accentColor = r.isVegan
-              ? '#10b981'
-              : r.isVegetarian
-                ? '#4ade80'
-                : '#fb923c';
-
             return (
-              <Pressable
+              <RecipeCard
+                item={item}
+                servings={servings}
+                isFavorite={isFavorite}
+                isInGroceries={isInGroceries}
                 onPress={() => {
                   console.log('teeest', router);
                   router.push(
                     `/recipe-details/${item.recipeId}?savedServings=${servings}&isFavorite=${item.isFavorite ? '1' : '0'}`,
                   );
                 }}
-                className="bg-white mx-1 rounded-2xl shadow-xs shadow-slate-100 overflow-hidden"
-              >
-                <View
-                  style={{
-                    width: 4,
-                    position: 'absolute',
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                    backgroundColor: accentColor,
-                  }}
-                />
-
-                <View className="pl-4 pr-3 pt-3 pb-0">
-                  <View className="flex-row justify-between items-start mb-3">
-                    <View className="flex-1 mr-3">
-                      <Text
-                        numberOfLines={2}
-                        className="font-inter-semibold text-slate-900 text-base leading-snug"
-                      >
-                        {capitalizeFull(r.name)}
-                      </Text>
-                      <Text className="text-slate-400 text-xs mt-0.5">
-                        {/* eslint-disable-next-line i18next/no-literal-string */}
-                        {r.prepTimeMin} min •{' '}
-                        {capitalizeFull(r.difficulty ?? '')}
-                      </Text>
-                    </View>
-
-                    <View className="flex-row flex-wrap gap-1 justify-end max-w-[110px]">
-                      {r.isVegan && (
-                        <View className="rounded-full bg-green-50 px-2 py-0.5">
-                          <Text className="text-green-700 text-[10px]">
-                            {t('diet.vegan')}
-                          </Text>
-                        </View>
-                      )}
-                      {r.isVegetarian && !r.isVegan && (
-                        <View className="rounded-full bg-green-50 px-2 py-0.5">
-                          <Text className="text-green-700 text-[10px]">
-                            {t('diet.vegetarian')}
-                          </Text>
-                        </View>
-                      )}
-                      {r.isGlutenFree && (
-                        <View className="rounded-full bg-amber-50 px-2 py-0.5">
-                          <Text className="text-amber-700 text-[10px]">
-                            {t('diet.gluten_free')}
-                          </Text>
-                        </View>
-                      )}
-                      {r.isDairyFree && (
-                        <View className="rounded-full bg-sky-50 px-2 py-0.5">
-                          <Text className="text-sky-700 text-[10px]">
-                            {t('diet.dairy_free')}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-                  </View>
-
-                  <View className="h-px bg-slate-100 mb-3" />
-
-                  <View className="flex-row mb-3">
-                    {[
-                      { value: r.calories, label: 'kcal' },
-                      { value: `${r.proteins}g`, label: 'prot' },
-                      { value: `${r.carbs}g`, label: 'carbs' },
-                      { value: `${r.fat}g`, label: 'fat' },
-                    ].map((macro, idx) => (
-                      <View key={idx} className="flex-1 items-center">
-                        <Text className="font-inter-semibold text-sm text-slate-800">
-                          {macro.value}
-                        </Text>
-                        <Text className="text-[10px] text-slate-400 uppercase tracking-wide">
-                          {macro.label}
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
-
-                  <View className="h-px bg-slate-100 mb-2" />
-
-                  <View className="flex-row items-center justify-between py-1">
-                    <View className="flex-row items-center bg-slate-50 rounded-full px-1">
-                      <Pressable
-                        onPress={(e) => {
-                          e.stopPropagation();
-                          changeServings(item.recipeId as string, servings, -1);
-                        }}
-                        className="w-8 h-8 items-center justify-center active:bg-slate-200 rounded-full"
-                      >
-                        <Text className="text-slate-500 text-lg font-inter-medium">
-                          −
-                        </Text>
-                      </Pressable>
-                      <View className="flex-row items-center gap-1 w-16 justify-center">
-                        <User size={12} color="#64748b" />
-                        <Text className="text-slate-700 font-inter-semibold text-sm">
-                          {servings}
-                        </Text>
-                      </View>
-                      <Pressable
-                        onPress={(e) => {
-                          e.stopPropagation();
-                          changeServings(item.recipeId as string, servings, +1);
-                        }}
-                        className="w-8 h-8 items-center justify-center active:bg-slate-200 rounded-full"
-                      >
-                        <Text className="text-slate-500 text-lg font-inter-medium">
-                          +
-                        </Text>
-                      </Pressable>
-                    </View>
-
-                    <View className="flex-row items-center">
-                      <Pressable
-                        onPress={(e) => {
-                          e.stopPropagation();
-                          updateFavoriteMutation.mutate({
-                            recipeId: item.recipeId,
-                            isFavorite: !isFavorite,
-                          });
-                        }}
-                        className="p-2 active:bg-red-50 rounded-full"
-                      >
-                        <Heart
-                          size={20}
-                          color={isFavorite ? '#ef4444' : '#cbd5e1'}
-                          fill={isFavorite ? '#ef4444' : 'none'}
-                        />
-                      </Pressable>
-                      {isInGroceries ? (
-                        <Pressable
-                          onPress={(e) => {
-                            e.stopPropagation();
-                            setSelectedRecipe({
-                              id: item.recipeId,
-                              name: r.name,
-                            });
-                            setShowConfirmRemove(true);
-                          }}
-                          className="p-2 active:bg-green-50 rounded-full"
-                        >
-                          <Check size={20} color="#16a34a" />
-                        </Pressable>
-                      ) : (
-                        <Pressable
-                          onPress={(e) => {
-                            e.stopPropagation();
-                            addToGroceriesMutation.mutate({
-                              recipeId: item.recipeId,
-                              newState: true,
-                            });
-                          }}
-                          className="p-2 active:bg-orange-50 rounded-full"
-                        >
-                          <ShoppingCart size={20} color="#f97316" />
-                        </Pressable>
-                      )}
-                      <Pressable
-                        onPress={(e) => {
-                          e.stopPropagation();
-                          handleOpenMenu(
-                            item.recipeId as string,
-                            r.name as string,
-                          );
-                        }}
-                        className="p-2 active:bg-slate-100 rounded-full"
-                      >
-                        <Ellipsis size={20} color="#94a3b8" />
-                      </Pressable>
-                    </View>
-                  </View>
-                </View>
-              </Pressable>
+                onFavoritePress={() => {
+                  updateFavoriteMutation.mutate({
+                    recipeId: item.recipeId,
+                    isFavorite: !isFavorite,
+                  });
+                }}
+                onServingChange={(delta) => {
+                  changeServings(item.recipeId as string, servings, delta);
+                }}
+                onGroceryPress={() => {
+                  addToGroceriesMutation.mutate({
+                    recipeId: item.recipeId,
+                    newState: true,
+                  });
+                }}
+                onGroceryRemovePress={() => {
+                  setSelectedRecipe({
+                    id: item.recipeId,
+                    name: item.recipe.name,
+                  });
+                  setShowConfirmRemove(true);
+                }}
+                onMenuPress={() => {
+                  handleOpenMenu(
+                    item.recipeId as string,
+                    item.recipe.name as string,
+                  );
+                }}
+                t={t}
+              />
             );
           }}
         />

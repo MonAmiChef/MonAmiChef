@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { ActivityIndicator, Pressable, ScrollView } from 'react-native';
+import Animated, {
+  useSharedValue,
+  withSpring,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { recipeApi } from '@/services/recipe.api';
@@ -82,11 +85,19 @@ const MacroItem = ({
 };
 
 export default function RecipeDetailPage() {
-  const { id, savedServings: savedServingsParam, isFavorite: isFavoriteParam } = useLocalSearchParams();
+  const {
+    id,
+    savedServings: savedServingsParam,
+    isFavorite: isFavoriteParam,
+  } = useLocalSearchParams();
   const [servings, setServings] = useState(
     savedServingsParam ? Number(savedServingsParam) : 1,
   );
   const [isFavorite, setIsFavorite] = useState(isFavoriteParam === '1');
+  const favoriteScale = useSharedValue(1);
+  const favoriteAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: favoriteScale.value }],
+  }));
   const { session } = useAuth();
   const router = useRouter();
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
@@ -294,15 +305,22 @@ export default function RecipeDetailPage() {
               </Pressable>
               {savedServingsParam && (
                 <Pressable
-                  onPress={() => updateFavoriteMutation.mutate(!isFavorite)}
+                  onPress={() => {
+                    favoriteScale.value = withSpring(isFavorite ? 1 : 1.2, {
+                      damping: 300,
+                    });
+                    updateFavoriteMutation.mutate(!isFavorite);
+                  }}
                   className={`p-3 rounded-full border-2 ${isFavorite ? 'border-red-500 bg-red-50' : 'border-slate-200'}`}
                 >
-                  <Heart
-                    strokeWidth={2.5}
-                    size={18}
-                    color={isFavorite ? '#ef4444' : '#94a3b8'}
-                    fill={isFavorite ? '#ef4444' : 'none'}
-                  />
+                  <Animated.View style={favoriteAnimatedStyle}>
+                    <Heart
+                      strokeWidth={2.5}
+                      size={18}
+                      color={isFavorite ? '#ef4444' : '#94a3b8'}
+                      fill={isFavorite ? '#ef4444' : 'none'}
+                    />
+                  </Animated.View>
                 </Pressable>
               )}
             </Box>
