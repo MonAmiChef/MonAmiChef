@@ -78,9 +78,12 @@
     "complete": "COMPLETE"
   },
   "recipe_details": {
+    "title": "Recipe",
     "loading": "Loading recipe...",
     "fail_loading": "Oops! Impossible to load recipe.",
     "back_to_plan": "Go back to plan",
+    "add_to_groceries": "Add to grocery list",
+    "added_to_groceries": "Added to grocery list",
     "about": "About",
     "ingredients": "Ingredients",
     "steps": "Cooking steps",
