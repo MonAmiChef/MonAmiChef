@@ -1,6 +1,11 @@
 import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
-import { Pressable } from '@/components/ui/pressable';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withSpring,
+} from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import {
   limitedCategories,
@@ -10,6 +15,63 @@ import {
 import { Check, Plus, X } from 'lucide-react-native';
 import { VStack } from '../ui/vstack';
 import { Box } from '../ui/box';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+function PreferencePill({
+  tag,
+  isSelected,
+  isExclude,
+  isDisabled,
+  onToggle,
+}: {
+  tag: PreferenceTag;
+  isSelected: boolean;
+  isExclude: boolean;
+  isDisabled: boolean;
+  onToggle: (tag: PreferenceTag) => void;
+}) {
+  const { t } = useTranslation();
+  const scale = useSharedValue(1);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePress = () => {
+    if (isDisabled) return;
+    scale.value = withSequence(
+      withSpring(0.95, { damping: 50 }),
+      withSpring(1, { damping: 50 }),
+    );
+    onToggle(tag);
+  };
+
+  const bgColor = isSelected
+    ? 'bg-orange-500'
+    : isExclude
+      ? 'bg-red-500'
+      : 'bg-orange-[#f000fb]';
+  const borderColor = isSelected
+    ? 'border-orange-500'
+    : isExclude
+      ? 'border-red-500'
+      : 'border-slate-200';
+  const textColor = isSelected || isExclude ? 'text-white' : 'text-slate-700';
+
+  return (
+    <AnimatedPressable
+      onPress={handlePress}
+      style={animatedStyle}
+      className={`flex flex-row gap-2 items-center border ${borderColor} py-1.5 px-3 rounded-full ${bgColor} ${isDisabled && !isSelected && !isExclude ? 'opacity-30' : ''}`}
+    >
+      {isSelected && <Check strokeWidth={3} color="#fff" size={14} />}
+      {isExclude && <X strokeWidth={3} color="#fff" size={14} />}
+      <Text className={`font-inter-medium text-sm ${textColor}`}>
+        {t(`preferences.tags.${tag}`)}
+      </Text>
+    </AnimatedPressable>
+  );
+}
 
 interface PreferencesQuickSelectorProps {
   selectedPreferences: PreferenceTag[];
@@ -55,44 +117,16 @@ export const PreferencesQuickSelector = ({
                   const isSelected = selectedPreferences.includes(tag);
                   const isExclude = selectedExclude.includes(tag);
                   const isActive = isSelected || isExclude;
-
                   const isDisabled = isLimitReached && !isActive;
-                  let bgColor = 'bg-orange-[#f000fb]';
-                  let textColor = 'text-slate-700';
-                  let borderColor = 'border-slate-200';
-
-                  if (isSelected) {
-                    bgColor = 'bg-orange-500';
-                    textColor = 'text-white';
-                    borderColor = 'border-orange-500';
-                  } else if (isExclude) {
-                    bgColor = 'bg-red-500';
-                    textColor = 'text-white';
-                    borderColor = 'border-red-500';
-                  }
-
                   return (
-                    <Pressable
+                    <PreferencePill
                       key={index}
-                      onPress={() => {
-                        if (!isDisabled || isSelected) {
-                          onToggle(tag);
-                        }
-                      }}
-                      className={`flex flex-row gap-2 items-center border ${borderColor} py-1.5 px-3 rounded-full ${bgColor}`}
-                    >
-                      {isSelected && (
-                        <Check strokeWidth={3} color={'#fff'} size={14} />
-                      )}
-                      {isExclude && (
-                        <X strokeWidth={3} color={'#fff'} size={14} />
-                      )}
-                      <Text
-                        className={`font-inter-medium text-sm ${textColor}`}
-                      >
-                        {t(`preferences.tags.${tag}`)}
-                      </Text>
-                    </Pressable>
+                      tag={tag}
+                      isSelected={isSelected}
+                      isExclude={isExclude}
+                      isDisabled={isDisabled}
+                      onToggle={onToggle}
+                    />
                   );
                 })}
               </Box>

@@ -6,21 +6,23 @@ import {
   ActionsheetContent,
   ActionsheetDragIndicator,
   ActionsheetDragIndicatorWrapper,
-  ActionsheetItem,
-  ActionsheetItemText,
 } from '@/components/ui/actionsheet';
 import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
-import { Pressable, ScrollView } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { LogOut, User } from 'lucide-react-native';
-import { Box } from '../ui/box';
 import { useAuth } from '@/hooks/useAuth';
 import { Link, useRouter } from 'expo-router';
 import { supabase } from '@/services/supabase';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { PreferenceSection } from '@/components/profile/PreferenceSection';
-import type { GoalType } from '@/services/user-preferences.api';
+import type {
+  Aversion,
+  DietRestriction,
+  GoalType,
+  IngredientRestriction,
+} from '@/services/user-preferences.api';
 
 export const ProfileActionSheet = ({
   isOpen,
@@ -34,13 +36,15 @@ export const ProfileActionSheet = ({
   const router = useRouter();
   const { data: prefs, upsert } = useUserPreferences(session);
 
-  // Local state for instant UI — avoids waiting on React Query refetch cycles
-  const [goal, setGoal] = useState<string | null>(null);
-  const [ingredientRestrictions, setIngredientRestrictions] = useState<string[]>([]);
-  const [dietRestrictions, setDietRestrictions] = useState<string[]>([]);
-  const [aversions, setAversions] = useState<string[]>([]);
+  const [goal, setGoal] = useState<GoalType | null>(null);
+  const [ingredientRestrictions, setIngredientRestrictions] = useState<
+    IngredientRestriction[]
+  >([]);
+  const [dietRestrictions, setDietRestrictions] = useState<DietRestriction[]>(
+    [],
+  );
+  const [aversions, setAversions] = useState<Aversion[]>([]);
 
-  // Seed local state from server data whenever it changes
   useEffect(() => {
     if (prefs !== undefined) {
       setGoal(prefs?.goal ?? null);
@@ -67,25 +71,25 @@ export const ProfileActionSheet = ({
   };
 
   const handleIngredientRestrictionToggle = (key: string) => {
-    const next = ingredientRestrictions.includes(key as never)
+    const next = ingredientRestrictions.includes(key as IngredientRestriction)
       ? ingredientRestrictions.filter((k) => k !== key)
-      : [...ingredientRestrictions, key as never];
+      : [...ingredientRestrictions, key as IngredientRestriction];
     setIngredientRestrictions(next);
     upsert({ ingredientRestrictions: next });
   };
 
   const handleDietRestrictionToggle = (key: string) => {
-    const next = dietRestrictions.includes(key as never)
+    const next = dietRestrictions.includes(key as DietRestriction)
       ? dietRestrictions.filter((k) => k !== key)
-      : [...dietRestrictions, key as never];
+      : [...dietRestrictions, key as DietRestriction];
     setDietRestrictions(next);
     upsert({ dietRestrictions: next });
   };
 
   const handleAversionToggle = (key: string) => {
-    const next = aversions.includes(key as never)
+    const next = aversions.includes(key as Aversion)
       ? aversions.filter((k) => k !== key)
-      : [...aversions, key as never];
+      : [...aversions, key as Aversion];
     setAversions(next);
     upsert({ aversions: next });
   };
@@ -131,10 +135,13 @@ export const ProfileActionSheet = ({
 
   const activeGoalNote = goal ? t(`profile.goals.note_${goal}`) : null;
 
+  const isGuest = session?.user.is_anonymous;
+  const initial = session?.user.email?.at(0)?.toLocaleUpperCase();
+
   return (
     <Actionsheet isOpen={isOpen} onClose={onClose}>
       <ActionsheetBackdrop />
-      <ActionsheetContent className="max-h-[90%]">
+      <ActionsheetContent className="max-h-[90%] bg-white">
         <ActionsheetDragIndicatorWrapper>
           <ActionsheetDragIndicator />
         </ActionsheetDragIndicatorWrapper>
@@ -142,75 +149,101 @@ export const ProfileActionSheet = ({
         <ScrollView
           style={{ width: '100%' }}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 16 }}
+          contentContainerStyle={{ paddingBottom: 32 }}
         >
-          <VStack className="w-full p-4 gap-4" space="md">
-            <VStack className="w-full bg items-center my-2  gap-4">
-              <VStack className="gap-2 items-center">
-                <Box className="bg-slate-500 h-16 w-16 items-center justify-center rounded-full">
-                  {session?.user.is_anonymous ? (
-                    <User size={35} color="white" />
-                  ) : (
-                    <Text className="text-white font-inter-bold">
-                      {session?.user.email?.at(0)?.toLocaleUpperCase()}
-                    </Text>
-                  )}
-                </Box>
-                <Text className="text-xl font-inter-semibold">
-                  {session?.user.is_anonymous
-                    ? t('profile_action_sheet.guest')
-                    : session?.user.email}
+          {/* Avatar */}
+          <VStack className="items-center pt-4 pb-6 gap-2">
+            <View
+              style={{
+                width: 72,
+                height: 72,
+                borderRadius: 36,
+                backgroundColor: isGuest ? '#94a3b8' : '#f97316',
+                alignItems: 'center',
+                justifyContent: 'center',
+                shadowColor: isGuest ? '#94a3b8' : '#f97316',
+                shadowOpacity: 0.35,
+                shadowRadius: 12,
+                shadowOffset: { width: 0, height: 4 },
+                elevation: 6,
+              }}
+            >
+              {isGuest ? (
+                <User size={32} color="white" />
+              ) : (
+                <Text className="text-white text-2xl font-inter-bold">
+                  {initial}
                 </Text>
-              </VStack>
-              {session?.user.is_anonymous && (
-                <VStack className="gap-3 w-full">
-                  <Text className="text-sm text-slate-500 text-center font-inter-regular">
-                    {t('profile_action_sheet.guest_upsell')}
-                  </Text>
-                  <HStack className="gap-2">
-                    <Link asChild href="/(auth)/login">
-                      <Pressable
-                        onPress={onClose}
-                        className={`p-3 bg-orange-500 flex-1 items-center rounded-lg`}
-                      >
-                        <Text className={`font-inter-medium text-white`}>
-                          {t('auth.login')}
-                        </Text>
-                      </Pressable>
-                    </Link>
-                    <Link asChild href="/(auth)/register">
-                      <Pressable
-                        onPress={onClose}
-                        className={`p-3 bg-slate-50 border-slate-600 flex-1 border items-center rounded-lg`}
-                      >
-                        <Text className={`text-slate-600 font-inter-medium`}>
-                          {t('auth.register')}
-                        </Text>
-                      </Pressable>
-                    </Link>
-                  </HStack>
-                </VStack>
+              )}
+            </View>
+            <VStack className="items-center gap-0.5">
+              <Text className="text-base font-inter-semibold text-slate-800">
+                {isGuest
+                  ? t('profile_action_sheet.guest')
+                  : session?.user.email}
+              </Text>
+              {!isGuest && (
+                <Text className="text-xs text-slate-400 font-inter-regular">
+                  {t('monamichef')}
+                </Text>
               )}
             </VStack>
+          </VStack>
 
-            <VStack className="gap-4">
-              <Text className="text-sm font-bold font-inter-medium uppercase">
+          {/* Guest CTA */}
+          {isGuest && (
+            <VStack className="mx-4 mb-4 gap-3 bg-orange-50 rounded-2xl p-4 border border-orange-100">
+              <Text className="text-sm text-slate-600 font-inter-regular text-center leading-5">
+                {t('profile_action_sheet.guest_upsell')}
+              </Text>
+              <HStack className="gap-2">
+                <Link asChild href="/(auth)/login">
+                  <Pressable
+                    onPress={onClose}
+                    className="p-3 bg-orange-500 flex-1 items-center rounded-xl"
+                  >
+                    <Text className="font-inter-semibold text-white text-sm">
+                      {t('auth.login')}
+                    </Text>
+                  </Pressable>
+                </Link>
+                <Link asChild href="/(auth)/register">
+                  <Pressable
+                    onPress={onClose}
+                    className="p-3 bg-white border border-slate-200 flex-1 items-center rounded-xl"
+                  >
+                    <Text className="font-inter-semibold text-slate-600 text-sm">
+                      {t('auth.register')}
+                    </Text>
+                  </Pressable>
+                </Link>
+              </HStack>
+            </VStack>
+          )}
+
+          <VStack className="px-4 gap-5">
+            {/* Language */}
+            <VStack className="gap-3 bg-slate-50 rounded-2xl p-4">
+              <Text className="text-xs font-inter-bold text-slate-400 uppercase tracking-widest">
                 {t('language')}
               </Text>
-
               <HStack className="gap-2">
                 {['fr', 'en'].map((lang) => (
                   <Pressable
                     key={lang}
                     onPress={() => handleLanguageChange(lang)}
-                    className={`flex-1 p-3 rounded-lg border items-center ${
+                    className={`flex-1 py-2.5 rounded-xl border items-center ${
                       i18n.language === lang
-                        ? 'bg-orange-50 border border-orange-500'
-                        : 'bg-slate-50 border-outline-200'
+                        ? 'bg-white border-orange-400'
+                        : 'bg-transparent border-transparent'
                     }`}
                   >
                     <Text
-                      className={`font-inter-medium ${i18n.language === lang ? 'text-orange-500' : 'text-slate-500'}`}
+                      className={`font-inter-medium text-sm ${
+                        i18n.language === lang
+                          ? 'text-orange-500'
+                          : 'text-slate-400'
+                      }`}
                     >
                       {lang === 'fr' ? '🇫🇷 Français' : '🇺🇸 English'}
                     </Text>
@@ -219,9 +252,11 @@ export const ProfileActionSheet = ({
               </HStack>
             </VStack>
 
-            {!session?.user.is_anonymous && (
+            {/* Preferences — authenticated only */}
+            {!isGuest && (
               <>
-                <VStack className="gap-3">
+                {/* Goal */}
+                <VStack className="gap-3 bg-slate-50 rounded-2xl p-4">
                   <PreferenceSection
                     title={t('profile.goals.title')}
                     items={goalItems}
@@ -230,16 +265,18 @@ export const ProfileActionSheet = ({
                     limit={1}
                   />
                   {activeGoalNote && (
-                    <Text className="text-xs italic text-slate-400">
+                    <Text className="text-xs italic text-slate-400 leading-4">
                       {activeGoalNote}
                     </Text>
                   )}
                 </VStack>
 
-                <VStack className="gap-3">
-                  <Text className="text-sm font-bold font-inter-medium uppercase">
+                {/* Dietary Restrictions */}
+                <VStack className="gap-3 bg-slate-50 rounded-2xl p-4">
+                  <Text className="text-xs font-inter-bold text-slate-400 uppercase tracking-widest">
                     {t('profile.restrictions.title')}
                   </Text>
+                  <View className="h-px bg-slate-200" />
                   <PreferenceSection
                     title=""
                     subLabel={t('profile.restrictions.ingredients')}
@@ -247,6 +284,7 @@ export const ProfileActionSheet = ({
                     selected={ingredientRestrictions}
                     onToggle={handleIngredientRestrictionToggle}
                   />
+                  <View className="h-px bg-slate-200" />
                   <PreferenceSection
                     title=""
                     subLabel={t('profile.restrictions.diets')}
@@ -256,25 +294,27 @@ export const ProfileActionSheet = ({
                   />
                 </VStack>
 
-                <PreferenceSection
-                  title={t('profile.aversions.title')}
-                  items={aversionItems}
-                  selected={aversions}
-                  onToggle={handleAversionToggle}
-                />
-              </>
-            )}
+                {/* Aversions */}
+                <VStack className="gap-3 bg-slate-50 rounded-2xl p-4">
+                  <PreferenceSection
+                    title={t('profile.aversions.title')}
+                    items={aversionItems}
+                    selected={aversions}
+                    onToggle={handleAversionToggle}
+                  />
+                </VStack>
 
-            {!session?.user.is_anonymous && (
-              <ActionsheetItem
-                onPress={() => void handleLogOut()}
-                className="rounded-lg bg-red-600 mt-4 p-3"
-              >
-                <LogOut size={18} color="#fff" />
-                <ActionsheetItemText className="text-white text-md font-inter-medium">
-                  {t('auth.logout')}
-                </ActionsheetItemText>
-              </ActionsheetItem>
+                {/* Logout */}
+                <Pressable
+                  onPress={() => void handleLogOut()}
+                  className="flex-row items-center justify-center gap-2 bg-red-50 border border-red-100 rounded-2xl p-3.5"
+                >
+                  <LogOut size={16} color="#ef4444" />
+                  <Text className="text-red-500 font-inter-semibold text-sm">
+                    {t('auth.logout')}
+                  </Text>
+                </Pressable>
+              </>
             )}
           </VStack>
         </ScrollView>

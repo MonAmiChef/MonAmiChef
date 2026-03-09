@@ -15,9 +15,72 @@ import {
   PreferenceTag,
 } from '@/constants/PreferencesTags';
 import { Pressable, ScrollView } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withSpring,
+} from 'react-native-reanimated';
 import { Box } from '../ui/box';
 import { HStack } from '../ui/hstack';
 import { Check, Send, X } from 'lucide-react-native';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+function PreferencePill({
+  tag,
+  isSelected,
+  isExclude,
+  isDisabled,
+  onToggle,
+}: {
+  tag: PreferenceTag;
+  isSelected: boolean;
+  isExclude: boolean;
+  isDisabled: boolean;
+  onToggle: (tag: PreferenceTag) => void;
+}) {
+  const { t } = useTranslation();
+  const scale = useSharedValue(1);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePress = () => {
+    if (isDisabled) return;
+    scale.value = withSequence(
+      withSpring(0.95, { damping: 50 }),
+      withSpring(1, { damping: 50 }),
+    );
+    onToggle(tag);
+  };
+
+  const bgColor = isSelected
+    ? 'bg-orange-500'
+    : isExclude
+      ? 'bg-red-500'
+      : 'bg-transparent';
+  const borderColor = isSelected
+    ? 'border-orange-500'
+    : isExclude
+      ? 'border-red-500'
+      : 'border-slate-200';
+  const textColor = isSelected || isExclude ? 'text-white' : 'text-slate-700';
+
+  return (
+    <AnimatedPressable
+      onPress={handlePress}
+      style={animatedStyle}
+      className={`flex flex-row gap-2 items-center border ${borderColor} py-1.5 px-3 rounded-full ${bgColor} ${isDisabled && !isSelected && !isExclude ? 'opacity-30' : ''}`}
+    >
+      {isSelected && <Check strokeWidth={3} color="#fff" size={14} />}
+      {isExclude && <X strokeWidth={3} color="#fff" size={14} />}
+      <Text className={`font-inter-medium text-sm ${textColor}`}>
+        {t(`preferences.tags.${tag}`)}
+      </Text>
+    </AnimatedPressable>
+  );
+}
 
 export const PreferenceActionSheet = ({
   selectedPreferences,
@@ -84,44 +147,16 @@ export const PreferenceActionSheet = ({
                     const isSelected = selectedPreferences.includes(tag);
                     const isExclude = selectedExclude.includes(tag);
                     const isActive = isSelected || isExclude;
-
                     const isDisabled = isLimitReached && !isActive;
-                    let bgColor = 'bg-transparent';
-                    let textColor = 'text-slate-700';
-                    let borderColor = 'border-slate-200';
-
-                    if (isSelected) {
-                      bgColor = 'bg-orange-500';
-                      textColor = 'text-white';
-                      borderColor = 'border-orange-500';
-                    } else if (isExclude) {
-                      bgColor = 'bg-red-500';
-                      textColor = 'text-white';
-                      borderColor = 'border-red-500';
-                    }
-
                     return (
-                      <Pressable
+                      <PreferencePill
                         key={index}
-                        onPress={() => {
-                          if (!isDisabled || isSelected) {
-                            onToggle(tag);
-                          }
-                        }}
-                        className={`flex flex-row gap-2 items-center border ${borderColor} py-1.5 px-3 rounded-full ${bgColor}`}
-                      >
-                        {isSelected && (
-                          <Check strokeWidth={3} color={'#fff'} size={14} />
-                        )}
-                        {isExclude && (
-                          <X strokeWidth={3} color={'#fff'} size={14} />
-                        )}
-                        <Text
-                          className={`font-inter-medium text-sm ${textColor}`}
-                        >
-                          {t(`preferences.tags.${tag}`)}
-                        </Text>
-                      </Pressable>
+                        tag={tag}
+                        isSelected={isSelected}
+                        isExclude={isExclude}
+                        isDisabled={isDisabled}
+                        onToggle={onToggle}
+                      />
                     );
                   })}
                 </Box>
