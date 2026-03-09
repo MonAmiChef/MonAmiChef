@@ -134,7 +134,48 @@
     "go_to_home": "Go to home screen"
   },
   "profile_action_sheet": {
-    "guest": "Guest"
+    "guest": "Guest",
+    "preferences": "Profile & Preferences",
+    "guest_upsell": "Log in to personalize your experience with dietary goals, restrictions, and food preferences."
+  },
+  "profile": {
+    "goals": {
+      "title": "My Goal",
+      "bulking": "Bulking",
+      "cutting": "Cutting",
+      "body_recomposition": "Body Recomposition",
+      "note_bulking": "Recipes will be higher in calories and protein to support muscle gain.",
+      "note_cutting": "Recipes will be lower in calories to support fat loss.",
+      "note_body_recomposition": "Recipes will be balanced to support fat loss and muscle gain simultaneously."
+    },
+    "restrictions": {
+      "title": "Dietary Restrictions",
+      "ingredients": "Ingredient Restrictions",
+      "diets": "Diets",
+      "gluten_free": "Gluten-Free",
+      "dairy_free": "Dairy-Free",
+      "peanut_free": "Peanut-Free",
+      "tree_nut_free": "Tree Nut-Free",
+      "shellfish_free": "Shellfish-Free",
+      "egg_free": "Egg-Free",
+      "soy_free": "Soy-Free",
+      "vegetarian": "Vegetarian",
+      "vegan": "Vegan",
+      "pescetarian": "Pescetarian",
+      "keto": "Keto",
+      "paleo": "Paleo",
+      "no_pork": "No Pork",
+      "no_beef": "No Beef"
+    },
+    "aversions": {
+      "title": "Food Aversions",
+      "no_cilantro": "No Cilantro",
+      "no_onions": "No Onions",
+      "no_garlic": "No Garlic",
+      "no_spicy_food": "No Spicy Food",
+      "no_mushrooms": "No Mushrooms",
+      "no_seafood": "No Seafood"
+    }
   },
   "preferences": {
     "title": "My Preferences",
