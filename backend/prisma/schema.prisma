@@ -69,13 +69,32 @@ model SavedRecipe {
 }
 
 model User {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username     String        @unique
   createdAt    DateTime?     @default(now()) @db.Date
   updatedAt    DateTime?     @db.Date
-  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
   chats        ChatSession[]
   recipes      Recipe[]
   savedRecipes SavedRecipe[]
+  profile      UserProfile?
+}
+
+model UserProfile {
+  id                  String   @id @default(uuid())
+  userId              String   @unique @db.Uuid
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  goal                String?
+
+  ingredientRestrictions String[] @default([])
+  dietRestrictions       String[] @default([])
+  aversions              String[] @default([])
+
+  cookingLevel        String   @default("INTERMEDIATE")
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
 
 model ChatSession {
@@ -107,6 +126,23 @@ model RecipeCache {
   aiResponseJson Json
   inputHash      String          @unique
   type           RecipeCacheType
+}
+
+enum HealthRestriction {
+  GLUTEN_FREE
+  DAIRY_FREE
+  PEANUT_FREE
+  TREE_NUT_FREE
+  SHELLFISH_FREE
+  EGG_FREE
+  SOY_FREE
+  NO_PORK
+  VEGETARIAN
+  VEGAN
+  PESCETARIAN
+  KETO
+  PALEO
+  NO_BEEF
 }
 
 enum IngredientCategory {
