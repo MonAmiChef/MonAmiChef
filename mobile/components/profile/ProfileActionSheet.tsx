@@ -221,7 +221,7 @@ export const ProfileActionSheet = ({
             </VStack>
           )}
 
-          <VStack className="px-4 gap-5">
+          <VStack className="px-2 gap-5">
             {/* Language */}
             <VStack className="gap-3 bg-slate-50 rounded-2xl p-4">
               <Text className="text-xs font-inter-bold text-slate-400 uppercase tracking-widest">

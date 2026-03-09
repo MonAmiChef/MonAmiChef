@@ -68,11 +68,27 @@ const PreferenceTagEnum = z.enum(
   Object.values(PreferenceTag) as [string, ...string[]],
 );
 
+const ProfilePreferencesSchema = z
+  .object({
+    goal: z
+      .enum(['bulking', 'cutting', 'body_recomposition'])
+      .nullable()
+      .optional(),
+    ingredientRestrictions: z.array(z.string()).optional().default([]),
+    dietRestrictions: z.array(z.string()).optional().default([]),
+    aversions: z.array(z.string()).optional().default([]),
+  })
+  .nullable()
+  .optional();
+
+export type ProfilePreferences = z.infer<typeof ProfilePreferencesSchema>;
+
 const CreateChatSessionRequestSchema = z.object({
   firstMessage: z.string(),
   preferences: z.array(PreferenceTagEnum).default([]),
   exclude: z.array(PreferenceTagEnum).default([]),
   language: z.string().optional().default('english'),
+  profilePreferences: ProfilePreferencesSchema,
 });
 
 export class CreateChatSessionRequestDto extends createZodDto(

@@ -8,6 +8,7 @@ import {
   UpdateChatSessionResponse,
 } from './chat-sessions.dto';
 import { PreferenceTag } from '@prisma/client';
+import { ProfilePreferences } from './chat-sessions.dto';
 
 @Injectable()
 export class ChatSessionsService {
@@ -66,12 +67,14 @@ export class ChatSessionsService {
     preferences,
     exclude,
     fallbackLanguage,
+    profilePreferences,
   }: {
     userId: string;
     message: string;
     preferences: PreferenceTag[];
     exclude: PreferenceTag[];
     fallbackLanguage: string;
+    profilePreferences?: ProfilePreferences;
   }): Promise<CreateChatSessionResponse> {
     const {
       text,
@@ -84,6 +87,7 @@ export class ChatSessionsService {
       preferences,
       exclude,
       fallbackLanguage,
+      profilePreferences,
     });
 
     const chat = await this.chatSessionsRepository.createChat({

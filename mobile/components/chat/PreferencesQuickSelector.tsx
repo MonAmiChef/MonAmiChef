@@ -86,8 +86,6 @@ export const PreferencesQuickSelector = ({
   onToggle,
   onOpenSelector,
 }: PreferencesQuickSelectorProps) => {
-  const { t } = useTranslation();
-
   return (
     <View className="flex flex-row gap-x-2 bg-[#fffdfb]">
       <ScrollView

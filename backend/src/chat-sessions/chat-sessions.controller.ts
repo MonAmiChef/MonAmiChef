@@ -63,6 +63,7 @@ export class ChatSessionsController {
       message: body.firstMessage,
       preferences: body.preferences as PreferenceTag[],
       exclude: body.exclude as PreferenceTag[],
+      profilePreferences: body.profilePreferences,
     });
   }
 
