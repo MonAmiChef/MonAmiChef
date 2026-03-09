@@ -13,7 +13,7 @@ import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { Pressable } from 'react-native';
-import { LogOut, User } from 'lucide-react-native';
+import { LogOut, Settings, User } from 'lucide-react-native';
 import { Box } from '../ui/box';
 import { useAuth } from '@/hooks/useAuth';
 import { Link, useRouter } from 'expo-router';
@@ -117,6 +117,21 @@ export const ProfileActionSheet = ({
               ))}
             </HStack>
           </VStack>
+
+          {!session?.user.is_anonymous && (
+            <ActionsheetItem
+              onPress={() => {
+                onClose();
+                router.push('/(main)/profile/');
+              }}
+              className="rounded-lg bg-slate-100 p-3"
+            >
+              <Settings size={18} color="#475569" />
+              <ActionsheetItemText className="text-slate-700 font-inter-medium">
+                {t('profile_action_sheet.preferences')}
+              </ActionsheetItemText>
+            </ActionsheetItem>
+          )}
 
           {!session?.user.is_anonymous && (
             <ActionsheetItem
