@@ -21,6 +21,7 @@ import { getLanguageName } from '@/utils/get-language-name';
 import { PreferenceTag } from '@/constants/PreferencesTags';
 import { PreferencesQuickSelector } from '@/components/chat/PreferencesQuickSelector';
 import { PreferenceActionSheet } from '@/components/chat/PreferenceActionSheet';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 import Logo from '@/assets/images/monamichef_bg_less.png';
 import { ScrollView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
@@ -72,6 +73,9 @@ export default function NewChat() {
   const [message, setMessage] = useState('');
   const headerHeight = useHeaderHeight();
 
+  const { data: profilePreferences } = useUserPreferences(session);
+  // profilePreferences is undefined for guests (useUserPreferences is disabled for anonymous users)
+
   const [selectedPreferences, setSelectedPreferences] = useState<
     PreferenceTag[]
   >([]);
@@ -92,6 +96,7 @@ export default function NewChat() {
         selectedPreferences,
         selectedExclude,
         getLanguageName(i18n.language),
+        session?.user.is_anonymous ? null : profilePreferences,
       );
     },
     onSuccess: async (data) => {

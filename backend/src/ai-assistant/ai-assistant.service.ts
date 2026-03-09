@@ -24,6 +24,7 @@ import {
   CreateChatSessionResponseJson,
   CreateChatWithTitleServiceResponse,
   CreateChatWithTitleServiceResponseSchema,
+  ProfilePreferences,
   UpdateChatResponse,
   UpdateChatSessionResponseJson,
 } from '../chat-sessions/chat-sessions.dto';
@@ -33,6 +34,41 @@ import {
 } from '../recipes/recipes.types';
 
 const DEFAULT_GEMINI_MODEL = 'gemini-3-flash-preview';
+
+function buildProfileContext(p: ProfilePreferences): string {
+  if (!p) return '';
+  const lines: string[] = [];
+
+  if (p.goal === 'bulking')
+    lines.push(
+      'USER GOAL: Bulking — prioritize recipes ≥400 kcal and ≥30g protein per serving.',
+    );
+  if (p.goal === 'cutting')
+    lines.push(
+      'USER GOAL: Cutting — keep recipes under 500 kcal per serving, prioritize high satiety.',
+    );
+  if (p.goal === 'body_recomposition')
+    lines.push(
+      'USER GOAL: Body recomposition — balanced macros, ≥25g protein, 350–500 kcal per serving.',
+    );
+
+  if (p.ingredientRestrictions?.length)
+    lines.push(
+      `STRICT ALLERGIES (never use these ingredients): ${p.ingredientRestrictions.join(', ')}.`,
+    );
+
+  if (p.dietRestrictions?.length)
+    lines.push(
+      `DIET: ${p.dietRestrictions.join(', ')}. All recipes must comply strictly.`,
+    );
+
+  if (p.aversions?.length)
+    lines.push(
+      `DISLIKES (omit entirely, do not mention as optional): ${p.aversions.join(', ')}.`,
+    );
+
+  return lines.length ? `\nUSER PROFILE CONSTRAINTS:\n${lines.join('\n')}` : '';
+}
 
 @Injectable()
 export class AiAssistantService {
@@ -67,11 +103,13 @@ export class AiAssistantService {
     preferences,
     exclude,
     fallbackLanguage,
+    profilePreferences,
   }: {
     message: string;
     preferences: PreferenceTag[];
     exclude: PreferenceTag[];
     fallbackLanguage: string;
+    profilePreferences?: ProfilePreferences;
   }): Promise<CreateChatWithTitleServiceResponse> {
     const userQuery =
       message.trim().length > 0
@@ -91,7 +129,7 @@ export class AiAssistantService {
       contents: userQuery,
       config: {
         responseMimeType: 'application/json',
-        systemInstruction: `${process.env.GENERATE_CHAT_WITH_TITLE_PROMPT}${languageRule}\nUser Context:${prefContext}`,
+        systemInstruction: `${process.env.GENERATE_CHAT_WITH_TITLE_PROMPT}${languageRule}\nUser Context:${prefContext}${buildProfileContext(profilePreferences)}`,
         responseJsonSchema: CreateChatSessionResponseJson,
         temperature: 0.3,
       },

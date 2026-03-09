@@ -1,5 +1,6 @@
 import { PreferenceTag } from '@/constants/PreferencesTags';
 import { components } from '@/types/api';
+import { UserPreferences } from '@/services/user-preferences.api';
 import { Session } from '@supabase/supabase-js';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -51,6 +52,7 @@ export const chatApi = {
     preferences: PreferenceTag[],
     exclude: PreferenceTag[],
     language: string,
+    profilePreferences?: UserPreferences | null,
   ): Promise<CreateChatResponse> => {
     const response = await fetch(`${API_URL}/chat-sessions`, {
       method: 'POST',
@@ -63,6 +65,14 @@ export const chatApi = {
         preferences,
         exclude,
         language,
+        profilePreferences: profilePreferences
+          ? {
+              goal: profilePreferences.goal,
+              ingredientRestrictions: profilePreferences.ingredientRestrictions,
+              dietRestrictions: profilePreferences.dietRestrictions,
+              aversions: profilePreferences.aversions,
+            }
+          : null,
       }),
     });
 

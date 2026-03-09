@@ -132,7 +132,48 @@
     "go_to_home": "Retourner a la page d'accueil"
   },
   "profile_action_sheet": {
-    "guest": "Invité"
+    "guest": "Invité",
+    "preferences": "Profil & Préférences",
+    "guest_upsell": "Connectez-vous pour personnaliser votre expérience avec vos objectifs, restrictions et préférences alimentaires."
+  },
+  "profile": {
+    "goals": {
+      "title": "Mon Objectif",
+      "bulking": "Prise de masse",
+      "cutting": "Sèche",
+      "body_recomposition": "Recomposition corporelle",
+      "note_bulking": "Les recettes seront plus riches en calories et en protéines pour soutenir la prise de muscle.",
+      "note_cutting": "Les recettes seront moins caloriques pour favoriser la perte de graisse.",
+      "note_body_recomposition": "Les recettes seront équilibrées pour favoriser simultanément la perte de graisse et la prise de muscle."
+    },
+    "restrictions": {
+      "title": "Restrictions alimentaires",
+      "ingredients": "Restrictions d'ingrédients",
+      "diets": "Régimes",
+      "gluten_free": "Sans gluten",
+      "dairy_free": "Sans lactose",
+      "peanut_free": "Sans arachides",
+      "tree_nut_free": "Sans noix",
+      "shellfish_free": "Sans crustacés",
+      "egg_free": "Sans œufs",
+      "soy_free": "Sans soja",
+      "vegetarian": "Végétarien",
+      "vegan": "Végétalien",
+      "pescetarian": "Pescétarien",
+      "keto": "Keto",
+      "paleo": "Paleo",
+      "no_pork": "Sans porc",
+      "no_beef": "Sans bœuf"
+    },
+    "aversions": {
+      "title": "Aversions alimentaires",
+      "no_cilantro": "Sans coriandre",
+      "no_onions": "Sans oignons",
+      "no_garlic": "Sans ail",
+      "no_spicy_food": "Sans épices",
+      "no_mushrooms": "Sans champignons",
+      "no_seafood": "Sans fruits de mer"
+    }
   },
   "preferences": {
     "title": "Mes Préférences",
