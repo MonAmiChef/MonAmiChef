@@ -17,6 +17,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Pressable, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ProfileActionSheet } from '@/components/profile/ProfileActionSheet';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CustomDrawerContent(props: any) {
@@ -187,6 +188,8 @@ export default function MainLayout() {
   const [showProfile, setShowProfile] = useState(false);
   const { session } = useAuth();
   const { t } = useTranslation();
+
+  usePushNotifications();
 
   return (
     <>
