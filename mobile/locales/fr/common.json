@@ -54,6 +54,7 @@
     "chats": "Conversations",
     "failed_retrieving_sessions": "Échec de récupération des conversations",
     "saved_recipes": "Recettes sauvegardées",
+    "meal_plan": "Meal Plan",
     "groceries": "Liste de courses"
   },
   "groceries": {
@@ -261,5 +262,26 @@
     "error_register": "Échec de le création de compte",
     "success_register": "Compte créé avec succès!",
     "please_login": "Veuillez vous connecter"
+  },
+  "meal_plan": {
+    "title": "Meal Plan",
+    "breakfast": "Petit-déjeuner",
+    "lunch": "Déjeuner",
+    "dinner": "Dîner",
+    "add_recipe": "Ajouter une recette",
+    "empty_slot": "Aucune recette planifiée",
+    "today": "Aujourd'hui",
+    "select_recipe": "Choisir une recette",
+    "planning_for": "Planifier pour",
+    "select_portions": "Portions",
+    "plan_meal": "Planifier",
+    "plan_for_days": "Planifier pour les prochains jours",
+    "remove_from_plan": "Retirer du planning",
+    "recipe_added": "Recette ajoutée au planning",
+    "recipe_removed": "Recette retirée du planning",
+    "recipe_planned": "Repas planifié(s) avec succès",
+    "error_adding": "Échec de l'ajout de la recette",
+    "error_removing": "Échec de la suppression de la recette",
+    "error_planning": "Échec de la planification"
   }
 }

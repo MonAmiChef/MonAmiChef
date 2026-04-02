@@ -26,6 +26,7 @@ import {
   Notebook,
   ShoppingCart,
   User,
+  CalendarPlus,
 } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
 import { savedRecipesApi } from '@/services/saved-recipes.api';
@@ -34,6 +35,8 @@ import { capitalizeFull } from '@/utils/text';
 import { useRouter, usePathname } from 'expo-router';
 import SavedRecipesOptionsSheet from '@/components/saved-recipes/SavedRecipesOptionsSheet';
 import ConfirmRemoveModal from '@/components/saved-recipes/ConfirmRemoveModal';
+import DayPickerModal from '@/components/meal-plan/DayPickerModal';
+import { mealPlanApi, CreateMealPlanEntryInput } from '@/services/meal-plan.api';
 
 interface RecipeCardProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,6 +49,7 @@ interface RecipeCardProps {
   onServingChange: (delta: number) => void;
   onGroceryPress: () => void;
   onGroceryRemovePress: () => void;
+  onPlanPress: () => void;
   onMenuPress: () => void;
   t: (key: string) => string;
 }
@@ -60,6 +64,7 @@ function RecipeCard({
   onServingChange,
   onGroceryPress,
   onGroceryRemovePress,
+  onPlanPress,
   onMenuPress,
   t,
 }: RecipeCardProps) {
@@ -239,6 +244,15 @@ function RecipeCard({
             <Pressable
               onPress={(e) => {
                 e.stopPropagation();
+                onPlanPress();
+              }}
+              className="p-2 active:bg-indigo-50 rounded-full"
+            >
+              <CalendarPlus size={20} color="#6366f1" />
+            </Pressable>
+            <Pressable
+              onPress={(e) => {
+                e.stopPropagation();
                 onMenuPress();
               }}
               className="p-2 active:bg-slate-100 rounded-full"
@@ -275,6 +289,7 @@ export default function RecipeList({
   });
   const [showSheet, setShowSheet] = useState(false);
   const [showConfirmRemove, setShowConfirmRemove] = useState(false);
+  const [showDayPicker, setShowDayPicker] = useState(false);
   const queryClient = useQueryClient();
   const [localServings, setLocalServings] = useState<Record<string, number>>(
     {},
@@ -383,6 +398,26 @@ export default function RecipeList({
     },
     onError: (_err, _vars, context) => {
       queryClient.setQueryData(['saved-recipes'], context?.previous);
+    },
+  });
+
+  const planMealMutation = useMutation({
+    mutationFn: (entries: CreateMealPlanEntryInput[]) =>
+      mealPlanApi.createEntries(session!, entries),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['meal-plan'] });
+      Toast.show({
+        text1: t('toast.success'),
+        text2: t('meal_plan.recipe_planned'),
+        type: 'success',
+      });
+    },
+    onError: () => {
+      Toast.show({
+        text1: t('toast.error'),
+        text2: t('meal_plan.error_planning'),
+        type: 'error',
+      });
     },
   });
 
@@ -541,6 +576,13 @@ export default function RecipeList({
                   });
                   setShowConfirmRemove(true);
                 }}
+                onPlanPress={() => {
+                  setSelectedRecipe({
+                    id: item.recipeId,
+                    name: item.recipe.name,
+                  });
+                  setShowDayPicker(true);
+                }}
                 onMenuPress={() => {
                   handleOpenMenu(
                     item.recipeId as string,
@@ -556,6 +598,10 @@ export default function RecipeList({
           isOpen={showSheet}
           onClose={() => setShowSheet(false)}
           handleDelete={handleDelete}
+          handlePlanMeal={() => {
+            setShowSheet(false);
+            setShowDayPicker(true);
+          }}
         />
         <ConfirmRemoveModal
           bodyText={t('remove_modal.confirm_text_groceries')}
@@ -566,6 +612,21 @@ export default function RecipeList({
               recipeId: selectedRecipe?.id ?? '',
               newState: false,
             });
+          }}
+        />
+        <DayPickerModal
+          isOpen={showDayPicker}
+          onClose={() => setShowDayPicker(false)}
+          recipeName={capitalizeFull(selectedRecipe?.name ?? '')}
+          onConfirm={(selections) => {
+            if (!selectedRecipe) return;
+            const entries: CreateMealPlanEntryInput[] = selections.map((s) => ({
+              recipeId: selectedRecipe.id,
+              date: s.date,
+              mealType: s.mealType,
+              servings: s.servings,
+            }));
+            planMealMutation.mutate(entries);
           }}
         />
       </Box>

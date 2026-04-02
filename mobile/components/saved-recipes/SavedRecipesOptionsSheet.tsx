@@ -8,17 +8,19 @@ import {
 } from '../ui/actionsheet';
 import { VStack } from '../ui/vstack';
 import { Pressable } from 'react-native';
-import { Trash2 } from 'lucide-react-native';
+import { Trash2, CalendarPlus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 export default function SavedRecipesOptionsSheet({
   isOpen,
   onClose,
   handleDelete,
+  handlePlanMeal,
 }: {
   isOpen: boolean;
   onClose: () => void;
   handleDelete: () => void;
+  handlePlanMeal?: () => void;
 }) {
   const { t } = useTranslation();
 
@@ -32,6 +34,20 @@ export default function SavedRecipesOptionsSheet({
 
         <VStack className="w-full py-4 gap-4" space="md">
           <VStack className="gap-2 items-center">
+            {handlePlanMeal && (
+              <Pressable
+                onPress={() => {
+                  handlePlanMeal();
+                  onClose();
+                }}
+                className="flex-row w-full items-center gap-3 p-4 rounded-2xl"
+              >
+                <CalendarPlus size={20} color="#6366f1" />
+                <Text className="text-indigo-600 font-inter-bold text-base">
+                  {t('meal_plan.plan_meal')}
+                </Text>
+              </Pressable>
+            )}
             <Pressable
               onPress={handleDelete}
               className="flex-row w-full items-center gap-3 p-4 rounded-2xl"

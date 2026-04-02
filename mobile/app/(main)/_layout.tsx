@@ -92,6 +92,32 @@ function CustomDrawerContent(props: any) {
 
       <Box className="px-5 py-2">
         <Pressable
+          onPress={() => router.push('/meal-plan')}
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Text
+            className={`text-lg font-inter-medium ${
+              pathname.startsWith('/meal-plan')
+                ? 'text-orange-600'
+                : 'text-slate-700'
+            }`}
+          >
+            {t('drawer.meal_plan')}
+          </Text>
+          <ChevronRight
+            size={18}
+            color={pathname.startsWith('/meal-plan') ? '#ea580c' : '#475569'}
+          />
+        </Pressable>
+      </Box>
+
+      <Box className="px-5 py-2">
+        <Pressable
           onPress={() => router.push('/groceries')}
           style={{
             display: 'flex',
@@ -233,6 +259,14 @@ export default function MainLayout() {
           options={{
             drawerLabel: 'Groceries',
             title: t('groceries.title'),
+          }}
+        />
+
+        <Drawer.Screen
+          name="meal-plan"
+          options={{
+            drawerLabel: 'Meal Plan',
+            title: t('meal_plan.title'),
           }}
         />
 

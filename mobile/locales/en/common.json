@@ -54,6 +54,7 @@
     "chats": "Chats",
     "failed_retrieving_sessions": "Failed to retrieve sessions",
     "saved_recipes": "Saved recipes",
+    "meal_plan": "Meal Plan",
     "groceries": "Grocery list"
   },
   "groceries": {
@@ -263,5 +264,26 @@
     "error_register": "Failed to register",
     "success_register": "Successfully registered!",
     "please_login": "Please log in"
+  },
+  "meal_plan": {
+    "title": "Meal Plan",
+    "breakfast": "Breakfast",
+    "lunch": "Lunch",
+    "dinner": "Dinner",
+    "add_recipe": "Add a recipe",
+    "empty_slot": "No recipe planned",
+    "today": "Today",
+    "select_recipe": "Select a recipe",
+    "planning_for": "Planning for",
+    "select_portions": "Portions",
+    "plan_meal": "Plan Meal",
+    "plan_for_days": "Plan for upcoming days",
+    "remove_from_plan": "Remove from plan",
+    "recipe_added": "Recipe added to meal plan",
+    "recipe_removed": "Recipe removed from meal plan",
+    "recipe_planned": "Meal(s) planned successfully",
+    "error_adding": "Failed to add recipe",
+    "error_removing": "Failed to remove recipe",
+    "error_planning": "Failed to plan meal"
   }
 }

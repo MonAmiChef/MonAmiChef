@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect, useRef } from 'react';
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
 import { Animated, Easing, Platform, View } from 'react-native';
 import { skeletonStyle, skeletonTextStyle } from './styles';
@@ -32,34 +32,45 @@ const Skeleton = forwardRef<
   },
   ref,
 ) {
-  const pulseAnim = new Animated.Value(1);
+  const pulseAnim = useRef(new Animated.Value(1)).current;
   const customTimingFunction = Easing.bezier(0.4, 0, 0.6, 1);
   const fadeDuration = 0.6;
-  const animationDuration = (fadeDuration * 10000) / Number(speed); // Convert seconds to milliseconds
+  const animationDuration = (fadeDuration * 10000) / Number(speed);
 
-  const pulse = Animated.sequence([
-    Animated.timing(pulseAnim, {
-      toValue: 1, // Start with opacity 1
-      duration: animationDuration / 2, // Third of the animation duration
-      easing: customTimingFunction,
-      useNativeDriver: Platform.OS !== 'web',
-    }),
-    Animated.timing(pulseAnim, {
-      toValue: 0.75,
-      duration: animationDuration / 2, // Third of the animation duration
-      easing: customTimingFunction,
-      useNativeDriver: Platform.OS !== 'web',
-    }),
-    Animated.timing(pulseAnim, {
-      toValue: 1,
-      duration: animationDuration / 2, // Third of the animation duration
-      easing: customTimingFunction,
-      useNativeDriver: Platform.OS !== 'web',
-    }),
-  ]);
+  useEffect(() => {
+    const pulse = Animated.sequence([
+      Animated.timing(pulseAnim, {
+        toValue: 1,
+        duration: animationDuration / 2,
+        easing: customTimingFunction,
+        useNativeDriver: Platform.OS !== 'web',
+      }),
+      Animated.timing(pulseAnim, {
+        toValue: 0.75,
+        duration: animationDuration / 2,
+        easing: customTimingFunction,
+        useNativeDriver: Platform.OS !== 'web',
+      }),
+      Animated.timing(pulseAnim, {
+        toValue: 1,
+        duration: animationDuration / 2,
+        easing: customTimingFunction,
+        useNativeDriver: Platform.OS !== 'web',
+      }),
+    ]);
+
+    if (!isLoaded) {
+      Animated.loop(pulse).start();
+    } else {
+      pulseAnim.setValue(1);
+    }
+
+    return () => {
+      pulseAnim.stopAnimation();
+    };
+  }, [isLoaded, animationDuration]);
 
   if (!isLoaded) {
-    Animated.loop(pulse).start();
     return (
       <Animated.View
         style={{ opacity: pulseAnim }}
@@ -72,8 +83,6 @@ const Skeleton = forwardRef<
       />
     );
   } else {
-    Animated.loop(pulse).stop();
-
     return children;
   }
 });
