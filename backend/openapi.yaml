@@ -405,6 +405,21 @@ paths:
         '200':
           description: ''
       tags: *ref_4
+  /user/push-token:
+    post:
+      operationId: NotificationsController_registerToken
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterPushTokenDto'
+      responses:
+        '201':
+          description: ''
+      tags:
+        - Notifications
 info:
   title: MonAmiChef
   description: The MonAmiChef API documentation
@@ -1779,5 +1794,12 @@ components:
           maximum: 9007199254740991
       required:
         - servings
+    RegisterPushTokenDto:
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+        - token
 security:
   - X-API-KEY: []

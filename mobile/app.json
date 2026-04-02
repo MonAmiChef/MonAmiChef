@@ -17,6 +17,10 @@
       "supportsTablet": true
     },
     "android": {
+      "notification": {
+        "icon": "./assets/icons/monamichef_bg_less-modified.png",
+        "color": "#f97316"
+      },
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",

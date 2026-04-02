@@ -74,6 +74,7 @@ model User {
   username        String          @unique
   createdAt       DateTime?       @default(now()) @db.Date
   updatedAt       DateTime?       @db.Date
+  pushToken       String?
 
   chats           ChatSession[]
   recipes         Recipe[]
