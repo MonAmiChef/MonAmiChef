@@ -216,7 +216,7 @@ export default function MealPlanScreen() {
     <Box className="flex-1 bg-[#fffdfb]">
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{ paddingBottom: 80 }}
       >
         {/* Day Picker bubbles */}
         <DayPicker
@@ -224,26 +224,6 @@ export default function MealPlanScreen() {
           onDateChange={handleDateChange}
         />
 
-        {/* Selected Date Label */}
-        <View style={{ paddingHorizontal: 20, paddingBottom: 16 }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 8,
-              paddingVertical: 10,
-              paddingHorizontal: 14,
-              backgroundColor: '#f8fafc',
-              borderRadius: 16,
-              alignSelf: 'flex-start',
-            }}
-          >
-            <CalendarDays size={16} color="#64748b" />
-            <Text className="font-inter-semibold text-sm text-slate-700">
-              {displayDate.charAt(0).toUpperCase() + displayDate.slice(1)}
-            </Text>
-          </View>
-        </View>
 
         {/* Daily Totals */}
         {entries && entries.length > 0 && totalMacros && (

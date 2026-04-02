@@ -382,6 +382,7 @@ export default function GroceriesPage() {
   return (
     <Box className="flex-1 bg-[#fffdfb] p-4">
       <Animated.FlatList
+        showsVerticalScrollIndicator={false}
         data={formattedData}
         keyExtractor={(item: any) => {
           if (item.type === 'RECIPES_SECTION_HEADER')
@@ -394,7 +395,7 @@ export default function GroceriesPage() {
           return `item-${item.ingredientIds.join('-')}`;
         }}
         itemLayoutAnimation={LinearTransition}
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 50 }}
         refreshControl={
           <RefreshControl
             refreshing={isManualRefreshing}
