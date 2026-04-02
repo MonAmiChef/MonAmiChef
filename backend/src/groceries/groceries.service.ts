@@ -25,8 +25,8 @@ export class GroceriesService {
     return this.groceriesRepository.getUserRecipesInGroceries(userId);
   }
 
-  async getUserGroceries(userId: string): Promise<GetUserGroceriesResponse> {
-    return this.groceriesRepository.getUserGroceries(userId);
+  async getUserGroceries(userId: string, date?: string): Promise<GetUserGroceriesResponse> {
+    return this.groceriesRepository.getUserGroceries(userId, date);
   }
 
   async toggleIngredientsStatus(

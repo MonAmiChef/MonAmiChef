@@ -15,13 +15,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { recipeApi } from '@/services/recipe.api';
 import { useAuth } from '@/hooks/useAuth';
 import {
-  Check,
   ChevronDownIcon,
   ChevronUpIcon,
   Ellipsis,
   Heart,
   Shapes,
-  ShoppingCart,
   Timer,
   User,
 } from 'lucide-react-native';
@@ -40,7 +38,6 @@ import {
   AccordionContentText,
 } from '@/components/ui/accordion';
 import SavedRecipesOptionsSheet from '@/components/saved-recipes/SavedRecipesOptionsSheet';
-import ConfirmRemoveModal from '@/components/saved-recipes/ConfirmRemoveModal';
 import { useTranslation } from 'react-i18next';
 import Drawer from 'expo-router/drawer';
 
@@ -105,7 +102,6 @@ export default function RecipeDetailPage() {
     [],
   );
   const [showSheet, setShowSheet] = useState(false);
-  const [showConfirmRemove, setShowConfirmRemove] = useState(false);
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
@@ -117,21 +113,14 @@ export default function RecipeDetailPage() {
     retry: 1,
   });
 
-  const { data: recipesInGroceries, refetch: refetchGroceries } = useQuery({
-    queryKey: ['groceries-recipes'],
-    queryFn: () => groceriesApi.getGroceriesRecipes(session!),
-    enabled: !!session,
-  });
-
-  const isAlreadyInGroceries = recipesInGroceries?.some(
-    (item: any) => item.recipeId === id,
-  );
+  const isAlreadyInGroceries = false; // logic removed
 
   const removeFromPlanMutation = useMutation({
     mutationFn: (recipeId: string) =>
       savedRecipesApi.removeFromSavedRecipes(session!, recipeId),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
+      await queryClient.invalidateQueries({ queryKey: ['meal-plan'] });
+      await queryClient.invalidateQueries({ queryKey: ['groceries'] });
       Toast.show({
         text1: t('toast.success'),
         text2: t('toast.removed_from_plan'),
@@ -154,42 +143,7 @@ export default function RecipeDetailPage() {
     router.back();
   };
 
-  const addTogroceriesMutation = useMutation({
-    mutationFn: ({
-      recipeId,
-      newState,
-    }: {
-      recipeId: string;
-      newState: boolean;
-    }) => groceriesApi.updateRecipeInGroceries(session!, recipeId, newState),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
-      Toast.show({
-        text1: t('toast.success'),
-        text2: t('toast.add_grocery'),
-        type: 'success',
-      });
-    },
-    onError: (error) => {
-      console.error(error);
-      Toast.show({
-        text1: t('toast.error'),
-        text2: t('toast.error_add_grocery'),
-        type: 'error',
-      });
-    },
-  });
 
-  const updateServingsMutation = useMutation({
-    mutationFn: ({ next }: { next: number; prev: number }) =>
-      savedRecipesApi.updateServings(session!, id as string, next),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['saved-recipes'] });
-    },
-    onError: (_err, { prev }) => {
-      setServings(prev);
-    },
-  });
 
   const updateFavoriteMutation = useMutation({
     mutationFn: (newState: boolean) =>
@@ -204,12 +158,6 @@ export default function RecipeDetailPage() {
       void queryClient.invalidateQueries({ queryKey: ['saved-recipes'] });
     },
   });
-
-  const changeServings = (delta: number) => {
-    const next = Math.max(1, servings + delta);
-    updateServingsMutation.mutate({ next, prev: servings });
-    setServings(next);
-  };
 
   const handleToggleStep = (index: number) => {
     setCompletedSteps((prev) =>
@@ -258,72 +206,44 @@ export default function RecipeDetailPage() {
           contentContainerStyle={{ gap: 24 }}
           showsVerticalScrollIndicator={false}
         >
-          {/* HEADER */}
-          <Box className="flex gap-6">
-            <Box className="flex flex-row flex-1">
-              <Text className="flex flex-row flex-1 text-2xl font-inter-bold text-slate-900">
+          <Box className="flex gap-4">
+            <Box className="flex flex-row items-center justify-between gap-4">
+              <Text className="flex-1 text-2xl font-inter-bold text-slate-900">
                 {data.name}
               </Text>
 
-              <Pressable
-                onPress={() => setShowSheet(true)}
-                className="p-2 active:bg-slate-100 bg-blue rounded-full"
-              >
-                <Ellipsis size={22} color="#000" />
-              </Pressable>
+              <Box className="flex flex-row items-center gap-2">
+                {savedServingsParam && (
+                  <Pressable
+                    onPress={() => {
+                      favoriteScale.value = withSpring(isFavorite ? 1 : 1.2, {
+                        damping: 300,
+                      });
+                      updateFavoriteMutation.mutate(!isFavorite);
+                    }}
+                    className={`p-2.5 rounded-full border-2 ${isFavorite ? 'border-red-500 bg-red-50' : 'border-slate-100'}`}
+                  >
+                    <Animated.View style={favoriteAnimatedStyle}>
+                      <Heart
+                        strokeWidth={2.5}
+                        size={18}
+                        color={isFavorite ? '#ef4444' : '#cbd5e1'}
+                        fill={isFavorite ? '#ef4444' : 'none'}
+                      />
+                    </Animated.View>
+                  </Pressable>
+                )}
+                <Pressable
+                  onPress={() => setShowSheet(true)}
+                  className="p-2.5 active:bg-slate-100 rounded-full border-2 border-slate-100"
+                >
+                  <Ellipsis size={20} color="#64748b" />
+                </Pressable>
+              </Box>
             </Box>
             <Text className="text-md font-inter-medium text-slate-500">
               {data.description}
             </Text>
-
-            <Box className="flex gap-2 flex-row">
-              <Pressable
-                className={`flex-row flex-1 ${isAlreadyInGroceries ? 'border-[1.5px] border-green-600' : 'bg-black'} px-2 py-3 text-center items-center justify-center gap-2 rounded-full`}
-                onPress={() => {
-                  if (isAlreadyInGroceries) {
-                    setShowConfirmRemove(true);
-                  } else {
-                    addTogroceriesMutation.mutate({
-                      recipeId: id as string,
-                      newState: true,
-                    });
-                  }
-                }}
-              >
-                {isAlreadyInGroceries ? (
-                  <Check strokeWidth={3} size={18} color="#00a63e" />
-                ) : (
-                  <ShoppingCart strokeWidth={3} size={18} color="#fff" />
-                )}
-                <Text
-                  className={`font-inter-semibold ${isAlreadyInGroceries ? 'text-[#00a63e]' : 'text-white'}`}
-                >
-                  {isAlreadyInGroceries
-                    ? t('recipe_details.added_to_groceries')
-                    : t('recipe_details.add_to_groceries')}
-                </Text>
-              </Pressable>
-              {savedServingsParam && (
-                <Pressable
-                  onPress={() => {
-                    favoriteScale.value = withSpring(isFavorite ? 1 : 1.2, {
-                      damping: 300,
-                    });
-                    updateFavoriteMutation.mutate(!isFavorite);
-                  }}
-                  className={`p-3 rounded-full border-2 ${isFavorite ? 'border-red-500 bg-red-50' : 'border-slate-200'}`}
-                >
-                  <Animated.View style={favoriteAnimatedStyle}>
-                    <Heart
-                      strokeWidth={2.5}
-                      size={18}
-                      color={isFavorite ? '#ef4444' : '#94a3b8'}
-                      fill={isFavorite ? '#ef4444' : 'none'}
-                    />
-                  </Animated.View>
-                </Pressable>
-              )}
-            </Box>
           </Box>
 
           <Divider />
@@ -369,16 +289,16 @@ export default function RecipeDetailPage() {
                 <Box className="mt-4">
                   <AccordionContentText>
                     <Box className="flex flex-1 w-full gap-4">
-                      <MacroItem value={data.calories} label="Calories" />
+                      <MacroItem value={data.calories ?? 0} label="Calories" />
                       <MacroItem
-                        value={data.proteins}
+                        value={data.proteins ?? 0}
                         suffix="g"
                         label="Proteins"
                       />
-                      <MacroItem value={data.carbs} suffix="g" label="Carbs" />
-                      <MacroItem value={data.fat} suffix="g" label="Fat" />
+                      <MacroItem value={data.carbs ?? 0} suffix="g" label="Carbs" />
+                      <MacroItem value={data.fat ?? 0} suffix="g" label="Fat" />
                       <MacroItem
-                        value={data.fibers}
+                        value={data.fibers ?? 0}
                         suffix="g"
                         label="Fibers"
                       />
@@ -415,48 +335,16 @@ export default function RecipeDetailPage() {
               <AccordionContent>
                 <Box className="mt-4">
                   <AccordionContentText>
-                    <Box className="flex flex-row flex-1 w-full gap-4">
+                    <Box className="flex flex-row flex-1 w-full">
                       <SpecItem
-                        value={data.prepTimeMin}
+                        value={String(data.prepTimeMin ?? 0)}
                         suffix="minutes"
                         icon={<Timer size={36} color="#ff6900" />}
                       />
                       <SpecItem
-                        value={data.difficulty}
+                        value={data.difficulty ?? ''}
                         icon={<Shapes size={36} color="#ff6900" />}
                       />
-                      {savedServingsParam ? (
-                        <Box className="flex flex-1 gap-2 items-center justify-center">
-                          <User size={36} color="#ff6900" />
-                          <Box className="flex-row items-center bg-slate-50 rounded-full px-1">
-                            <Pressable
-                              onPress={() => changeServings(-1)}
-                              className="w-8 h-8 items-center justify-center"
-                            >
-                              <Text className="text-xl font-inter-semibold text-slate-600">
-                                −
-                              </Text>
-                            </Pressable>
-                            <Text className="text-lg font-inter-medium w-5 text-center">
-                              {servings}
-                            </Text>
-                            <Pressable
-                              onPress={() => changeServings(1)}
-                              className="w-8 h-8 items-center justify-center"
-                            >
-                              <Text className="text-xl font-inter-semibold text-slate-600">
-                                +
-                              </Text>
-                            </Pressable>
-                          </Box>
-                        </Box>
-                      ) : (
-                        <SpecItem
-                          value={String(servings)}
-                          icon={<User size={36} color="#ff6900" />}
-                          suffix="servings"
-                        />
-                      )}
                     </Box>
                   </AccordionContentText>
                 </Box>
@@ -599,19 +487,7 @@ export default function RecipeDetailPage() {
         isOpen={showSheet}
         onClose={() => setShowSheet(false)}
         handleDelete={handleDelete}
-      />
-      <ConfirmRemoveModal
-        bodyText={t('remove_modal.confirm_text_groceries')}
-        showModal={showConfirmRemove}
-        onClose={() => setShowConfirmRemove(false)}
-        onConfirm={() => {
-          addTogroceriesMutation.mutate({
-            recipeId: id as string,
-            newState: false,
-          });
-          void refetchGroceries();
-        }}
-      />
+                      />
     </SafeAreaView>
   );
 }

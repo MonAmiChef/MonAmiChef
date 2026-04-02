@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import {
   SupabaseGuard,
   type AuthenticatedRequest,
@@ -36,8 +36,12 @@ export class GroceriesController {
 
   @Get()
   @ZodResponse({ status: 200, type: GetUserGroceriesResponseDto })
-  async getUserGroceries(@Req() req: AuthenticatedRequest) {
-    return this.groceriesService.getUserGroceries(req.user.id);
+  async getUserGroceries(
+    @Req() req: AuthenticatedRequest,
+    @Query('date') date?: string,
+  ) {
+    console.log('[GroceriesController] GET /groceries for user:', req.user.id, 'with date:', date);
+    return this.groceriesService.getUserGroceries(req.user.id, date);
   }
 
   @Post()

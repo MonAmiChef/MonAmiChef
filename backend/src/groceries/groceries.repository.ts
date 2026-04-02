@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { GetUserGroceriesResponse } from './groceries.dto';
 
 @Injectable()
 export class GroceriesRepository {
@@ -33,7 +32,26 @@ export class GroceriesRepository {
     });
   }
 
-  async getUserGroceries(userId: string) {
+  async getUserGroceries(userId: string, dateStr?: string) {
+    console.log('[GroceriesRepo] Fetching groceries for user:', userId, 'with base date:', dateStr);
+    
+    // Use the provided date or fall back to server's today
+    const tomorrowStr = new Date().toISOString().split('T')[0];
+    const baseDateStr = dateStr || tomorrowStr;
+    const today = new Date(baseDateStr + 'T00:00:00.000Z');
+    
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    
+    const endDate = new Date(today);
+    endDate.setDate(today.getDate() + 10); // Be very inclusive (10 days)
+
+    console.log('[GroceriesRepo] Window:', {
+      yesterday: yesterday.toISOString(),
+      endDate: endDate.toISOString(),
+    });
+
+    // Fetch manually added recipes
     const savedRecipes = await this.prismaService.savedRecipe.findMany({
       where: {
         userId,
@@ -41,8 +59,7 @@ export class GroceriesRepository {
       },
       include: {
         recipe: {
-          select: {
-            name: true,
+          include: {
             ingredients: {
               include: {
                 reference: true,
@@ -52,13 +69,53 @@ export class GroceriesRepository {
         },
       },
     });
+    console.log('[GroceriesRepo] Found saved recipes:', savedRecipes.length);
 
-    const mergedIngredients = savedRecipes.reduce(
-      (acc, plan) => {
-        const recipeName = plan.recipe.name;
-        const servingsFactor = Number(plan.servings || 1);
+    // Fetch recipes from meal plan for the next 10 days (+ yesterday buffer)
+    const mealPlanEntries = await this.prismaService.mealPlanEntry.findMany({
+      where: {
+        userId,
+        date: {
+          gte: yesterday,
+          lte: endDate,
+        },
+      },
+      include: {
+        recipe: {
+          include: {
+            ingredients: {
+              include: {
+                reference: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    console.log('[GroceriesRepo] Found meal plan entries:', mealPlanEntries.length);
 
-        plan.recipe.ingredients.forEach((ing) => {
+    // Combine both sources for aggregation
+    const allItems = [
+      ...savedRecipes.map((s) => ({
+        recipe: s.recipe,
+        servings: s.servings || 1,
+      })),
+      ...mealPlanEntries.map((m) => ({
+        recipe: m.recipe,
+        servings: m.servings,
+      })),
+    ];
+    console.log('[GroceriesRepo] Total items to aggregate:', allItems.length);
+
+    const mergedIngredients = allItems.reduce(
+      (acc, item) => {
+        if (!item.recipe) return acc;
+
+        const recipeName = item.recipe.name;
+        const recipeId = item.recipe.id;
+        const servingsFactor = Number(item.servings || 1);
+
+        item.recipe.ingredients.forEach((ing) => {
           const key = `${ing.name.toLowerCase().trim()}_${ing.unit.toLowerCase().trim()}`;
           const adjustedQuantity = ing.quantity * servingsFactor;
 
@@ -68,7 +125,7 @@ export class GroceriesRepository {
               totalQuantity: adjustedQuantity,
               unit: ing.unit,
               category: ing.category,
-              recipes: [recipeName],
+              recipeDetails: [{ id: recipeId, name: recipeName, servings: servingsFactor }],
               isBought: ing.isBought,
               ingredientIds: [ing.id],
               image: ing.reference?.imageUrl || null,
@@ -81,20 +138,25 @@ export class GroceriesRepository {
               acc[key].image = ing.reference.imageUrl;
             }
 
-            if (!acc[key].recipes.includes(recipeName)) {
-              acc[key].recipes.push(recipeName);
+            const existingRecipe = acc[key].recipeDetails.find(rd => rd.id === recipeId);
+            if (existingRecipe) {
+              existingRecipe.servings += servingsFactor;
+            } else {
+              acc[key].recipeDetails.push({ id: recipeId, name: recipeName, servings: servingsFactor });
             }
           }
         });
 
         return acc;
       },
-      {} as Record<string, GetUserGroceriesResponse[number]>,
+      {} as Record<string, any>,
     );
 
-    return Object.values(mergedIngredients).sort((a, b) =>
+    const results = Object.values(mergedIngredients).sort((a, b) =>
       (a.category || '').localeCompare(b.category || ''),
     );
+    console.log('[GroceriesRepo] Final ingredients count:', results.length);
+    return results;
   }
 
   async toggleIngredientsStatus(

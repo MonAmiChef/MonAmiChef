@@ -53,7 +53,13 @@ const GroceryItemSchema = z.object({
   totalQuantity: z.number(),
   unit: z.string(),
   category: z.string(),
-  recipes: z.array(z.string()),
+  recipeDetails: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      servings: z.number(),
+    }),
+  ),
   isBought: z.boolean(),
   ingredientIds: z.array(z.string()),
   image: z.string().nullable(),

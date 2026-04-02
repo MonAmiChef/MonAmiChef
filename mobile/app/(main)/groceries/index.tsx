@@ -51,7 +51,7 @@ const formatData = (
   recipesSectionExpanded: boolean,
   groceryRecipes: {
     name: string;
-    recipeId: string;
+    id: string;
     servings: number | undefined;
   }[],
   allData: MergedIngredient[],
@@ -66,9 +66,10 @@ const formatData = (
   });
 
   if (recipesSectionExpanded) {
-    groceryRecipes.forEach(({ name, recipeId, servings }) => {
+    console.log('[GroceriesMode] Data items:', allData.length);
+    groceryRecipes.forEach(({ name, id: recipeId, servings }) => {
       const hasAnyBought = allData.some(
-        (item) => item.recipes.includes(name) && item.isBought,
+        (item) => item.recipeDetails.some(rd => rd.name === name) && item.isBought,
       );
       const isHidden = hiddenRecipes.has(name);
       flatList.push({
@@ -176,7 +177,7 @@ function GroceryItem({ item, onToggle }: GroceryItemProps) {
           </View>
 
           <Box className="flex-row flex-wrap mt-1">
-            {item.recipes.map((recipeName: string, index: number) => (
+            {item.recipeDetails.map((detail: any, index: number) => (
               <Box
                 key={index}
                 className="bg-slate-100 px-2 py-0.5 rounded-md mr-1 mb-1 border border-slate-200"
@@ -185,7 +186,7 @@ function GroceryItem({ item, onToggle }: GroceryItemProps) {
                   className="text-[9px] text-slate-500 font-inter-medium italic"
                   numberOfLines={1}
                 >
-                  {recipeName}
+                  {detail.name}
                 </Text>
               </Box>
             ))}
@@ -282,9 +283,13 @@ export default function GroceriesPage() {
     );
   };
 
+  const todayStr = new Date().toISOString().split('T')[0];
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['groceries'],
-    queryFn: () => groceriesApi.getUserGroceries(session!),
+    queryKey: ['groceries', todayStr],
+    queryFn: () => {
+      console.log('[GroceriesMode] Fetching for today:', todayStr, 'Session:', !!session);
+      return groceriesApi.getUserGroceries(session!, todayStr);
+    },
     enabled: !!session,
   });
 
@@ -297,28 +302,17 @@ export default function GroceriesPage() {
   const router = useRouter();
   const { t } = useTranslation();
 
-  const uniqueRecipeNames = [...new Set(data?.flatMap((i) => i.recipes) ?? [])];
-  const groceryRecipes = uniqueRecipeNames
-    .map((name) => {
-      const match = savedRecipes?.find((r: any) => r.recipe.name === name);
-      return {
-        name,
-        recipeId: match?.recipeId as string | undefined,
-        servings: match?.servings as number | undefined,
-      };
-    })
-    .filter(
-      (
-        r,
-      ): r is {
-        name: string;
-        recipeId: string;
-        servings: number | undefined;
-      } => !!r.recipeId,
-    );
+  const allRecipesMap = new Map<string, { id: string; name: string; servings: number }>();
+  data?.forEach(item => {
+    item.recipeDetails.forEach(rd => {
+      allRecipesMap.set(rd.name, rd);
+    });
+  });
+
+  const groceryRecipes = Array.from(allRecipesMap.values()).sort((a, b) => a.name.localeCompare(b.name));
 
   const visibleIngredients = (data ?? []).filter(
-    (item) => !item.recipes.every((name) => hiddenRecipes.has(name)),
+    (item) => !item.recipeDetails.every((rd) => hiddenRecipes.has(rd.name)),
   );
 
   const formattedData =
@@ -337,12 +331,13 @@ export default function GroceriesPage() {
     mutationFn: ({ ids, bought }: { ids: string[]; bought: boolean }) =>
       groceriesApi.toggleIngredientsStatus(session!, ids, bought),
     onMutate: async ({ ids, bought }) => {
-      await queryClient.cancelQueries({ queryKey: ['groceries'] });
+      await queryClient.cancelQueries({ queryKey: ['groceries', todayStr] });
       const previousData = queryClient.getQueryData<MergedIngredient[]>([
         'groceries',
+        todayStr,
       ]);
       queryClient.setQueryData<MergedIngredient[]>(
-        ['groceries'],
+        ['groceries', todayStr],
         (old) =>
           old?.map((item) =>
             item.ingredientIds.some((id) => ids.includes(id))
@@ -353,7 +348,7 @@ export default function GroceriesPage() {
       return { previousData };
     },
     onError: (_err, _vars, context) => {
-      queryClient.setQueryData(['groceries'], context?.previousData);
+      queryClient.setQueryData(['groceries', todayStr], context?.previousData);
       Toast.show({
         text1: t('toast.error'),
         text2: t('toast.error_togling_item'),
@@ -361,7 +356,7 @@ export default function GroceriesPage() {
       });
     },
     onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: ['groceries'] });
+      void queryClient.invalidateQueries({ queryKey: ['groceries', todayStr] });
     },
   });
 
@@ -369,14 +364,14 @@ export default function GroceriesPage() {
     mutationFn: (recipeId: string) =>
       groceriesApi.updateRecipeInGroceries(session!, recipeId, false),
     onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: ['groceries'] });
+      void queryClient.invalidateQueries({ queryKey: ['groceries', todayStr] });
       void queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
     },
   });
 
   const resetRecipeIngredients = (recipeName: string) => {
     const ids = (data ?? [])
-      .filter((item) => item.recipes.includes(recipeName))
+      .filter((item) => item.recipeDetails.some(rd => rd.name === recipeName))
       .flatMap((item) => item.ingredientIds);
     if (ids.length) toggleMutation.mutate({ ids, bought: false });
   };

@@ -20,11 +20,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import {
-  Check,
   Ellipsis,
   Heart,
   Notebook,
-  ShoppingCart,
   User,
   CalendarPlus,
 } from 'lucide-react-native';
@@ -34,7 +32,6 @@ import { groceriesApi } from '@/services/groceries.api';
 import { capitalizeFull } from '@/utils/text';
 import { useRouter, usePathname } from 'expo-router';
 import SavedRecipesOptionsSheet from '@/components/saved-recipes/SavedRecipesOptionsSheet';
-import ConfirmRemoveModal from '@/components/saved-recipes/ConfirmRemoveModal';
 import DayPickerModal from '@/components/meal-plan/DayPickerModal';
 import { mealPlanApi, CreateMealPlanEntryInput } from '@/services/meal-plan.api';
 
@@ -43,12 +40,8 @@ interface RecipeCardProps {
   item: any;
   servings: number;
   isFavorite: boolean;
-  isInGroceries: boolean | undefined;
   onPress: () => void;
   onFavoritePress: () => void;
-  onServingChange: (delta: number) => void;
-  onGroceryPress: () => void;
-  onGroceryRemovePress: () => void;
   onPlanPress: () => void;
   onMenuPress: () => void;
   t: (key: string) => string;
@@ -58,12 +51,8 @@ function RecipeCard({
   item,
   servings,
   isFavorite,
-  isInGroceries,
   onPress,
   onFavoritePress,
-  onServingChange,
-  onGroceryPress,
-  onGroceryRemovePress,
   onPlanPress,
   onMenuPress,
   t,
@@ -173,35 +162,11 @@ function RecipeCard({
         <View className="h-px bg-slate-100 mb-2" />
 
         <View className="flex-row items-center justify-between py-1">
-          <View className="flex-row items-center bg-slate-50 rounded-full px-1">
-            <Pressable
-              onPress={(e) => {
-                e.stopPropagation();
-                onServingChange(-1);
-              }}
-              className="w-8 h-8 items-center justify-center active:bg-slate-200 rounded-full"
-            >
-              <Text className="text-slate-500 text-lg font-inter-medium">
-                −
-              </Text>
-            </Pressable>
-            <View className="flex-row items-center gap-1 w-16 justify-center">
-              <User size={12} color="#64748b" />
-              <Text className="text-slate-700 font-inter-semibold text-sm">
-                {servings}
-              </Text>
-            </View>
-            <Pressable
-              onPress={(e) => {
-                e.stopPropagation();
-                onServingChange(+1);
-              }}
-              className="w-8 h-8 items-center justify-center active:bg-slate-200 rounded-full"
-            >
-              <Text className="text-slate-500 text-lg font-inter-medium">
-                +
-              </Text>
-            </Pressable>
+          <View className="flex-row items-center bg-slate-50 rounded-full px-3 py-1.5">
+            <User size={12} color="#64748b" />
+            <Text className="text-slate-700 font-inter-semibold text-xs ml-1.5">
+              {servings} {t('recipe_details.servings')}
+            </Text>
           </View>
 
           <View className="flex-row items-center">
@@ -220,27 +185,6 @@ function RecipeCard({
                 />
               </Animated.View>
             </Pressable>
-            {isInGroceries ? (
-              <Pressable
-                onPress={(e) => {
-                  e.stopPropagation();
-                  onGroceryRemovePress();
-                }}
-                className="p-2 active:bg-green-50 rounded-full"
-              >
-                <Check size={20} color="#16a34a" />
-              </Pressable>
-            ) : (
-              <Pressable
-                onPress={(e) => {
-                  e.stopPropagation();
-                  onGroceryPress();
-                }}
-                className="p-2 active:bg-orange-50 rounded-full"
-              >
-                <ShoppingCart size={20} color="#f97316" />
-              </Pressable>
-            )}
             <Pressable
               onPress={(e) => {
                 e.stopPropagation();
@@ -288,29 +232,14 @@ export default function RecipeList({
     enabled: !!session,
   });
   const [showSheet, setShowSheet] = useState(false);
-  const [showConfirmRemove, setShowConfirmRemove] = useState(false);
   const [showDayPicker, setShowDayPicker] = useState(false);
   const queryClient = useQueryClient();
-  const [localServings, setLocalServings] = useState<Record<string, number>>(
-    {},
-  );
-
-  const { data: recipesInGroceries } = useQuery({
-    queryKey: ['groceries-recipes'],
-    queryFn: () => groceriesApi.getGroceriesRecipes(session!),
-    enabled: !!session,
-  });
-
-  const isAlreadyInGroceries = (recipeId: string) => {
-    return recipesInGroceries?.some((item) => item.recipeId === recipeId);
-  };
 
   const removeFromSavedMutation = useMutation({
     mutationFn: (recipeId: string) =>
       savedRecipesApi.removeFromSavedRecipes(session!, recipeId),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['saved-recipes'] });
-      await queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
       Toast.show({
         text1: t('toast.success'),
         text2: t('toast.removed_from_plan'),
@@ -327,54 +256,7 @@ export default function RecipeList({
     },
   });
 
-  const changeServings = (recipeId: string, current: number, delta: number) => {
-    const next = Math.max(1, current + delta);
-    setLocalServings((prev) => ({ ...prev, [recipeId]: next }));
-    updateServingsMutation.mutate({ recipeId, servings: next });
-  };
 
-  const updateServingsMutation = useMutation({
-    mutationFn: ({
-      recipeId,
-      servings,
-    }: {
-      recipeId: string;
-      servings: number;
-    }) => savedRecipesApi.updateServings(session!, recipeId, servings),
-    onError: (_, { recipeId }) => {
-      setLocalServings((prev) => {
-        const next = { ...prev };
-        delete next[recipeId];
-        return next;
-      });
-    },
-  });
-
-  const addToGroceriesMutation = useMutation({
-    mutationFn: ({
-      recipeId,
-      newState,
-    }: {
-      recipeId: string;
-      newState: boolean;
-    }) => groceriesApi.updateRecipeInGroceries(session!, recipeId, newState),
-    onSuccess: async (_data, variables) => {
-      await queryClient.invalidateQueries({ queryKey: ['groceries-recipes'] });
-      Toast.show({
-        text1: t('toast.success'),
-        text2: `${t('toast.recipe_was')} ${variables.newState === true ? t('toast.added') : t('toast.removed')}`,
-        type: 'success',
-      });
-    },
-    onError: (error) => {
-      console.error(error);
-      Toast.show({
-        text1: t('toast.error'),
-        text2: t('toast.error_add_grocery'),
-        type: 'error',
-      });
-    },
-  });
 
   const updateFavoriteMutation = useMutation({
     mutationFn: ({
@@ -406,6 +288,7 @@ export default function RecipeList({
       mealPlanApi.createEntries(session!, entries),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['meal-plan'] });
+      await queryClient.invalidateQueries({ queryKey: ['groceries'] });
       Toast.show({
         text1: t('toast.success'),
         text2: t('meal_plan.recipe_planned'),
@@ -538,18 +421,14 @@ export default function RecipeList({
           }
           ItemSeparatorComponent={() => <View className="h-3" />}
           renderItem={({ item }) => {
-            const isInGroceries = isAlreadyInGroceries(item.recipeId);
-            const servings = localServings[item.recipeId] ?? item.servings ?? 1;
+            const servings = item.servings ?? 1;
             const isFavorite = item.isFavorite as boolean;
-
             return (
               <RecipeCard
                 item={item}
                 servings={servings}
                 isFavorite={isFavorite}
-                isInGroceries={isInGroceries}
                 onPress={() => {
-                  console.log('teeest', router);
                   router.push(
                     `/recipe-details/${item.recipeId}?savedServings=${servings}&isFavorite=${item.isFavorite ? '1' : '0'}`,
                   );
@@ -559,22 +438,6 @@ export default function RecipeList({
                     recipeId: item.recipeId,
                     isFavorite: !isFavorite,
                   });
-                }}
-                onServingChange={(delta) => {
-                  changeServings(item.recipeId as string, servings, delta);
-                }}
-                onGroceryPress={() => {
-                  addToGroceriesMutation.mutate({
-                    recipeId: item.recipeId,
-                    newState: true,
-                  });
-                }}
-                onGroceryRemovePress={() => {
-                  setSelectedRecipe({
-                    id: item.recipeId,
-                    name: item.recipe.name,
-                  });
-                  setShowConfirmRemove(true);
                 }}
                 onPlanPress={() => {
                   setSelectedRecipe({
@@ -603,17 +466,7 @@ export default function RecipeList({
             setShowDayPicker(true);
           }}
         />
-        <ConfirmRemoveModal
-          bodyText={t('remove_modal.confirm_text_groceries')}
-          showModal={showConfirmRemove}
-          onClose={() => setShowConfirmRemove(false)}
-          onConfirm={() => {
-            addToGroceriesMutation.mutate({
-              recipeId: selectedRecipe?.id ?? '',
-              newState: false,
-            });
-          }}
-        />
+
         <DayPickerModal
           isOpen={showDayPicker}
           onClose={() => setShowDayPicker(false)}

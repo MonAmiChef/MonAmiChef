@@ -217,6 +217,20 @@ paths:
         '200':
           description: ''
       tags: *ref_1
+  /saved-recipes/favorite:
+    patch:
+      operationId: SavedRecipesController_updateFavorite
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFavoriteRequestDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_1
   /saved-recipes/add:
     post:
       operationId: SavedRecipesController_addToSavedRecipes
@@ -261,7 +275,12 @@ paths:
   /groceries:
     get:
       operationId: GroceriesController_getUserGroceries
-      parameters: []
+      parameters:
+        - name: date
+          required: true
+          in: query
+          schema:
+            type: string
       responses:
         '200':
           description: ''
@@ -305,6 +324,87 @@ paths:
                 $ref: '#/components/schemas/GetRecipeResponseDto_Output'
       tags:
         - Recipes
+  /user-preferences:
+    get:
+      operationId: ProfileController_getProfile
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: &ref_3
+        - Profile
+    patch:
+      operationId: ProfileController_updateProfile
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertUserPreferencesDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /meal-plans:
+    get:
+      operationId: MealPlanController_getMealPlan
+      parameters:
+        - name: date
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: &ref_4
+        - MealPlan
+    post:
+      operationId: MealPlanController_createMealPlanEntries
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMealPlanRequestDto'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_4
+  /meal-plans/{id}:
+    delete:
+      operationId: MealPlanController_deleteMealPlanEntry
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
+  /meal-plans/{id}/servings:
+    patch:
+      operationId: MealPlanController_updateServings
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMealPlanServingsRequestDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
 info:
   title: MonAmiChef
   description: The MonAmiChef API documentation
@@ -768,6 +868,7 @@ components:
       properties:
         firstMessage:
           type: string
+          x-nestjs_zod-has-null: true
         preferences:
           default: []
           type: array
@@ -825,6 +926,7 @@ components:
               - garlic
               - lettuce
               - cucumber
+          x-nestjs_zod-has-null: true
         exclude:
           default: []
           type: array
@@ -882,9 +984,41 @@ components:
               - garlic
               - lettuce
               - cucumber
+          x-nestjs_zod-has-null: true
         language:
           default: english
           type: string
+          x-nestjs_zod-has-null: true
+        profilePreferences:
+          anyOf:
+            - type: object
+              properties:
+                goal:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - bulking
+                        - cutting
+                        - body_recomposition
+                    - type: 'null'
+                ingredientRestrictions:
+                  default: []
+                  type: array
+                  items:
+                    type: string
+                dietRestrictions:
+                  default: []
+                  type: array
+                  items:
+                    type: string
+                aversions:
+                  default: []
+                  type: array
+                  items:
+                    type: string
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
       required:
         - firstMessage
     CreateChatSessionResponseDto_Output:
@@ -1212,6 +1346,16 @@ components:
       required:
         - recipeId
         - servings
+    UpdateFavoriteRequestDto:
+      type: object
+      properties:
+        recipeId:
+          type: string
+        isFavorite:
+          type: boolean
+      required:
+        - recipeId
+        - isFavorite
     AddToSavedRecipesRequestDto:
       type: object
       properties:
@@ -1297,10 +1441,22 @@ components:
                 type: string
               category:
                 type: string
-              recipes:
+              recipeDetails:
                 type: array
                 items:
-                  type: string
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    servings:
+                      type: number
+                  required:
+                    - id
+                    - name
+                    - servings
+                  additionalProperties: false
               isBought:
                 type: boolean
               ingredientIds:
@@ -1316,7 +1472,7 @@ components:
               - totalQuantity
               - unit
               - category
-              - recipes
+              - recipeDetails
               - isBought
               - ingredientIds
               - image
@@ -1533,5 +1689,95 @@ components:
         - imagePath
         - messageId
         - ingredients
+    UpsertUserPreferencesDto:
+      type: object
+      properties:
+        goal:
+          anyOf:
+            - type: string
+              enum:
+                - bulking
+                - cutting
+                - body_recomposition
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+        ingredientRestrictions:
+          type: array
+          items:
+            type: string
+            enum:
+              - gluten_free
+              - dairy_free
+              - peanut_free
+              - tree_nut_free
+              - shellfish_free
+              - egg_free
+              - soy_free
+          x-nestjs_zod-has-null: true
+        dietRestrictions:
+          type: array
+          items:
+            type: string
+            enum:
+              - vegetarian
+              - vegan
+              - pescetarian
+              - keto
+              - paleo
+              - no_pork
+              - no_beef
+          x-nestjs_zod-has-null: true
+        aversions:
+          type: array
+          items:
+            type: string
+            enum:
+              - no_cilantro
+              - no_onions
+              - no_garlic
+              - no_spicy_food
+              - no_mushrooms
+              - no_seafood
+          x-nestjs_zod-has-null: true
+    CreateMealPlanRequestDto:
+      type: object
+      properties:
+        entries:
+          minItems: 1
+          type: array
+          items:
+            type: object
+            properties:
+              recipeId:
+                type: string
+              date:
+                type: string
+              mealType:
+                type: string
+                enum:
+                  - BREAKFAST
+                  - LUNCH
+                  - DINNER
+              servings:
+                default: 1
+                type: integer
+                minimum: 1
+                maximum: 9007199254740991
+            required:
+              - recipeId
+              - date
+              - mealType
+      required:
+        - entries
+    UpdateMealPlanServingsRequestDto:
+      type: object
+      properties:
+        servings:
+          type: integer
+          minimum: 1
+          maximum: 9007199254740991
+      required:
+        - servings
 security:
   - X-API-KEY: []

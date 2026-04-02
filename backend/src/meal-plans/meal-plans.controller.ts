@@ -30,6 +30,7 @@ export class MealPlanController {
     @Req() req: AuthenticatedRequest,
     @Query('date') date: string,
   ) {
+    console.log('[MealPlanController] GET /meal-plans for user:', req.user.id, 'with date:', date);
     return this.mealPlanService.getMealPlanByDate(req.user.id, date);
   }
 

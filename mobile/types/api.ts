@@ -184,6 +184,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/saved-recipes/servings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["SavedRecipesController_updateServings"];
+        trace?: never;
+    };
+    "/saved-recipes/favorite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["SavedRecipesController_updateFavorite"];
+        trace?: never;
+    };
     "/saved-recipes/add": {
         parameters: {
             query?: never;
@@ -262,6 +294,70 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/user-preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ProfileController_getProfile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["ProfileController_updateProfile"];
+        trace?: never;
+    };
+    "/meal-plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MealPlanController_getMealPlan"];
+        put?: never;
+        post: operations["MealPlanController_createMealPlanEntries"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/meal-plans/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["MealPlanController_deleteMealPlanEntry"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/meal-plans/{id}/servings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["MealPlanController_updateServings"];
         trace?: never;
     };
 }
@@ -431,6 +527,15 @@ export interface components {
             exclude: ("high_protein" | "high_fiber" | "low_carb" | "balanced" | "high_carb" | "low_fat" | "vegetarian" | "vegan" | "italian" | "mexican" | "mediterranean" | "american" | "french" | "indian" | "thai" | "chinese" | "japanese" | "middle_eastern" | "korean" | "african" | "breakfast" | "lunch" | "dinner" | "appetizer" | "dessert" | "snack" | "smoothie_drink" | "under_15" | "under_30" | "one_hour_max" | "slow_cook" | "chicken" | "beef" | "pork" | "fish" | "seafood" | "lamb" | "turkey" | "duck" | "tomatoes" | "onions" | "carrots" | "bell_peppers" | "broccoli" | "spinach" | "mushrooms" | "zucchini" | "potatoes" | "garlic" | "lettuce" | "cucumber")[];
             /** @default english */
             language: string;
+            profilePreferences?: {
+                goal?: ("bulking" | "cutting" | "body_recomposition") | null;
+                /** @default [] */
+                ingredientRestrictions: string[];
+                /** @default [] */
+                dietRestrictions: string[];
+                /** @default [] */
+                aversions: string[];
+            } | null;
         };
         CreateChatSessionResponseDto_Output: {
             /** Format: uuid */
@@ -494,6 +599,14 @@ export interface components {
         RemoveFromSavedRecipesRequestDto: {
             recipeId: string;
         };
+        UpdateServingsRequestDto: {
+            recipeId: string;
+            servings: number;
+        };
+        UpdateFavoriteRequestDto: {
+            recipeId: string;
+            isFavorite: boolean;
+        };
         AddToSavedRecipesRequestDto: {
             messageContent: string;
             messageId: string;
@@ -522,7 +635,11 @@ export interface components {
                 totalQuantity: number;
                 unit: string;
                 category: string;
-                recipes: string[];
+                recipeDetails: {
+                    id: string;
+                    name: string;
+                    servings: number;
+                }[];
                 isBought: boolean;
                 ingredientIds: string[];
                 image: string | null;
@@ -540,7 +657,6 @@ export interface components {
             name: string;
             description: string | null;
             prepTimeMin: number | null;
-            servings: number | null;
             difficulty: string | null;
             instructions: string[];
             calories: number | null;
@@ -572,6 +688,25 @@ export interface components {
                     imageUrl: string | null;
                 } | null;
             }[];
+        };
+        UpsertUserPreferencesDto: {
+            goal?: ("bulking" | "cutting" | "body_recomposition") | null;
+            ingredientRestrictions?: ("gluten_free" | "dairy_free" | "peanut_free" | "tree_nut_free" | "shellfish_free" | "egg_free" | "soy_free")[];
+            dietRestrictions?: ("vegetarian" | "vegan" | "pescetarian" | "keto" | "paleo" | "no_pork" | "no_beef")[];
+            aversions?: ("no_cilantro" | "no_onions" | "no_garlic" | "no_spicy_food" | "no_mushrooms" | "no_seafood")[];
+        };
+        CreateMealPlanRequestDto: {
+            entries: {
+                recipeId: string;
+                date: string;
+                /** @enum {string} */
+                mealType: "BREAKFAST" | "LUNCH" | "DINNER";
+                /** @default 1 */
+                servings: number;
+            }[];
+        };
+        UpdateMealPlanServingsRequestDto: {
+            servings: number;
         };
     };
     responses: never;
@@ -815,6 +950,48 @@ export interface operations {
             };
         };
     };
+    SavedRecipesController_updateServings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateServingsRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SavedRecipesController_updateFavorite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFavoriteRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     SavedRecipesController_addToSavedRecipes: {
         parameters: {
             query?: never;
@@ -878,7 +1055,9 @@ export interface operations {
     };
     GroceriesController_getUserGroceries: {
         parameters: {
-            query?: never;
+            query: {
+                date: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -936,6 +1115,126 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["GetRecipeResponseDto_Output"];
                 };
+            };
+        };
+    };
+    ProfileController_getProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProfileController_updateProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpsertUserPreferencesDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanController_getMealPlan: {
+        parameters: {
+            query: {
+                date: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanController_createMealPlanEntries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateMealPlanRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanController_deleteMealPlanEntry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MealPlanController_updateServings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateMealPlanServingsRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

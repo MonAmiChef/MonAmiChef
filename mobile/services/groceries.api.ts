@@ -5,7 +5,7 @@ export interface MergedIngredient {
   totalQuantity: number;
   unit: string;
   category: string;
-  recipes: string[];
+  recipeDetails: { id: string; name: string; servings: number }[];
   isBought: boolean;
   ingredientIds: string[];
   image: string | null;
@@ -14,8 +14,10 @@ export interface MergedIngredient {
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export const groceriesApi = {
-  getUserGroceries: async (session: Session): Promise<MergedIngredient[]> => {
-    const response = await fetch(`${API_URL}/groceries`, {
+  getUserGroceries: async (session: Session, dateStr?: string): Promise<MergedIngredient[]> => {
+    const url = dateStr ? `${API_URL}/groceries?date=${dateStr}` : `${API_URL}/groceries`;
+    console.log('[GroceriesAPI] Fetching from:', url);
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

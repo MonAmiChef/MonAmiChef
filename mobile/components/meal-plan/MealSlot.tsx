@@ -5,6 +5,7 @@ import { Plus, X, User, LucideIcon, Croissant, Sun, Moon } from 'lucide-react-na
 import { MealPlanEntry, MealType } from '@/services/meal-plan.api';
 import { capitalizeFull } from '@/utils/text';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 
 interface MealSlotProps {
   mealType: MealType;
@@ -36,6 +37,7 @@ export default function MealSlot({
   isReadOnly = false,
 }: MealSlotProps) {
   const { t } = useTranslation();
+  const router = useRouter();
   const colors = mealTypeColors[mealType];
   const Icon: LucideIcon = mealTypeIcons[mealType];
 
@@ -117,7 +119,7 @@ export default function MealSlot({
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <Icon color={colors.text} />
+          <Icon size={18} color={colors.text} />
           <Text
             style={{ color: colors.text }}
             className="font-inter-semibold text-sm"
@@ -143,7 +145,15 @@ export default function MealSlot({
       </View>
 
       {/* Recipe content */}
-      <View style={{ paddingHorizontal: 16, paddingVertical: 14 }}>
+      <Pressable
+        onPress={() =>
+          router.push(
+            `/recipe-details/${entry.recipeId}?savedServings=${entry.servings}&isFavorite=0`,
+          )
+        }
+        className="active:bg-slate-50"
+        style={{ paddingHorizontal: 16, paddingVertical: 14 }}
+      >
         <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
           {/* Left accent bar */}
           <View
@@ -207,7 +217,10 @@ export default function MealSlot({
                 }}
               >
                 <Pressable
-                  onPress={() => onServingChange(entry.id, -1)}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    onServingChange(entry.id, -1);
+                  }}
                   disabled={isReadOnly}
                   style={{
                     width: 28,
@@ -239,7 +252,10 @@ export default function MealSlot({
                   </Text>
                 </View>
                 <Pressable
-                  onPress={() => onServingChange(entry.id, 1)}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    onServingChange(entry.id, 1);
+                  }}
                   disabled={isReadOnly}
                   style={{
                     width: 28,
@@ -260,7 +276,8 @@ export default function MealSlot({
             </View>
           </View>
         </View>
-      </View>
+      </Pressable>
+
     </View>
   );
 }

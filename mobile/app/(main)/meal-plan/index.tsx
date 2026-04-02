@@ -76,7 +76,10 @@ export default function MealPlanScreen() {
     isFetching,
   } = useQuery({
     queryKey: ['meal-plan', dateStr],
-    queryFn: () => mealPlanApi.getMealPlan(session!, dateStr),
+    queryFn: () => {
+      console.log('[MealPlanQuery] Fetching for:', dateStr);
+      return mealPlanApi.getMealPlan(session!, dateStr);
+    },
     enabled: !!session,
   });
 
@@ -96,7 +99,11 @@ export default function MealPlanScreen() {
         },
       ]),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['meal-plan', dateStr] });
+      console.log('[MealPlanMutation] Create success for:', dateStr);
+      await queryClient.invalidateQueries({ queryKey: ['meal-plan'] });
+      await queryClient.refetchQueries({ queryKey: ['meal-plan', dateStr] });
+      await queryClient.invalidateQueries({ queryKey: ['groceries'] });
+      await refetch();
       Toast.show({
         text1: t('toast.success'),
         text2: t('meal_plan.recipe_added'),
@@ -115,7 +122,11 @@ export default function MealPlanScreen() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => mealPlanApi.deleteEntry(session!, id),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['meal-plan', dateStr] });
+      console.log('[MealPlanMutation] Delete success for:', dateStr);
+      await queryClient.invalidateQueries({ queryKey: ['meal-plan'] });
+      await queryClient.refetchQueries({ queryKey: ['meal-plan', dateStr] });
+      await queryClient.invalidateQueries({ queryKey: ['groceries'] });
+      await refetch();
       Toast.show({
         text1: t('toast.success'),
         text2: t('meal_plan.recipe_removed'),
@@ -146,6 +157,12 @@ export default function MealPlanScreen() {
     },
     onError: (_err, _vars, context) => {
       queryClient.setQueryData(['meal-plan', dateStr], context?.previous);
+    },
+    onSettled: async () => {
+      console.log('[MealPlan] Update servings settled, invalidating...');
+      await queryClient.invalidateQueries({ queryKey: ['meal-plan'] });
+      await queryClient.invalidateQueries({ queryKey: ['groceries'] });
+      await refetch();
     },
   });
 
