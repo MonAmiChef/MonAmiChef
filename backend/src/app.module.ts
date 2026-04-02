@@ -53,6 +53,9 @@ import { RecipesController } from './recipes/recipes.controller';
 import { ProfileService } from './profile/profile.service';
 import { ProfileRepository } from './profile/profile.repository';
 import { ProfileController } from './profile/profile.controller';
+import { MealPlanController } from './meal-plans/meal-plans.controller';
+import { MealPlanService } from './meal-plans/meal-plans.service';
+import { MealPlanRepository } from './meal-plans/meal-plans.repository';
 
 @Catch()
 class GlobalExceptionFilter extends BaseExceptionFilter {
@@ -122,6 +125,7 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     GroceriesController,
     RecipesController,
     ProfileController,
+    MealPlanController,
   ],
   providers: [
     ParseGroceriesService,
@@ -159,6 +163,8 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     GroceriesService,
     ProfileService,
     ProfileRepository,
+    MealPlanService,
+    MealPlanRepository,
   ],
 })
 export class AppModule {}

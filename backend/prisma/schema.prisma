@@ -43,15 +43,16 @@ model Recipe {
   isDairyFree  Boolean       @default(false)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  userId       String        @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  imagePath    String?
-  messageId    String?       @unique
-  description  String?
-  instructions String[]
-  ingredients  Ingredient[]
-  Message      Message?      @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  user         User          @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  savedRecipes SavedRecipe[]
+  userId          String          @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  imagePath       String?
+  messageId       String?         @unique
+  description     String?
+  instructions    String[]
+  ingredients     Ingredient[]
+  Message         Message?        @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user            User            @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  savedRecipes    SavedRecipe[]
+  mealPlanEntries MealPlanEntry[]
 }
 
 model SavedRecipe {
@@ -69,15 +70,16 @@ model SavedRecipe {
 }
 
 model User {
-  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  username     String        @unique
-  createdAt    DateTime?     @default(now()) @db.Date
-  updatedAt    DateTime?     @db.Date
+  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username        String          @unique
+  createdAt       DateTime?       @default(now()) @db.Date
+  updatedAt       DateTime?       @db.Date
 
-  chats        ChatSession[]
-  recipes      Recipe[]
-  savedRecipes SavedRecipe[]
-  profile      UserProfile?
+  chats           ChatSession[]
+  recipes         Recipe[]
+  savedRecipes    SavedRecipe[]
+  mealPlanEntries MealPlanEntry[]
+  profile         UserProfile?
 }
 
 model UserProfile {
@@ -220,4 +222,26 @@ enum MessageRole {
 enum RecipeCacheType {
   extraction
   substitution
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+}
+
+model MealPlanEntry {
+  id        String   @id @default(uuid())
+  userId    String   @db.Uuid
+  recipeId  String
+  date      DateTime @db.Date
+  mealType  MealType
+  servings  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date, mealType])
 }
