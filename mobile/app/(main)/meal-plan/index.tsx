@@ -17,6 +17,17 @@ import { CalendarDays } from 'lucide-react-native';
 import { Skeleton } from '@/components/ui/skeleton';
 import Toast from 'react-native-toast-message';
 import { useTranslation } from 'react-i18next';
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 const MEAL_TYPES: MealType[] = ['BREAKFAST', 'LUNCH', 'DINNER'];
 
@@ -212,8 +223,27 @@ export default function MealPlanScreen() {
     { calories: 0, proteins: 0, carbs: 0, fat: 0 },
   );
 
+  const handleTestNotification = async () => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "🍳 C'est l'heure!",
+        body: "Votre Poulet curry vous attend. Temps de prépa: 25 min. Bonne cuisine! 🔥",
+        data: { data: 'goes here' },
+      },
+      trigger: null, // Send immediately
+    });
+  };
+
   return (
     <Box className="flex-1 bg-[#fffdfb]">
+      {/* Bouton de test temporaire */}
+      <Pressable
+        onPress={handleTestNotification}
+        className="absolute top-12 right-6 z-50 bg-orange-500 p-2 rounded-full shadow-lg"
+      >
+        <Text className="text-white text-xs font-inter-bold">🔔 Test Push</Text>
+      </Pressable>
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 80 }}

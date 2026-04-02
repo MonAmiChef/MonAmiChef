@@ -56,6 +56,8 @@ import { ProfileController } from './profile/profile.controller';
 import { MealPlanController } from './meal-plans/meal-plans.controller';
 import { MealPlanService } from './meal-plans/meal-plans.service';
 import { MealPlanRepository } from './meal-plans/meal-plans.repository';
+import { ScheduleModule } from '@nestjs/schedule';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Catch()
 class GlobalExceptionFilter extends BaseExceptionFilter {
@@ -113,6 +115,8 @@ class GlobalExceptionFilter extends BaseExceptionFilter {
     RecipeCacheModule,
     ChatSessionsModule,
     HashingModule,
+    ScheduleModule.forRoot(),
+    NotificationsModule,
   ],
   controllers: [
     ParserController,
