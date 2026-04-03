@@ -79,12 +79,24 @@ export class NotificationsService {
     }
   }
 
-  async updatePushToken(userId: string, token: string) {
-    return this.prisma.user.update({
-      where: { id: userId },
-      data: { pushToken: token },
-    });
+  async updatePushToken(userId: string, token: string, username?: string) {
+    this.logger.log(`Updating push token for user ${userId}`);
+    try {
+      return await this.prisma.user.upsert({
+        where: { id: userId },
+        update: { pushToken: token },
+        create: {
+          id: userId,
+          pushToken: token,
+          username: username || `user_${userId.substring(0, 8)}`,
+        },
+      });
+    } catch (error) {
+      this.logger.error(`Failed to update push token for user ${userId}:`, error);
+      throw error;
+    }
   }
+
 
   async sendPushNotification(userId: string, title: string, body: string, data?: any) {
     const user = await this.prisma.user.findUnique({

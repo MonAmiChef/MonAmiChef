@@ -28,31 +28,31 @@ model Ingredient {
 }
 
 model Recipe {
-  id           String        @id @default(uuid())
-  name         String
-  prepTimeMin  Int?
-  difficulty   String?
-  calories     Float?
-  proteins     Float?
-  carbs        Float?
-  fat          Float?
-  fibers       Float?
-  isVegetarian Boolean       @default(false)
-  isVegan      Boolean       @default(false)
-  isGlutenFree Boolean       @default(false)
-  isDairyFree  Boolean       @default(false)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id              String          @id @default(uuid())
+  name            String
+  prepTimeMin     Int?
+  difficulty      String?
+  calories        Float?
+  proteins        Float?
+  carbs           Float?
+  fat             Float?
+  fibers          Float?
+  isVegetarian    Boolean         @default(false)
+  isVegan         Boolean         @default(false)
+  isGlutenFree    Boolean         @default(false)
+  isDairyFree     Boolean         @default(false)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
   userId          String          @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   imagePath       String?
   messageId       String?         @unique
   description     String?
   instructions    String[]
   ingredients     Ingredient[]
+  mealPlanEntries MealPlanEntry[]
   Message         Message?        @relation(fields: [messageId], references: [id], onDelete: Cascade)
   user            User            @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   savedRecipes    SavedRecipe[]
-  mealPlanEntries MealPlanEntry[]
 }
 
 model SavedRecipe {
@@ -61,8 +61,8 @@ model SavedRecipe {
   createdAt       DateTime @default(now())
   userId          String   @db.Uuid
   isInGroceryList Boolean  @default(false)
-  isFavorite      Boolean  @default(false)
   servings        Int      @default(1)
+  isFavorite      Boolean  @default(false)
   recipe          Recipe   @relation(fields: [recipeId], references: [id])
   user            User     @relation(fields: [userId], references: [id])
 
@@ -70,34 +70,29 @@ model SavedRecipe {
 }
 
 model User {
-  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username        String          @unique
   createdAt       DateTime?       @default(now()) @db.Date
   updatedAt       DateTime?       @db.Date
+  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   pushToken       String?
-
   chats           ChatSession[]
+  mealPlanEntries MealPlanEntry[]
   recipes         Recipe[]
   savedRecipes    SavedRecipe[]
-  mealPlanEntries MealPlanEntry[]
   profile         UserProfile?
 }
 
 model UserProfile {
-  id                  String   @id @default(uuid())
-  userId              String   @unique @db.Uuid
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  goal                String?
-
-  ingredientRestrictions String[] @default([])
-  dietRestrictions       String[] @default([])
+  id                     String   @id @default(uuid())
+  userId                 String   @unique @db.Uuid
+  cookingLevel           String   @default("INTERMEDIATE")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
   aversions              String[] @default([])
-
-  cookingLevel        String   @default("INTERMEDIATE")
-
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  dietRestrictions       String[] @default([])
+  ingredientRestrictions String[] @default([])
+  goal                   String?
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ChatSession {
@@ -129,6 +124,21 @@ model RecipeCache {
   aiResponseJson Json
   inputHash      String          @unique
   type           RecipeCacheType
+}
+
+model MealPlanEntry {
+  id        String   @id @default(uuid())
+  userId    String   @db.Uuid
+  recipeId  String
+  date      DateTime @db.Date
+  mealType  MealType
+  servings  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date, mealType])
 }
 
 enum HealthRestriction {
@@ -229,20 +239,4 @@ enum MealType {
   BREAKFAST
   LUNCH
   DINNER
-}
-
-model MealPlanEntry {
-  id        String   @id @default(uuid())
-  userId    String   @db.Uuid
-  recipeId  String
-  date      DateTime @db.Date
-  mealType  MealType
-  servings  Int      @default(1)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, date, mealType])
 }

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, InternalServerErrorException } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { SupabaseGuard } from '../supabase-guard/supabase.guard';
 import { z } from 'zod';
@@ -17,8 +17,16 @@ export class NotificationsController {
 
   @Post()
   async registerToken(@Request() req: any, @Body() body: RegisterPushTokenDto) {
-    const userId = req.user.sub as string;
-    await this.notificationsService.updatePushToken(userId, body.token);
-    return { success: true };
+    const userId = req.user.id as string;
+    const username = req.user.user_metadata?.username as string | undefined;
+
+    try {
+      await this.notificationsService.updatePushToken(userId, body.token, username);
+      return { success: true };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message || 'Error updating push token');
+    }
+
   }
+
 }

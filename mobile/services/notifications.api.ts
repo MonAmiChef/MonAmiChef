@@ -14,10 +14,18 @@ export const notificationsApi = {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to register push token');
+      let errorMessage = 'Failed to register push token';
+      try {
+        const error = await response.json();
+        errorMessage = error.message || errorMessage;
+      } catch (e) {
+        // Fallback if response is not JSON
+        console.error('Error parsing notification API error response:', e);
+      }
+      throw new Error(errorMessage);
     }
 
     return response.json();
+
   },
 };
