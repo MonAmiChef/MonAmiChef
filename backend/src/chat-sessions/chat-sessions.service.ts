@@ -56,6 +56,7 @@ export class ChatSessionsService {
       exclude: chat.exclude,
       messages: chat.messages.map((msg) => ({
         ...msg,
+        role: msg.role.toLowerCase() as 'user' | 'model',
         createdAt: msg.createdAt?.toISOString() ?? new Date().toISOString(),
       })),
       createdAt: chat.createdAt.toISOString(),
@@ -171,7 +172,7 @@ export class ChatSessionsService {
       messages: (result?.messages ?? []).map((msg) => ({
         ...msg,
         createdAt: msg.createdAt?.toISOString() ?? new Date().toISOString(),
-        role: msg.role as 'user' | 'model',
+        role: msg.role.toLowerCase() as 'user' | 'model',
       })),
       createdAt: chat?.createdAt ?? new Date().toISOString(),
       updatedAt: chat?.updatedAt ?? new Date().toISOString(),

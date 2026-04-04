@@ -74,6 +74,31 @@ function buildProfileContext(p: ProfilePreferences): string {
 export class AiAssistantService {
   private ai = new GoogleGenAI({});
 
+  private fixMissingNewlines(text: string): string {
+    // Ensure a newline BEFORE headers (###) if not already there
+    let fixed = text.replace(/([^ \n])###/g, '$1\n###');
+    // Ensure a newline BEFORE bullet points (*) if not already there
+    fixed = fixed.replace(/([^ \n])\*/g, '$1\n*');
+    return fixed;
+  }
+
+  private extractJson(raw: string): any {
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      const start = raw.indexOf('{');
+      const end = raw.lastIndexOf('}');
+      if (start !== -1 && end !== -1 && end > start) {
+        try {
+          return JSON.parse(raw.substring(start, end + 1));
+        } catch (innerE) {
+          throw e;
+        }
+      }
+      throw e;
+    }
+  }
+
   async parseRecipe({ language, text }: { language: string; text: string }) {
     const result = await this.ai.models.generateContent({
       model: process.env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL,
@@ -203,11 +228,11 @@ export class AiAssistantService {
     });
 
     try {
-      const jsonResponse = chatResponseSchema.parse(
-        JSON.parse(result.text ?? ''),
-      );
+      const rawJson = this.extractJson(result.text ?? '{}');
+      const jsonResponse = chatResponseSchema.parse(rawJson);
+
       return {
-        text: jsonResponse.text ?? 'Error',
+        text: this.fixMissingNewlines(jsonResponse.text ?? 'Error'),
         isRecipe: jsonResponse.isRecipe ?? false,
         imagePrompt: jsonResponse.imagePrompt ?? '',
         ingredients: jsonResponse.ingredients ?? [],
@@ -216,10 +241,13 @@ export class AiAssistantService {
     } catch (e) {
       console.error('Erreur parsing JSON AI:', e);
       try {
-        const raw = JSON.parse(result.text ?? '{}') as Record<string, unknown>;
+        const raw = this.extractJson(result.text ?? '{}') as Record<
+          string,
+          unknown
+        >;
         const text =
           typeof raw.text === 'string' && raw.text.length > 0
-            ? raw.text
+            ? this.fixMissingNewlines(raw.text)
             : 'Error';
         return {
           text,

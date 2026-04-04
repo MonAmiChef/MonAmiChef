@@ -309,8 +309,8 @@ export default function ChatScreen() {
               backgroundColor: '#fffdfb',
             }}
             renderItem={({ item }) => {
-              const isModel = item.role === 'model';
-              const formattedContent = item.content.replace(/\n/g, '\n\n');
+              const isModel = item.role.toLowerCase() === 'model';
+              const formattedContent = item.content.replace(/\n\n+/g, '\n\n');
               const messageDate = new Date(item.createdAt);
               const isAlreadyInPlan = savedRecipes?.find(
                 (meal: any) => meal.recipe.messageId === item.id,
