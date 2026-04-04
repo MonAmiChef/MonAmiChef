@@ -161,14 +161,7 @@ function RecipeCard({
 
         <View className="h-px bg-slate-100 mb-2" />
 
-        <View className="flex-row items-center justify-between py-1">
-          <View className="flex-row items-center bg-slate-50 rounded-full px-3 py-1.5">
-            <User size={12} color="#64748b" />
-            <Text className="text-slate-700 font-inter-semibold text-xs ml-1.5">
-              {servings} {t('recipe_details.servings')}
-            </Text>
-          </View>
-
+        <View className="flex-row items-center justify-end py-1">
           <View className="flex-row items-center">
             <Pressable
               onPress={(e) => {
@@ -375,7 +368,7 @@ export default function RecipeList({
       <Box className="flex-1 p-4">
         <FlatList
           data={displayData}
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
           keyExtractor={(item) => item.recipeId}
           numColumns={1}
           showsVerticalScrollIndicator={false}

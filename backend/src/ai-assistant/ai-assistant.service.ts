@@ -140,6 +140,31 @@ export class AiAssistantService {
     );
   }
 
+  private sanitizeHistory(
+    messages: Pick<Message, 'role' | 'content' | 'isRecipe'>[],
+  ): { role: 'user' | 'model'; parts: { text: string }[] }[] {
+    // Keep only last 10 messages for context, focus on current flow
+    const history = messages.length > 10 ? messages.slice(-10) : messages;
+
+    return history.map((m, index) => {
+      let content = m.content;
+
+      // If it's a recipe and NOT the last message in history, summarize it
+      // to avoid overwhelming Gemini with previous recipes' ingredients/JSON
+      if (m.role.toLowerCase() === 'model' && m.isRecipe && index < history.length - 1) {
+        // Extract title if possible or use generic summary
+        const titleMatch = content.match(/^# (.*)/m) || content.match(/title": "(.*?)"/);
+        const title = titleMatch ? titleMatch[1] : 'Previous Recipe';
+        content = `[ARCHIVED RECIPE: ${title}. This recipe was shared previously. Ignore its specific ingredients for new requests unless asked to modify it.]`;
+      }
+
+      return {
+        role: m.role.toLowerCase() === 'user' ? 'user' : 'model',
+        parts: [{ text: content }],
+      };
+    });
+  }
+
   async updateChat({
     messages,
     newMessage,
@@ -147,7 +172,7 @@ export class AiAssistantService {
     exclude,
     language,
   }: {
-    messages: Pick<Message, 'role' | 'content'>[];
+    messages: Pick<Message, 'role' | 'content' | 'isRecipe'>[];
     newMessage: string;
     preferences: PreferenceTag[];
     exclude: PreferenceTag[];
@@ -161,19 +186,18 @@ export class AiAssistantService {
 
     const languageRule = `\nLANGUAGE RULE: You MUST write the 'text' field entirely in ${language}. This is a hard constraint — do not switch to another language unless the user explicitly asks you to in their message.\n`;
 
+    const sanitizedHistory = this.sanitizeHistory(messages);
+
     const result = await this.ai.models.generateContent({
       model: process.env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL,
       contents: [
-        ...messages.map((m) => ({
-          role: m.role.toLowerCase() === 'user' ? 'user' : 'model',
-          parts: [{ text: m.content }],
-        })),
+        ...sanitizedHistory,
         { role: 'user', parts: [{ text: newMessage }] },
       ],
       config: {
         responseMimeType: 'application/json',
         systemInstruction: `${process.env.GENERATE_CHAT_RESPONSE_PROMPT}${languageRule}\nUser Context:\n${prefContext}`,
-        responseJsonSchema: UpdateChatSessionResponseJson,
+        responseJsonSchema: UpdateChatSessionResponseJson as any,
         temperature: 0.3,
       },
     });
@@ -197,9 +221,21 @@ export class AiAssistantService {
           typeof raw.text === 'string' && raw.text.length > 0
             ? raw.text
             : 'Error';
-        return { text, isRecipe: false, imagePrompt: '', ingredients: [], servings: undefined };
+        return {
+          text,
+          isRecipe: false,
+          imagePrompt: '',
+          ingredients: [],
+          servings: undefined,
+        };
       } catch {
-        return { text: 'Error', isRecipe: false, imagePrompt: '', ingredients: [], servings: undefined };
+        return {
+          text: 'Error',
+          isRecipe: false,
+          imagePrompt: '',
+          ingredients: [],
+          servings: undefined,
+        };
       }
     }
   }

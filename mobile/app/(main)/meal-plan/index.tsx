@@ -237,12 +237,12 @@ export default function MealPlanScreen() {
   return (
     <Box className="flex-1 bg-[#fffdfb]">
       {/* Bouton de test temporaire */}
-      <Pressable
+      {/* <Pressable
         onPress={handleTestNotification}
         className="absolute top-12 right-6 z-50 bg-orange-500 p-2 rounded-full shadow-lg"
       >
         <Text className="text-white text-xs font-inter-bold">🔔 Test Push</Text>
-      </Pressable>
+      </Pressable> */}
 
       <ScrollView
         showsVerticalScrollIndicator={false}

@@ -55,7 +55,8 @@
     "failed_retrieving_sessions": "Failed to retrieve sessions",
     "saved_recipes": "Saved recipes",
     "meal_plan": "Meal Plan",
-    "groceries": "Grocery list"
+    "groceries": "Grocery list",
+    "recent_chats": "Recent Chats"
   },
   "groceries": {
     "title": "Grocery list",

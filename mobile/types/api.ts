@@ -533,6 +533,10 @@ export interface components {
                 title: string;
                 createdAt: string;
                 updatedAt: string;
+                /** @default [] */
+                preferences: string[];
+                /** @default [] */
+                exclude: string[];
             }[];
         };
         CreateChatSessionRequestDto: {

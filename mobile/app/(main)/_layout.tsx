@@ -10,6 +10,9 @@ import {
   Menu,
   MessageCirclePlus,
   ChevronRight,
+  Heart,
+  Calendar,
+  ShoppingBag,
 } from 'lucide-react-native';
 import { DrawerActions } from '@react-navigation/native';
 import { chatApi } from '@/services/chat.api';
@@ -36,12 +39,60 @@ function CustomDrawerContent(props: any) {
     staleTime: 1000 * 60 * 5,
   });
 
+  const isActive = (path: string) => pathname.startsWith(path);
+
+  const NavItem = ({
+    path,
+    label,
+    icon: Icon,
+  }: {
+    path: string;
+    label: string;
+    icon: any;
+  }) => {
+    const active = isActive(path);
+    return (
+      <Box className="px-3 py-1">
+        <Pressable
+          onPress={() => router.push(path as any)}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingVertical: 12,
+            paddingHorizontal: 16,
+            backgroundColor: active ? '#fff7ed' : 'transparent',
+            borderRadius: 12,
+            borderLeftWidth: active ? 4 : 0,
+            borderLeftColor: '#f97316',
+          }}
+        >
+          <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <Icon size={20} color={active ? '#f97316' : '#64748b'} />
+            <Text
+              className={`text-[16px] font-inter-${active ? 'semibold' : 'medium'} ${
+                active ? 'text-orange-600' : 'text-slate-600'
+              }`}
+            >
+              {label}
+            </Text>
+          </Box>
+          <ChevronRight
+            size={16}
+            color={active ? '#f97316' : '#cbd5e1'}
+            strokeWidth={2}
+          />
+        </Pressable>
+      </Box>
+    );
+  };
+
   return (
     <DrawerContentScrollView
       {...props}
-      contentContainerStyle={{ flex: 1, gap: 20 }}
+      contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
     >
-      <Box className="flex px-4 py-3">
+      <Box className="px-6 py-6 pt-8">
         <Pressable
           onPress={() => {
             router.push({ pathname: '/', params: { openPreferences: 'true' } });
@@ -50,132 +101,107 @@ function CustomDrawerContent(props: any) {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 5,
-            paddingVertical: 8,
-            borderRadius: 38,
-            borderColor: '#ff6900',
-            borderWidth: 2,
-            borderStyle: 'dashed',
+            gap: 10,
+            paddingVertical: 14,
+            backgroundColor: '#ff6900',
+            borderRadius: 16,
+            shadowColor: '#ff6900',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.2,
+            shadowRadius: 8,
+            elevation: 4,
           }}
         >
-          <MessageCirclePlus size={20} color="#ff6900" strokeWidth={2.5} />
-          <Text className="text-lg text-orange-500 font-inter-bold ml-2">
+          <MessageCirclePlus size={20} color="white" strokeWidth={2.5} />
+          <Text className="text-lg text-white font-inter-bold">
             {t('drawer.new_chat')}
           </Text>
         </Pressable>
       </Box>
 
-      <Box className="px-5 py-2">
-        <Pressable
-          onPress={() => router.push('/recipes/saved')}
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <Text
-            className={`text-lg font-inter-medium ${
-              pathname.startsWith('/recipes')
-                ? 'text-orange-600'
-                : 'text-slate-700'
-            }`}
-          >
-            {t('drawer.saved_recipes')}
-          </Text>
-          <ChevronRight
-            size={18}
-            color={pathname.startsWith('/recipes') ? '#ea580c' : '#475569'}
-          />
-        </Pressable>
+      <Box className="mt-2">
+        <NavItem
+          path="/recipes/saved"
+          label={t('drawer.saved_recipes')}
+          icon={Heart}
+        />
+        <NavItem
+          path="/meal-plan"
+          label={t('drawer.meal_plan')}
+          icon={Calendar}
+        />
+        <NavItem
+          path="/groceries"
+          label={t('drawer.groceries')}
+          icon={ShoppingBag}
+        />
       </Box>
 
-      <Box className="px-5 py-2">
-        <Pressable
-          onPress={() => router.push('/meal-plan')}
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <Text
-            className={`text-lg font-inter-medium ${
-              pathname.startsWith('/meal-plan')
-                ? 'text-orange-600'
-                : 'text-slate-700'
-            }`}
-          >
-            {t('drawer.meal_plan')}
-          </Text>
-          <ChevronRight
-            size={18}
-            color={pathname.startsWith('/meal-plan') ? '#ea580c' : '#475569'}
-          />
-        </Pressable>
-      </Box>
-
-      <Box className="px-5 py-2">
-        <Pressable
-          onPress={() => router.push('/groceries')}
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <Text
-            className={`text-lg font-inter-medium ${
-              pathname === '/groceries' ? 'text-orange-600' : 'text-slate-700'
-            }`}
-          >
-            {t('drawer.groceries')}
-          </Text>
-          <ChevronRight
-            size={18}
-            color={pathname === '/groceries' ? '#ea580c' : '#475569'}
-          />
-        </Pressable>
-      </Box>
-
-      <Box className="flex-1 py-1">
-        <Box className="px-5 py-2 border-slate-100">
-          <Text className="text-lg font-inter-medium text-slate-700">
-            {t('drawer.chats')}
+      <Box className="flex-1 mt-8">
+        <Box className="px-7 py-3">
+          <Text className="text-xs font-inter-bold text-slate-400 uppercase tracking-widest">
+            {t('drawer.recent_chats')}
           </Text>
         </Box>
-        <Box>
+        <Box className="px-3">
           {isLoading ? (
-            <ActivityIndicator className="mt-4" />
+            <ActivityIndicator className="mt-4" color="#f97316" />
           ) : sessions ? (
-            sessions.map((chat, index) => {
-              const active = pathname.split('/')[2] === chat.id;
+            [...sessions]
+              .sort(
+                (a, b) =>
+                  new Date(b.updatedAt).getTime() -
+                  new Date(a.updatedAt).getTime(),
+              )
+              .map((chat, index) => {
+                const active = pathname.split('/')[2] === chat.id;
 
-              return (
-                <Box key={index}>
+                return (
                   <Pressable
-                    key={chat.id}
+                    key={chat.id || index}
                     onPress={() => {
-                      router.navigate(`/chat/${chat.id}`);
+                      router.navigate(`/chat/${chat.id}` as any);
                     }}
-                    className={`px-5 py-1.5`}
+                    style={{
+                      flexDirection: 'column',
+                      paddingVertical: 10,
+                      paddingHorizontal: 16,
+                      backgroundColor: active ? '#fff7ed' : 'transparent',
+                      borderRadius: 12,
+                      marginBottom: 4,
+                      gap: 4,
+                    }}
                   >
                     <Text
                       numberOfLines={1}
-                      className={`${active ? 'bg-orange-100 rounded-lg text-orange-600 pl-3' : 'text-slate-600'} pr-3 py-3 font-inter-medium`}
+                      className={`text-[14px] font-inter-${active ? 'semibold' : 'medium'} ${
+                        active ? 'text-orange-600' : 'text-slate-600'
+                      }`}
                     >
                       {chat.title || 'Nouvelle discussion'}
                     </Text>
+                    {chat.preferences && chat.preferences.length > 0 && (
+                      <Text
+                        numberOfLines={1}
+                        className="text-[12px] text-slate-400 font-inter-medium"
+                      >
+                        {(chat.preferences || [])
+                          .slice(0, 2)
+                          .map((tag: any) => t(`preferences.tags.${tag}`))
+                          .join(', ') +
+                          ((chat.preferences || []).length > 2
+                            ? ` +${(chat.preferences || []).length - 2}`
+                            : '')}
+                      </Text>
+                    )}
                   </Pressable>
-                </Box>
-              );
-            })
+                );
+              })
           ) : (
-            <Box className="flex-1 justify-center items-center">
-              <Text>{t('drawer.failed_retrieving_sessions')}</Text>
+            <Box className="flex-1 justify-center items-center py-10">
+              <Text className="text-slate-400 italic">
+                {t('drawer.failed_retrieving_sessions')}
+              </Text>
             </Box>
           )}
         </Box>

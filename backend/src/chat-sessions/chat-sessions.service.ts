@@ -144,7 +144,11 @@ export class ChatSessionsService {
 
     const { text, isRecipe, ingredients, servings } =
       await this.aiAssistantService.updateChat({
-        messages: chat.messages,
+        messages: chat.messages.map((m) => ({
+          role: m.role,
+          content: m.content,
+          isRecipe: m.isRecipe,
+        })),
         newMessage: message,
         preferences,
         exclude,

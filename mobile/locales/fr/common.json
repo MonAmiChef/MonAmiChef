@@ -55,7 +55,8 @@
     "failed_retrieving_sessions": "Échec de récupération des conversations",
     "saved_recipes": "Recettes sauvegardées",
     "meal_plan": "Planificateur",
-    "groceries": "Liste de courses"
+    "groceries": "Liste de courses",
+    "recent_chats": "Conversations récentes"
   },
   "groceries": {
     "title": "Liste de courses",
