@@ -30,6 +30,8 @@ export class ChatSessionsService {
         title: chat.title,
         createdAt: chat.createdAt.toISOString(),
         updatedAt: chat.updatedAt?.toISOString() ?? new Date().toISOString(),
+        preferences: chat.preferences,
+        exclude: chat.exclude,
       })),
     };
   }

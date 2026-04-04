@@ -869,11 +869,23 @@ components:
                 type: string
               updatedAt:
                 type: string
+              preferences:
+                default: []
+                type: array
+                items:
+                  type: string
+              exclude:
+                default: []
+                type: array
+                items:
+                  type: string
             required:
               - id
               - title
               - createdAt
               - updatedAt
+              - preferences
+              - exclude
             additionalProperties: false
           x-nestjs_zod-parent-additional-properties: false
       required:

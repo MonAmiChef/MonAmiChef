@@ -20,6 +20,9 @@ export class ChatSessionsRepository {
       where: {
         userId,
       },
+      orderBy: {
+        updatedAt: 'desc',
+      },
     });
   }
 

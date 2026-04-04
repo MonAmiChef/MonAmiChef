@@ -278,6 +278,8 @@ const GetAllChatsSessionResponseSchema = z.object({
       title: z.string(),
       createdAt: z.string(),
       updatedAt: z.string(),
+      preferences: z.array(z.string()).optional().default([]),
+      exclude: z.array(z.string()).optional().default([]),
     }),
   ),
 });
