@@ -12,6 +12,13 @@ export function usePushNotifications() {
   const responseListener = useRef<Notifications.EventSubscription | undefined>(undefined);
 
   useEffect(() => {
+    // Android Expo Go doesn't support remote notifications (SDK 53/54+)
+    // and throws a fatal native error when calling notification methods.
+    if (Platform.OS === 'android' && Constants.appOwnership === 'expo') {
+      console.warn('Push notifications are not supported in Expo Go on Android. Skipping.');
+      return;
+    }
+
     if (!session) return;
 
     registerForPushNotificationsAsync().then((token) => {

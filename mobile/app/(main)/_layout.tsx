@@ -21,6 +21,7 @@ import { Pressable, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ProfileActionSheet } from '@/components/profile/ProfileActionSheet';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { ProgressiveBlurHeader } from '@/components/ui/ProgressiveBlurHeader';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CustomDrawerContent(props: any) {
@@ -260,10 +261,8 @@ export default function MainLayout() {
           headerStyle: {
             elevation: 0,
             shadowOpacity: 0,
-            backgroundColor: '#fffdfb',
             borderWidth: 0,
-            boxShadow: 'none',
-            height: 120,
+            height: 115, // Compacted slightly from 130
           },
         })}
       >
@@ -271,7 +270,9 @@ export default function MainLayout() {
           name="chat"
           options={{
             drawerLabel: 'Conversation',
-            title: 'Chat',
+            headerTitle: '',
+            headerTransparent: true,
+            headerBackground: () => <ProgressiveBlurHeader />,
           }}
         />
 

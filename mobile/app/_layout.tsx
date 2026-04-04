@@ -16,6 +16,12 @@ import {
   useFonts,
   Inter_500Medium,
 } from '@expo-google-fonts/inter';
+import {
+  Krub_400Regular,
+  Krub_500Medium,
+  Krub_600SemiBold,
+  Krub_700Bold,
+} from '@expo-google-fonts/krub';
 import '../global.css';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { StatusBar } from 'expo-status-bar';
@@ -37,6 +43,10 @@ export default function RootLayout() {
     Inter_700Bold,
     Inter_800ExtraBold,
     Inter_300Light_Italic,
+    Krub_400Regular,
+    Krub_500Medium,
+    Krub_600SemiBold,
+    Krub_700Bold,
   });
 
   useEffect(() => {

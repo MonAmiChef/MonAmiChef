@@ -295,7 +295,7 @@ export default function ChatScreen() {
         <View className="flex-1 bg-base-bg pb-4">
           <Drawer.Screen
             options={{
-              headerTitle: data?.title || 'MonAmiChef',
+              headerTitle: '',
             }}
           />
           <FlashList
@@ -305,9 +305,10 @@ export default function ChatScreen() {
             keyExtractor={(item) => item.id}
             contentContainerStyle={{
               paddingHorizontal: 16,
-              paddingVertical: 20,
-              backgroundColor: '#fffdfb',
+              paddingTop: 125, // Adjusted for 115px header + 10px spacing
+              paddingBottom: 20,
             }}
+            style={{ backgroundColor: '#fffdfb' }}
             renderItem={({ item }) => {
               const isModel = item.role.toLowerCase() === 'model';
               const formattedContent = item.content.replace(/\n\n+/g, '\n\n');
@@ -385,14 +386,14 @@ export default function ChatScreen() {
 
               return (
                 <Box className="bg-orange-500 self-end gap-1 px-4 py-3 rounded-2xl rounded-tr-none mb-2 max-w-[80%]">
-                  <Text className="text-white text-[15px] font-medium">
+                  <Text className="text-white text-[15px] font-krub-medium">
                     {item.content}
                   </Text>
                   <HStack className="self-end gap-1">
-                    <Text className="text-orange-200 self-end text-xs font-medium">
+                    <Text className="text-orange-200 self-end text-xs font-krub-medium">
                       {messageDate.toLocaleDateString(i18n.language)}
                     </Text>
-                    <Text className="text-orange-200 self-end text-xs font-medium">
+                    <Text className="text-orange-200 self-end text-xs font-krub-medium">
                       {messageDate.toLocaleTimeString(i18n.language, {
                         hour: 'numeric',
                         minute: 'numeric',

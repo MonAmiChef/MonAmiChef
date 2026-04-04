@@ -188,6 +188,10 @@ module.exports = {
         'inter-normal-italic': ['Inter_400Normal_Italic'],
         'inter-normal': ['Inter_400Normal'],
         'space-mono': ['var(--font-space-mono)'],
+        krub: ['Krub_400Regular'],
+        'krub-medium': ['Krub_500Medium'],
+        'krub-semibold': ['Krub_600SemiBold'],
+        'krub-bold': ['Krub_700Bold'],
       },
       fontWeight: {
         extrablack: '950',
