@@ -270,7 +270,13 @@ export default function MainLayout() {
           name="chat"
           options={{
             drawerLabel: 'Conversation',
-            headerTitle: '',
+            headerTitle: () => (
+              <Box className="flex-row items-center gap-2">
+                <Text className="text-xl font-inter-bold text-slate-900">
+                  MonAmiChef
+                </Text>
+              </Box>
+            ),
             headerTransparent: true,
             headerBackground: () => <ProgressiveBlurHeader />,
           }}
