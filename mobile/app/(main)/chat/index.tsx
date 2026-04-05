@@ -6,8 +6,15 @@ import {
   ActivityIndicator,
   TouchableWithoutFeedback,
   Pressable,
+  StyleSheet,
 } from 'react-native';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { BlurView } from 'expo-blur';
+import {
+  KeyboardAvoidingView,
+  KeyboardStickyView,
+} from 'react-native-keyboard-controller';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { FlashList, FlashListRef } from '@shopify/flash-list';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Text } from '@/components/ui/text';
 import { chatApi } from '@/services/chat.api';
@@ -17,6 +24,7 @@ import { Image } from 'expo-image';
 import { ChatInput } from '@/components/chat/ChatInput';
 import { WaveText } from '@/components/chat/WaveText';
 import { useTranslation } from 'react-i18next';
+import { ProgressiveBlurFooter } from '@/components/ui/ProgressiveBlurFooter';
 import { getLanguageName } from '@/utils/get-language-name';
 import { PreferenceTag } from '@/constants/PreferencesTags';
 import { PreferencesQuickSelector } from '@/components/chat/PreferencesQuickSelector';
@@ -150,8 +158,10 @@ export default function NewChat() {
     }
   };
 
+  const insets = useSafeAreaInsets();
+
   return (
-    <>
+    <View className="flex-1">
       <KeyboardAvoidingView
         style={{ flex: 1, backgroundColor: '#fffdfb' }}
         behavior="padding"
@@ -234,24 +244,9 @@ export default function NewChat() {
               )}
             </View>
           </TouchableWithoutFeedback>
-          <PreferencesQuickSelector
-            selectedPreferences={selectedPreferences}
-            selectedExclude={selectedExclude}
-            onToggle={handleTagPress}
-            onOpenSelector={() => setShowPreferences(true)}
-          />
-          <ChatInput
-            value={message}
-            tagsNumber={selectedPreferences.length}
-            onChangeText={setMessage}
-            onSend={(msg) => {
-              handleSend(msg);
-              setMessage('');
-            }}
-            isLoading={mutation.isPending}
-          />
         </View>
       </KeyboardAvoidingView>
+
       <PreferenceActionSheet
         selectedPreferences={selectedPreferences}
         selectedExclude={selectedExclude}
@@ -264,6 +259,52 @@ export default function NewChat() {
         }}
         onClose={() => setShowPreferences(false)}
       />
-    </>
+
+      <ProgressiveBlurFooter />
+
+      <View
+        className="absolute bottom-0 left-0 right-0"
+        pointerEvents="box-none"
+      >
+        <KeyboardStickyView offset={{ closed: 0, opened: 60 }}>
+          <View
+            key="unified-input-container"
+            className="mx-4 overflow-hidden rounded-[28px] border border-slate-100"
+            style={{
+              marginBottom: insets.bottom + 20, // Precise floating height
+              backgroundColor: 'rgba(255, 253, 251, 0.85)',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              elevation: 2,
+              paddingBottom: 2,
+            }}
+          >
+            <BlurView
+              intensity={60}
+              tint="light"
+              style={StyleSheet.absoluteFill}
+            />
+            <PreferencesQuickSelector
+              selectedPreferences={selectedPreferences}
+              selectedExclude={selectedExclude}
+              onToggle={handleTagPress}
+              onOpenSelector={() => setShowPreferences(true)}
+            />
+            <ChatInput
+              value={message}
+              tagsNumber={selectedPreferences.length}
+              onChangeText={setMessage}
+              onSend={(msg) => {
+                handleSend(msg);
+                setMessage('');
+              }}
+              isLoading={mutation.isPending}
+            />
+          </View>
+        </KeyboardStickyView>
+      </View>
+    </View>
   );
 }

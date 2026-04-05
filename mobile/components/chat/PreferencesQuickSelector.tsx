@@ -5,6 +5,7 @@ import Animated, {
   useSharedValue,
   withSequence,
   withSpring,
+  LinearTransition,
 } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import {
@@ -12,11 +13,10 @@ import {
   preferencesTags,
   PreferenceTag,
 } from '@/constants/PreferencesTags';
-import { Check, Plus, X } from 'lucide-react-native';
+import { Check, Sliders, X } from 'lucide-react-native';
 import { VStack } from '../ui/vstack';
 import { Box } from '../ui/box';
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 function PreferencePill({
   tag,
@@ -32,17 +32,9 @@ function PreferencePill({
   onToggle: (tag: PreferenceTag) => void;
 }) {
   const { t } = useTranslation();
-  const scale = useSharedValue(1);
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
 
   const handlePress = () => {
     if (isDisabled) return;
-    scale.value = withSequence(
-      withSpring(0.95, { damping: 50 }),
-      withSpring(1, { damping: 50 }),
-    );
     onToggle(tag);
   };
 
@@ -50,26 +42,33 @@ function PreferencePill({
     ? 'bg-orange-500'
     : isExclude
       ? 'bg-red-500'
-      : 'bg-orange-[#f000fb]';
+      : 'bg-slate-100/80';
   const borderColor = isSelected
-    ? 'border-orange-500'
+    ? 'border-orange-600'
     : isExclude
-      ? 'border-red-500'
+      ? 'border-red-600'
       : 'border-slate-200';
-  const textColor = isSelected || isExclude ? 'text-white' : 'text-slate-700';
+  const textColor = isSelected || isExclude ? 'text-white' : 'text-slate-600';
 
   return (
-    <AnimatedPressable
-      onPress={handlePress}
-      style={animatedStyle}
-      className={`flex flex-row gap-2 items-center border ${borderColor} py-1.5 px-3 rounded-full ${bgColor} ${isDisabled && !isSelected && !isExclude ? 'opacity-30' : ''}`}
-    >
-      {isSelected && <Check strokeWidth={3} color="#fff" size={14} />}
-      {isExclude && <X strokeWidth={3} color="#fff" size={14} />}
-      <Text className={`font-inter-medium text-sm ${textColor}`}>
-        {t(`preferences.tags.${tag}`)}
-      </Text>
-    </AnimatedPressable>
+    <Animated.View layout={LinearTransition.duration(200)}>
+      <Pressable
+        onPress={handlePress}
+        className={`flex flex-row gap-1.5 items-center border ${borderColor} py-1.5 px-3 rounded-full ${bgColor} ${
+          isDisabled && !isSelected && !isExclude ? 'opacity-30' : ''
+        }`}
+        style={({ pressed }) => ({
+          opacity: pressed ? 0.7 : 1,
+          transform: [{ scale: pressed ? 0.98 : 1 }],
+        })}
+      >
+        {isSelected && <Check strokeWidth={3} color="#fff" size={13} />}
+        {isExclude && <X strokeWidth={3} color="#fff" size={12} />}
+        <Text className={`font-krub-medium text-[12px] ${textColor}`}>
+          {t(`preferences.tags.${tag}`)}
+        </Text>
+      </Pressable>
+    </Animated.View>
   );
 }
 
@@ -80,6 +79,8 @@ interface PreferencesQuickSelectorProps {
   onOpenSelector: () => void;
 }
 
+import { LinearGradient } from 'expo-linear-gradient';
+
 export const PreferencesQuickSelector = ({
   selectedPreferences,
   selectedExclude,
@@ -87,30 +88,31 @@ export const PreferencesQuickSelector = ({
   onOpenSelector,
 }: PreferencesQuickSelectorProps) => {
   return (
-    <View className="flex flex-row gap-x-2 bg-[#fffdfb]">
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingHorizontal: 16,
-          gap: 8,
-          alignItems: 'center',
-        }}
-        keyboardShouldPersistTaps="handled"
-      >
-        {limitedCategories.map((category, cIndex) => {
-          const categoryTags = preferencesTags[category.name] || [];
+    <View className="flex flex-row items-center pt-3 pb-1">
+      <View className="flex-1 relative">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingLeft: 12,
+            paddingRight: 32, // More padding to allow fading over tags
+            gap: 6,
+            alignItems: 'center',
+          }}
+          keyboardShouldPersistTaps="handled"
+        >
+          {limitedCategories.map((category, cIndex) => {
+            const categoryTags = preferencesTags[category.name] || [];
 
-          const currentCount = [
-            ...selectedPreferences,
-            ...selectedExclude,
-          ].filter((tag) => categoryTags.includes(tag)).length;
+            const currentCount = [
+              ...selectedPreferences,
+              ...selectedExclude,
+            ].filter((tag) => categoryTags.includes(tag)).length;
 
-          const isLimitReached = currentCount >= category.limit;
+            const isLimitReached = currentCount >= category.limit;
 
-          return (
-            <VStack className="gap-y-4" key={cIndex}>
-              <Box className="flex flex-row gap-2">
+            return (
+              <View className="flex-row gap-2" key={cIndex}>
                 {preferencesTags[category.name].map((tag, index) => {
                   const isSelected = selectedPreferences.includes(tag);
                   const isExclude = selectedExclude.includes(tag);
@@ -127,17 +129,32 @@ export const PreferencesQuickSelector = ({
                     />
                   );
                 })}
-              </Box>
-            </VStack>
-          );
-        })}
-      </ScrollView>
+              </View>
+            );
+          })}
+        </ScrollView>
+
+        {/* Right Gradient Fade */}
+        <LinearGradient
+          colors={['transparent', 'rgba(255, 253, 251, 0.95)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: 40,
+            pointerEvents: 'none',
+          }}
+        />
+      </View>
 
       <Pressable
         onPress={onOpenSelector}
-        className="mr-4 bg-orange-100 border border-orange-300 p-1 rounded-full active:bg-orange-200"
+        className="mr-3 ml-1 bg-slate-50/50 w-8 h-8 items-center justify-center border border-slate-200/50 rounded-full active:bg-slate-100"
       >
-        <Plus size={20} color="#ff6900" strokeWidth={2.5} />
+        <Sliders size={15} color="#64748b" strokeWidth={2.5} />
       </Pressable>
     </View>
   );

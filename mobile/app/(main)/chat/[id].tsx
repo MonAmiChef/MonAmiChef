@@ -3,18 +3,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Box } from '@/components/ui/box';
+import { ProgressiveBlurFooter } from '@/components/ui/ProgressiveBlurFooter';
 import { useAuth } from '@/hooks/useAuth';
 import { chatApi } from '@/services/chat.api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 import {
+  StyleSheet,
   ActivityIndicator,
   Keyboard,
   Pressable,
   Text,
   View,
 } from 'react-native';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { BlurView } from 'expo-blur';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  KeyboardAvoidingView,
+  KeyboardStickyView,
+} from 'react-native-keyboard-controller';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
 import Markdown from 'react-native-markdown-display';
 import { markdownStyles } from '@/constants/MarkdownStyles';
@@ -55,6 +62,7 @@ export default function ChatScreen() {
   const [selectedRecipeId, setSelectedRecipeId] = useState('');
   const [pendingAddId, setPendingAddId] = useState<string | null>(null);
   const headerHeight = useHeaderHeight();
+  const insets = useSafeAreaInsets();
 
   const [selectedPreferences, setSelectedPreferences] = useState<
     PreferenceTag[]
@@ -263,7 +271,7 @@ export default function ChatScreen() {
     },
   });
 
-  if (isAuthLoading || (isLoading && !!session)) {
+  if (isAuthLoading) {
     return (
       <View className="flex-1 justify-center items-center bg-white">
         <ActivityIndicator color="#000" />
@@ -286,13 +294,13 @@ export default function ChatScreen() {
   };
 
   return (
-    <>
+    <View className="flex-1">
       <KeyboardAvoidingView
         style={{ flex: 1, backgroundColor: '#fffdfb' }}
         behavior="padding"
         keyboardVerticalOffset={headerHeight}
       >
-        <View className="flex-1 bg-base-bg pb-4">
+        <View className="flex-1 bg-base-bg">
           <Drawer.Screen
             options={{
               headerTitle: '',
@@ -306,7 +314,7 @@ export default function ChatScreen() {
             contentContainerStyle={{
               paddingHorizontal: 16,
               paddingTop: 125, // Adjusted for 115px header + 10px spacing
-              paddingBottom: 20,
+              paddingBottom: 140, // Ensure space for floating island and blur
             }}
             style={{ backgroundColor: '#fffdfb' }}
             renderItem={({ item }) => {
@@ -406,24 +414,54 @@ export default function ChatScreen() {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             onContentSizeChange={(w, h) => {}}
           />
-          <PreferencesQuickSelector
-            selectedPreferences={selectedPreferences}
-            selectedExclude={selectedExclude}
-            onToggle={handleTagPress}
-            onOpenSelector={() => setShowPreferences(true)}
-          />
-          <ChatInput
-            value={message}
-            onChangeText={setMessage}
-            tagsNumber={selectedPreferences.length}
-            onSend={(msg) => {
-              handleSend(msg);
-              setMessage('');
-            }}
-            isLoading={mutation.isPending}
-          />
         </View>
       </KeyboardAvoidingView>
+
+      <ProgressiveBlurFooter />
+
+      <View
+        className="absolute bottom-0 left-0 right-0"
+        pointerEvents="box-none"
+      >
+        <KeyboardStickyView offset={{ closed: 0, opened: 60 }}>
+          <View
+            key="unified-input-container"
+            className="mx-4 overflow-hidden rounded-[28px] border border-slate-100"
+            style={{
+              marginBottom: insets.bottom + 20,
+              backgroundColor: 'rgba(255, 253, 251, 0.85)',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              elevation: 2,
+              paddingBottom: 2,
+            }}
+          >
+            <BlurView
+              intensity={60}
+              tint="light"
+              style={StyleSheet.absoluteFill}
+            />
+            <PreferencesQuickSelector
+              selectedPreferences={selectedPreferences}
+              selectedExclude={selectedExclude}
+              onToggle={handleTagPress}
+              onOpenSelector={() => setShowPreferences(true)}
+            />
+            <ChatInput
+              value={message}
+              onChangeText={setMessage}
+              tagsNumber={selectedPreferences.length}
+              onSend={(msg) => {
+                handleSend(msg);
+                setMessage('');
+              }}
+              isLoading={mutation.isPending}
+            />
+          </View>
+        </KeyboardStickyView>
+      </View>
       <PreferenceActionSheet
         selectedPreferences={selectedPreferences}
         selectedExclude={selectedExclude}
@@ -444,6 +482,6 @@ export default function ChatScreen() {
           removeFromPlanMutation.mutate(selectedRecipeId);
         }}
       />
-    </>
+    </View>
   );
 }
