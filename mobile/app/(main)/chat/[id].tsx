@@ -310,6 +310,7 @@ export default function ChatScreen() {
             showsVerticalScrollIndicator={false}
             data={data?.messages}
             keyExtractor={(item) => item.id}
+            extraData={{ savedRecipes, pendingAddId }}
             contentContainerStyle={{
               paddingHorizontal: 16,
               paddingTop: 125, // Adjusted for 115px header + 10px spacing
@@ -321,7 +322,7 @@ export default function ChatScreen() {
               const formattedContent = item.content.replace(/\n\n+/g, '\n\n');
               const messageDate = new Date(item.createdAt);
               const isAlreadyInPlan = savedRecipes?.find(
-                (meal: any) => meal.recipe.messageId === item.id,
+                (meal: any) => meal.recipe?.messageId === item.id,
               );
 
               if (item.id === 'temp-loading-id') {
@@ -356,6 +357,15 @@ export default function ChatScreen() {
                             content: item.content,
                             id: item.id,
                           });
+                        }
+                      }}
+                      onRemove={() => {
+                        const meal = savedRecipes?.find(
+                          (m: any) => m.recipe?.messageId === item.id,
+                        );
+                        if (meal?.recipeId) {
+                          setSelectedRecipeId(meal.recipeId);
+                          setShowConfirmRemove(true);
                         }
                       }}
                     />

@@ -520,6 +520,12 @@ export interface components {
                 isRecipe: boolean;
                 content: string;
                 createdAt: string;
+                calories?: number | null;
+                proteins?: number | null;
+                carbs?: number | null;
+                fat?: number | null;
+                prepTime?: number | null;
+                title?: string | null;
             }[];
             createdAt: string;
             updatedAt: string;
@@ -570,6 +576,12 @@ export interface components {
                 isRecipe: boolean;
                 content: string;
                 createdAt: string;
+                calories?: number | null;
+                proteins?: number | null;
+                carbs?: number | null;
+                fat?: number | null;
+                prepTime?: number | null;
+                title?: string | null;
             }[];
             createdAt: string;
             updatedAt: string;
@@ -581,6 +593,12 @@ export interface components {
                 category: "FRUITS" | "VEGETABLES" | "MEAT" | "FISH" | "DAIRY" | "PANTRY" | "BAKERY" | "FROZEN" | "DRINKS" | "OTHER";
             }[];
             servings?: number;
+            calories?: number | null;
+            proteins?: number | null;
+            carbs?: number | null;
+            fat?: number | null;
+            prepTime?: number | null;
+            recipeName?: string;
         };
         UpdateChatSessionRequestDto: {
             message: string;
@@ -604,6 +622,12 @@ export interface components {
                 isRecipe: boolean;
                 content: string;
                 createdAt: string;
+                calories?: number | null;
+                proteins?: number | null;
+                carbs?: number | null;
+                fat?: number | null;
+                prepTime?: number | null;
+                title?: string | null;
             }[];
             createdAt: string;
             updatedAt: string;
@@ -615,6 +639,11 @@ export interface components {
                 category: "FRUITS" | "VEGETABLES" | "MEAT" | "FISH" | "DAIRY" | "PANTRY" | "BAKERY" | "FROZEN" | "DRINKS" | "OTHER";
             }[];
             servings?: number;
+            calories?: number | null;
+            proteins?: number | null;
+            carbs?: number | null;
+            fat?: number | null;
+            prepTime?: number | null;
         };
         RemoveFromSavedRecipesRequestDto: {
             recipeId: string;

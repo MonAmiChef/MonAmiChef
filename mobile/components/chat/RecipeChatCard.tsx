@@ -21,6 +21,31 @@ import { useTranslation } from 'react-i18next';
 import Markdown from 'react-native-markdown-display';
 import { markdownStyles } from '@/constants/MarkdownStyles';
 
+// Simple helper to fix common markdown rendering issues in react-native-markdown-display
+const sanitizeMarkdown = (text: string) => {
+  if (!text) return '';
+  
+  // 1. Normalize line endings and ensure double newlines for blocks
+  let sanitized = text
+    .replace(/\r\n/g, '\n')
+    .replace(/\n\n+/g, '\n\n');
+
+  // 2. Ensure headers and lists have double newlines before them
+  sanitized = sanitized
+    .replace(/([^\n])\n(#)/g, '$1\n\n$2')
+    .replace(/([^\n])\n(\d+\.)/g, '$1\n\n$2')
+    .replace(/([^\n])\n(\* )/g, '$1\n\n$2');
+
+  // 3. Move colons OUTSIDE of bold markers (e.g., **Title:** -> **Title**:)
+  // This is a common AI pattern that confuses the mobile parser
+  sanitized = sanitized.replace(/(\*\*)([^:*]+)(:)(\*\*)/g, '$1$2$4$3');
+  
+  // 4. Ensure markers touch the content (remove space inside markers if present)
+  sanitized = sanitized.replace(/\*\* /g, '**').replace(/ \*\*/g, '**');
+
+  return sanitized.trim();
+};
+
 interface RecipeChatCardProps {
   title?: string;
   text: string;
@@ -31,6 +56,7 @@ interface RecipeChatCardProps {
   prepTime?: number;
   isAlreadySaved: boolean;
   onSave: () => void;
+  onRemove?: () => void;
   isSaving?: boolean;
 }
 
@@ -44,6 +70,7 @@ export const RecipeChatCard = ({
   prepTime,
   isAlreadySaved,
   onSave,
+  onRemove,
   isSaving = false,
 }: RecipeChatCardProps) => {
   const { t } = useTranslation();
@@ -82,9 +109,6 @@ export const RecipeChatCard = ({
       <Box className="p-5 bg-slate-50/50 border-b border-slate-100">
         <HStack className="justify-between items-start mb-3">
           <VStack className="flex-1 mr-3">
-            <Text className="text-[10px] uppercase tracking-[2px] font-inter-bold text-orange-500 mb-1">
-              {t('chat.recipe_suggestion')}
-            </Text>
             <Text className="text-xl font-inter-bold text-slate-900 leading-tight">
               {title || t('chat.new_recipe')}
             </Text>
@@ -118,12 +142,15 @@ export const RecipeChatCard = ({
       {/* Action Area */}
       <Box className="p-4 bg-white">
         {isAlreadySaved ? (
-          <Box className="flex-row w-full justify-center items-center rounded-2xl border border-green-200 bg-green-50 py-3.5">
+          <Pressable 
+            onPress={onRemove}
+            className="flex-row w-full justify-center items-center rounded-2xl border border-green-200 bg-green-50 py-3.5 active:bg-green-100"
+          >
             <Check size={20} color="#059669" />
             <Text className="ml-2 font-inter-bold text-green-700">
               {t('chat.already_saved')}
             </Text>
-          </Box>
+          </Pressable>
         ) : (
           <Pressable
             onPress={onSave}
@@ -172,7 +199,7 @@ export const RecipeChatCard = ({
           >
             <Box className="p-5">
               <Markdown mergeStyle={true} style={markdownStyles}>
-                {text}
+                {sanitizeMarkdown(text)}
               </Markdown>
             </Box>
           </MotiView>
