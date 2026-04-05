@@ -60,8 +60,9 @@
   },
   "groceries": {
     "title": "Grocery list",
-    "empty": "Your grocery list is empty, let's generate a recipe first!",
+    "empty": "Your grocery list is empty. Add recipes to your meal plan to see them here!",
     "go_to_chat": "Go to chat",
+    "go_to_plan": "Go to meal plan",
     "recipes_section": "Recipes",
     "ingredients_section": "Ingredients",
     "categories": {
@@ -117,10 +118,10 @@
   "saved_recipes": {
     "all": "Saved",
     "favorites": "Favorites",
-    "favorites_empty": "No favorites yet",
+    "favorites_empty": "You don't have any favorites yet. Click the heart icon to find your favorite recipes here!",
     "title": "Recipes",
     "subtitle": "Recipes",
-    "empty": "No saved recipes yet, generate one first",
+    "empty": "You don't have any saved recipes yet. Start by generating one with the chef!",
     "go_to_chat": "Go to chat",
     "remove": "Remove from saved recipes",
     "servings": "Servings"

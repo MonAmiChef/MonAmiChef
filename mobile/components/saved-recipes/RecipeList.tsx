@@ -12,7 +12,9 @@ import {
   RefreshControl,
   Pressable,
   View,
+  useWindowDimensions,
 } from 'react-native';
+import { Image } from 'expo-image';
 import Animated, {
   useSharedValue,
   withSpring,
@@ -319,6 +321,8 @@ export default function RecipeList({
     ? (data?.filter((item: { isFavorite: boolean }) => item.isFavorite) ?? [])
     : (data ?? []);
 
+  const { width } = useWindowDimensions();
+
   if (isLoading)
     return <ActivityIndicator className="flex-1" color="#ff6900" />;
 
@@ -385,20 +389,28 @@ export default function RecipeList({
             filterFavorites
               ? () => (
                   <Box className="flex h-[75%] bg-[#fffdfb] px-2 justify-center items-center gap-6">
-                    <View className="w-24 h-24 bg-red-50 rounded-full items-center justify-center">
-                      <Heart size={48} color="#ef4444" strokeWidth={1.5} />
-                    </View>
-                    <Text className="font-inter-bold text-2xl text-slate-900 text-center">
+                    <Box style={{ width: width * 0.7, height: width * 0.5 }}>
+                      <Image
+                        source={require('@/assets/images/undraw_loving-it_hspq.svg')}
+                        contentFit="contain"
+                        style={{ width: '100%', height: '100%' }}
+                      />
+                    </Box>
+                    <Text className="font-inter-medium text-lg text-slate-500 text-center px-8">
                       {t('saved_recipes.favorites_empty')}
                     </Text>
                   </Box>
                 )
               : () => (
                   <Box className="flex h-[75%] bg-[#fffdfb] px-2 justify-center items-center gap-6">
-                    <View className="w-24 h-24 bg-orange-50 rounded-full items-center justify-center">
-                      <Notebook size={48} color="#f97316" strokeWidth={1.5} />
-                    </View>
-                    <Text className="font-inter-bold text-2xl text-slate-900 text-center">
+                    <Box style={{ width: width * 0.7, height: width * 0.5 }}>
+                      <Image
+                        source={require('@/assets/images/undraw_no-data_ig65.svg')}
+                        contentFit="contain"
+                        style={{ width: '100%', height: '100%' }}
+                      />
+                    </Box>
+                    <Text className="font-inter-medium text-lg text-slate-500 text-center px-8">
                       {t('saved_recipes.empty')}
                     </Text>
                     <Pressable

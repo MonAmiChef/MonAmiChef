@@ -14,6 +14,7 @@ import {
   Pressable,
   RefreshControl,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import {
   CheckCircle2,
@@ -24,10 +25,10 @@ import {
   EyeOff,
   MoreHorizontal,
   RotateCcw,
-  ShoppingCart,
   User,
   UtensilsCrossed,
 } from 'lucide-react-native';
+import { Image } from 'expo-image';
 import Toast from 'react-native-toast-message';
 import { groceriesApi, MergedIngredient } from '@/services/groceries.api';
 import { savedRecipesApi } from '@/services/saved-recipes.api';
@@ -384,6 +385,8 @@ export default function GroceriesPage() {
     if (ids.length) toggleMutation.mutate({ ids, bought: false });
   };
 
+  const { width } = useWindowDimensions();
+
   if (isLoading)
     return <ActivityIndicator className="flex-1" color="#ff6900" />;
 
@@ -416,22 +419,37 @@ export default function GroceriesPage() {
         }
         ListEmptyComponent={() => (
           <Box className="flex h-[75%] bg-[#fffdfb] px-2 justify-center items-center gap-6">
-            <View className="w-24 h-24 bg-orange-50 rounded-full items-center justify-center">
-              <ShoppingCart size={48} color="#f97316" strokeWidth={1.5} />
-            </View>
+            <Box style={{ width: width * 0.7, height: width * 0.5 }}>
+              <Image
+                source={require('@/assets/images/undraw_empty-cart_574u.svg')}
+                contentFit="contain"
+                style={{ width: '100%', height: '100%' }}
+              />
+            </Box>
 
-            <Text className="font-inter-bold text-2xl text-slate-900 text-center">
+            <Text className="font-inter-medium text-lg text-slate-500 text-center px-4">
               {t('groceries.empty')}
             </Text>
 
-            <Pressable
-              onPress={() => router.push('/(main)/chat')}
-              className="bg-orange-500 px-8 py-4 rounded-2xl active:bg-orange-600 shadow-sm shadow-orange-200"
-            >
-              <Text className="font-inter-semibold text-white text-lg">
-                {t('groceries.go_to_chat')}
-              </Text>
-            </Pressable>
+            <Box className="w-full gap-3 px-8">
+              <Pressable
+                onPress={() => router.push('/(main)/meal-plan')}
+                className="bg-orange-500 py-4 rounded-2xl active:bg-orange-600 shadow-sm shadow-orange-200 items-center"
+              >
+                <Text className="font-inter-semibold text-white text-lg">
+                  {t('groceries.go_to_plan')}
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => router.push('/(main)/chat')}
+                className="bg-slate-50 py-4 rounded-2xl active:bg-slate-100 border border-slate-100 items-center"
+              >
+                <Text className="font-inter-semibold text-slate-600 text-lg">
+                  {t('groceries.go_to_chat')}
+                </Text>
+              </Pressable>
+            </Box>
           </Box>
         )}
         renderItem={({ item }: { item: any }) => {

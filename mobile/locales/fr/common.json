@@ -60,8 +60,9 @@
   },
   "groceries": {
     "title": "Liste de courses",
-    "empty": "Votre liste de course est vide, générez une recette d'abord!",
+    "empty": "Votre liste de courses est vide. Ajoutez des recettes à votre planning pour qu'elles apparaissent ici !",
     "go_to_chat": "Aller au chat",
+    "go_to_plan": "Aller au planning",
     "recipes_section": "Recettes",
     "ingredients_section": "Ingrédients",
     "categories": {
@@ -115,10 +116,10 @@
   "saved_recipes": {
     "all": "Sauvegardées",
     "favorites": "Favorites",
-    "favorites_empty": "Aucun favoris",
+    "favorites_empty": "Vous n'avez pas encore de favoris. Cliquez sur le cœur pour retrouver vos recettes préférées ici !",
     "title": "Recettes",
     "subtitle": "Sauvegardées",
-    "empty": "Aucune recette sauvegardée, générez-en une!",
+    "empty": "Vous n'avez pas encore de recettes sauvegardées. Commencez par en générer une avec le chef !",
     "go_to_chat": "Aller au chat",
     "remove": "Retirer des sauvegardées",
     "servings": "Personnes"
@@ -265,7 +266,7 @@
     "please_login": "Veuillez vous connecter"
   },
   "meal_plan": {
-    "title": "Menu de la semaine",
+    "title": "Planificateur",
     "breakfast": "Petit-déjeuner",
     "lunch": "Déjeuner",
     "dinner": "Dîner",

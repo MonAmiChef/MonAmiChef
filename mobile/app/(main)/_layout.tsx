@@ -269,7 +269,7 @@ export default function MainLayout() {
         <Drawer.Screen
           name="chat"
           options={{
-            drawerLabel: 'Conversation',
+            drawerLabel: t('drawer.chats'),
             headerTitle: () => (
               <Box className="flex-row items-center gap-2">
                 <Text className="text-xl font-inter-bold text-slate-900">
@@ -285,7 +285,7 @@ export default function MainLayout() {
         <Drawer.Screen
           name="recipes"
           options={{
-            drawerLabel: 'Saved Recipes',
+            drawerLabel: t('drawer.saved_recipes'),
             title: t('saved_recipes.title'),
           }}
         />
@@ -293,7 +293,7 @@ export default function MainLayout() {
         <Drawer.Screen
           name="groceries"
           options={{
-            drawerLabel: 'Groceries',
+            drawerLabel: t('drawer.groceries'),
             title: t('groceries.title'),
           }}
         />
@@ -301,7 +301,7 @@ export default function MainLayout() {
         <Drawer.Screen
           name="meal-plan"
           options={{
-            drawerLabel: 'Meal Plan',
+            drawerLabel: t('drawer.meal_plan'),
             title: t('meal_plan.title'),
           }}
         />
