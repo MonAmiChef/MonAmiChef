@@ -60,10 +60,39 @@ function MealPlanSkeleton() {
   return (
     <View style={{ paddingHorizontal: 20, gap: 12 }}>
       {[1, 2, 3].map((i) => (
-        <Skeleton
+        <Box
           key={i}
-          className="w-full h-32 rounded-[20px] bg-slate-100"
-        />
+          className="rounded-[20px] bg-white border border-slate-100 overflow-hidden"
+        >
+          {/* Header skeleton */}
+          <Skeleton className="h-10 w-full bg-slate-50" />
+
+          {/* Card content skeleton */}
+          <Box className="p-4 flex-row gap-3">
+            {/* Left accent line */}
+            <Skeleton className="w-[3px] h-20 rounded-sm bg-orange-100" />
+
+            <Box className="flex-1 gap-2">
+              {/* Title */}
+              <Skeleton className="h-5 w-3/4 rounded-md" />
+
+              {/* Macros row */}
+              <Box className="flex-row gap-4 mt-2">
+                {[1, 2, 3, 4].map((j) => (
+                  <Box key={j} className="items-center gap-1">
+                    <Skeleton className="h-3 w-8 rounded-sm" />
+                    <Skeleton className="h-2 w-6 rounded-sm" />
+                  </Box>
+                ))}
+              </Box>
+
+              {/* Servings row */}
+              <Box className="mt-2">
+                <Skeleton className="h-8 w-24 rounded-full" />
+              </Box>
+            </Box>
+          </Box>
+        </Box>
       ))}
     </View>
   );

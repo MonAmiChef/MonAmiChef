@@ -42,9 +42,44 @@ import Animated, {
 } from 'react-native-reanimated';
 import ConfirmRemoveModal from '@/components/saved-recipes/ConfirmRemoveModal';
 import SavedRecipesOptionsSheet from '@/components/saved-recipes/SavedRecipesOptionsSheet';
+import { Skeleton, SkeletonText } from '@/components/ui/skeleton';
 import { capitalizeFull } from '@/utils/text';
 
 export { capitalizeFull };
+
+function GroceriesSkeleton() {
+  return (
+    <Box className="flex-1 px-1">
+      {/* Recipes section skeleton */}
+      <Skeleton className="h-14 w-full rounded-xl mt-4 mb-2" />
+
+      {/* Ingredients subtitle */}
+      <Skeleton className="h-4 w-32 mt-6 mb-4 rounded-md" />
+
+      {/* Categories and items */}
+      {[1, 2, 3].map((i) => (
+        <Box key={i} className="mb-4">
+          <Skeleton className="h-12 w-full rounded-xl mb-3" />
+          <Box className="px-2 gap-3">
+            {[1, 2].map((j) => (
+              <Box key={j} className="flex-row items-center gap-3 py-1">
+                <Skeleton variant="circular" className="h-6 w-6" />
+                <Box className="flex-1 gap-2">
+                  <Skeleton className="h-4 w-3/4 rounded-md" />
+                  <Box className="flex-row gap-2">
+                    <Skeleton className="h-3 w-16 rounded-sm" />
+                    <Skeleton className="h-3 w-20 rounded-sm" />
+                  </Box>
+                </Box>
+                <Skeleton className="h-8 w-16 rounded-lg" />
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      ))}
+    </Box>
+  );
+}
 
 const formatData = (
   items: MergedIngredient[],
@@ -388,7 +423,11 @@ export default function GroceriesPage() {
   const { width } = useWindowDimensions();
 
   if (isLoading)
-    return <ActivityIndicator className="flex-1" color="#ff6900" />;
+    return (
+      <Box className="flex-1 bg-[#fffdfb] p-4">
+        <GroceriesSkeleton />
+      </Box>
+    );
 
   return (
     <Box className="flex-1 bg-[#fffdfb] p-4">

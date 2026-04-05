@@ -35,7 +35,50 @@ import { capitalizeFull } from '@/utils/text';
 import { useRouter, usePathname } from 'expo-router';
 import SavedRecipesOptionsSheet from '@/components/saved-recipes/SavedRecipesOptionsSheet';
 import DayPickerModal from '@/components/meal-plan/DayPickerModal';
+import { Skeleton } from '@/components/ui/skeleton';
 import { mealPlanApi, CreateMealPlanEntryInput } from '@/services/meal-plan.api';
+
+function RecipeCardSkeleton() {
+  return (
+    <Box
+      className="bg-white mx-1 rounded-2xl shadow-xs shadow-slate-100 overflow-hidden relative"
+      style={{ height: 160 }}
+    >
+      <Skeleton className="w-[4px] absolute top-0 bottom-0 left-0 bg-orange-100" />
+      <Box className="flex-1 pl-6 pr-4 pt-4 pb-2">
+        <Box className="flex-row justify-between mb-2">
+          <Box className="flex-1 mr-4 gap-2">
+            <Skeleton className="h-5 w-3/4 rounded-md" />
+            <Skeleton className="h-3 w-1/2 rounded-sm" />
+          </Box>
+          <Box className="flex-row gap-1">
+            <Skeleton className="h-5 w-12 rounded-full" />
+            <Skeleton className="h-5 w-12 rounded-full" />
+          </Box>
+        </Box>
+
+        <Box className="h-px bg-slate-50 mb-4" />
+
+        <Box className="flex-row mb-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Box key={i} className="flex-1 items-center gap-1">
+              <Skeleton className="h-4 w-8 rounded-sm" />
+              <Skeleton className="h-2 w-6 rounded-sm" />
+            </Box>
+          ))}
+        </Box>
+
+        <Box className="h-px bg-slate-50 mb-2" />
+
+        <Box className="flex-row justify-end gap-2">
+          <Skeleton variant="circular" className="h-9 w-9" />
+          <Skeleton variant="circular" className="h-9 w-9" />
+          <Skeleton variant="circular" className="h-9 w-9" />
+        </Box>
+      </Box>
+    </Box>
+  );
+}
 
 interface RecipeCardProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -324,7 +367,18 @@ export default function RecipeList({
   const { width } = useWindowDimensions();
 
   if (isLoading)
-    return <ActivityIndicator className="flex-1" color="#ff6900" />;
+    return (
+      <Box className="flex-1 bg-[#fffdfb]">
+        <View className="px-4 pt-4">
+          <Skeleton className="h-10 w-full rounded-xl" />
+        </View>
+        <Box className="flex-1 p-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <RecipeCardSkeleton key={i} />
+          ))}
+        </Box>
+      </Box>
+    );
 
   return (
     <Box className="flex-1 bg-[#fffdfb]">
