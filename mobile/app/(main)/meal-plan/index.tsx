@@ -18,6 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Toast from 'react-native-toast-message';
 import { useTranslation } from 'react-i18next';
 import * as Notifications from 'expo-notifications';
+import * as Haptics from 'expo-haptics';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -144,6 +145,7 @@ export default function MealPlanScreen() {
       await queryClient.refetchQueries({ queryKey: ['meal-plan', dateStr] });
       await queryClient.invalidateQueries({ queryKey: ['groceries'] });
       await refetch();
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Toast.show({
         text1: t('toast.success'),
         text2: t('meal_plan.recipe_added'),
@@ -193,6 +195,8 @@ export default function MealPlanScreen() {
         (old: MealPlanEntry[] | undefined) =>
           old?.map((e) => (e.id === id ? { ...e, servings } : e)),
       );
+      // Vibration tactile discrète pour le changement de portions
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       return { previous };
     },
     onError: (_err, _vars, context) => {

@@ -43,6 +43,7 @@ import { useTranslation } from 'react-i18next';
 import { getLanguageName } from '@/utils/get-language-name';
 import ConfirmRemoveModal from '@/components/saved-recipes/ConfirmRemoveModal';
 import { RecipeChatCard } from '@/components/chat/RecipeChatCard';
+import * as Haptics from 'expo-haptics';
 
 type ChatSession = components['schemas']['GetChatSessionResponseDto_Output'];
 type ChatMessage = ChatSession['messages'][number];
@@ -255,11 +256,8 @@ export default function ChatScreen() {
     onSuccess: async () => {
       setPendingAddId(null);
       await queryClient.invalidateQueries({ queryKey: ['saved-recipes'] });
-      Toast.show({
-        text1: t('toast.success'),
-        text2: t('toast.added_to_plan'),
-        type: 'success',
-      });
+      // Haptic feedback instead of toast for smoother UX
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     },
     onError: (error) => {
       setPendingAddId(null);

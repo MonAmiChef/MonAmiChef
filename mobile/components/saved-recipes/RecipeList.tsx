@@ -29,6 +29,7 @@ import {
   CalendarPlus,
 } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
+import * as Haptics from 'expo-haptics';
 import { savedRecipesApi } from '@/services/saved-recipes.api';
 import { groceriesApi } from '@/services/groceries.api';
 import { capitalizeFull } from '@/utils/text';
@@ -278,6 +279,7 @@ export default function RecipeList({
       savedRecipesApi.removeFromSavedRecipes(session!, recipeId),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['saved-recipes'] });
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Toast.show({
         text1: t('toast.success'),
         text2: t('toast.removed_from_plan'),
@@ -327,6 +329,7 @@ export default function RecipeList({
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['meal-plan'] });
       await queryClient.invalidateQueries({ queryKey: ['groceries'] });
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Toast.show({
         text1: t('toast.success'),
         text2: t('meal_plan.recipe_planned'),
