@@ -11,7 +11,7 @@
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#fffdfb"
     },
     "ios": {
       "supportsTablet": true
@@ -25,7 +25,7 @@
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#fffdfb"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.lenny00.MonAmiChef"

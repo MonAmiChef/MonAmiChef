@@ -42,6 +42,7 @@ import { savedRecipesApi } from '@/services/saved-recipes.api';
 import { useTranslation } from 'react-i18next';
 import { getLanguageName } from '@/utils/get-language-name';
 import ConfirmRemoveModal from '@/components/saved-recipes/ConfirmRemoveModal';
+import { RecipeChatCard } from '@/components/chat/RecipeChatCard';
 
 type ChatSession = components['schemas']['GetChatSessionResponseDto_Output'];
 type ChatMessage = ChatSession['messages'][number];
@@ -314,7 +315,7 @@ export default function ChatScreen() {
             contentContainerStyle={{
               paddingHorizontal: 16,
               paddingTop: 125, // Adjusted for 115px header + 10px spacing
-              paddingBottom: 140, // Ensure space for floating island and blur
+              paddingBottom: 200, // Ensure space for floating island and blur
             }}
             style={{ backgroundColor: '#fffdfb' }}
             renderItem={({ item }) => {
@@ -339,55 +340,35 @@ export default function ChatScreen() {
               }
 
               if (isModel) {
+                if (item.isRecipe) {
+                  return (
+                    <RecipeChatCard
+                      title={(item as any).title}
+                      text={item.content}
+                      calories={(item as any).calories}
+                      proteins={(item as any).proteins}
+                      carbs={(item as any).carbs}
+                      fat={(item as any).fat}
+                      prepTime={(item as any).prepTime}
+                      isAlreadySaved={!!isAlreadyInPlan}
+                      isSaving={pendingAddId === item.id}
+                      onSave={() => {
+                        if (!pendingAddId) {
+                          addMealMutation.mutate({
+                            content: item.content,
+                            id: item.id,
+                          });
+                        }
+                      }}
+                    />
+                  );
+                }
+
                 return (
                   <Box className="w-full py-6">
                     <Markdown mergeStyle={true} style={markdownStyles}>
                       {formattedContent}
                     </Markdown>
-                    {item.isRecipe &&
-                      (isAlreadyInPlan ? (
-                        <Pressable
-                          onPress={() => {
-                            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                            setSelectedRecipeId(isAlreadyInPlan.recipeId);
-                            setShowConfirmRemove(true);
-                          }}
-                          className="mt-2 flex gap-2 flex-row w-full justify-center items-center rounded-xl border border-green-300 bg-green-100 py-2.5"
-                        >
-                          <Check size={18} color="#008236" />
-                          <Text className="font-inter-medium text-md text-green-700">
-                            {t('chat.already_saved')}
-                          </Text>
-                        </Pressable>
-                      ) : (
-                        <Pressable
-                          onPress={() => {
-                            if (!pendingAddId) {
-                              addMealMutation.mutate({
-                                content: item.content,
-                                id: item.id,
-                              });
-                            }
-                          }}
-                          disabled={pendingAddId === item.id}
-                          className={`mt-2 flex gap-2 flex-row w-full justify-center items-center rounded-xl border py-2.5 ${
-                            pendingAddId === item.id
-                              ? 'border-gray-300 bg-gray-100 opacity-70'
-                              : 'border-green-300 bg-green-100 active:bg-green-200'
-                          }`}
-                        >
-                          {pendingAddId === item.id ? (
-                            <ActivityIndicator size="small" color="#008236" />
-                          ) : (
-                            <>
-                              <ShoppingCart size={18} color="#008236" />
-                              <Text className="font-inter-medium text-md text-green-700">
-                                {t('chat.add_to_saved_recipes')}
-                              </Text>
-                            </>
-                          )}
-                        </Pressable>
-                      ))}
                   </Box>
                 );
               }

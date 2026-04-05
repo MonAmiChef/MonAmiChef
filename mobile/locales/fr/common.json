@@ -102,6 +102,11 @@
     "chef_typing": "Le chef prépare sa réponse...",
     "add_to_saved_recipes": "Sauvegarder la recette",
     "already_saved": "Déjà sauvegardée",
+    "recipe_suggestion": "Suggestion de recette",
+    "new_recipe": "Nouvelle recette",
+    "view_full_recipe": "Voir la recette complète",
+    "hide_details": "Masquer les détails",
+    "ai_generated_disclaimer": "Valeurs estimées par l'IA",
     "suggest_recipe": "Peux-tu me suggérer une recette ou des conseils de cuisine basés sur les préférences suivantes: {{preferences}}",
     "suggest_recipe_exclusions": "et en excluant les ingrédients suivants {{exclusions}}",
     "default_prompts": {
