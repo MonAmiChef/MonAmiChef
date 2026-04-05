@@ -135,7 +135,7 @@ export class AiAssistantService {
     exclude: PreferenceTag[];
     fallbackLanguage: string;
     profilePreferences?: ProfilePreferences;
-  }): Promise<CreateChatWithTitleServiceResponse> {
+  }): Promise<CreateChatWithTitleServiceResponse & { recipeName?: string }> {
     const userQuery =
       message.trim().length > 0
         ? message
@@ -202,7 +202,7 @@ export class AiAssistantService {
     preferences: PreferenceTag[];
     exclude: PreferenceTag[];
     language: string;
-  }): Promise<UpdateChatResponse> {
+  }): Promise<UpdateChatResponse & { recipeName?: string }> {
     const prefContext = `
     RESPONSE_LANGUAGE: ${language}
     PREFERENCES: ${preferences?.join(', ') || 'None'}

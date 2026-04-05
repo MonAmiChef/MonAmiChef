@@ -839,6 +839,10 @@ components:
                 anyOf:
                   - type: number
                   - type: 'null'
+              title:
+                anyOf:
+                  - type: string
+                  - type: 'null'
             required:
               - id
               - chatId
@@ -1130,6 +1134,10 @@ components:
                 anyOf:
                   - type: number
                   - type: 'null'
+              title:
+                anyOf:
+                  - type: string
+                  - type: 'null'
             required:
               - id
               - chatId
@@ -1221,6 +1229,10 @@ components:
             - type: 'null'
           x-nestjs_zod-has-null: true
           x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        recipeName:
+          type: string
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
       required:
         - id
@@ -1406,6 +1418,10 @@ components:
               prepTime:
                 anyOf:
                   - type: number
+                  - type: 'null'
+              title:
+                anyOf:
+                  - type: string
                   - type: 'null'
             required:
               - id

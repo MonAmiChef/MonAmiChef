@@ -80,6 +80,7 @@ export class ChatSessionsRepository {
       carbs?: number;
       fat?: number;
       prepTime?: number;
+      title?: string;
     };
   }) {
     const now = new Date();
@@ -107,7 +108,7 @@ export class ChatSessionsRepository {
                   ? {
                       create: {
                         userId,
-                        name: title, // Use the chat title as recipe name by default
+                        name: recipeData.title || title, // Use custom title if provided, otherwise chat title
                         calories: recipeData.calories,
                         proteins: recipeData.proteins,
                         carbs: recipeData.carbs,
@@ -150,7 +151,16 @@ export class ChatSessionsRepository {
       content: string;
       role: MessageRole;
       isRecipe?: boolean;
-      recipeData?: any;
+      recipeData?: {
+        ingredients: any[];
+        servings?: number;
+        calories?: number;
+        proteins?: number;
+        carbs?: number;
+        fat?: number;
+        prepTime?: number;
+        title?: string;
+      };
     }[];
     preferences: PreferenceTag[];
     exclude: PreferenceTag[];

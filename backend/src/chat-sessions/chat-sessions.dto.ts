@@ -112,6 +112,7 @@ const ChatMessageSchema = z.object({
   carbs: z.number().nullable().optional(),
   fat: z.number().nullable().optional(),
   prepTime: z.number().nullable().optional(),
+  title: z.string().nullable().optional(),
 });
 
 const CreateChatSessionResponseSchema = z.object({
@@ -127,6 +128,7 @@ const CreateChatSessionResponseSchema = z.object({
   carbs: z.number().nullable().optional(),
   fat: z.number().nullable().optional(),
   prepTime: z.number().nullable().optional(),
+  recipeName: z.string().optional(),
 });
 
 export const CreateChatSessionResponseJson = {
@@ -172,6 +174,7 @@ export const CreateChatSessionResponseJson = {
     carbs: { type: 'number', description: 'Total carbs in grams per serving' },
     fat: { type: 'number', description: 'Total fat in grams per serving' },
     prepTime: { type: 'integer', description: 'Preparation time in minutes' },
+    recipeName: { type: 'string', description: 'A catchy name for the dish' },
   },
   required: ['title', 'text', 'isRecipe'],
 };
@@ -198,6 +201,7 @@ export const chatResponseSchema = z.object({
   carbs: z.number().optional(),
   fat: z.number().optional(),
   prepTime: z.number().optional(),
+  recipeName: z.string().optional(),
 });
 
 export const updateChatResponseSchema = z.object({
@@ -211,6 +215,7 @@ export const updateChatResponseSchema = z.object({
   carbs: z.number().optional(),
   fat: z.number().optional(),
   prepTime: z.number().optional(),
+  recipeName: z.string().optional(),
 });
 
 export type UpdateChatResponse = z.output<typeof updateChatResponseSchema>;
@@ -257,6 +262,7 @@ export const UpdateChatSessionResponseJson = {
     carbs: { type: 'number', description: 'Total carbs in grams per serving' },
     fat: { type: 'number', description: 'Total fat in grams per serving' },
     prepTime: { type: 'integer', description: 'Preparation time in minutes' },
+    recipeName: { type: 'string', description: 'A catchy name for the dish' },
   },
   required: ['text', 'isRecipe'],
 };

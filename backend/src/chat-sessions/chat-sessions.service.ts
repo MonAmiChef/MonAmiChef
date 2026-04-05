@@ -89,7 +89,7 @@ export class ChatSessionsService {
     const {
       text,
       title,
-      isRecipe: isResponseRecipe,
+      isRecipe,
       ingredients,
       servings,
       calories,
@@ -97,6 +97,7 @@ export class ChatSessionsService {
       carbs,
       fat,
       prepTime,
+      recipeName,
     } = await this.aiAssistantService.createChatWithTitle({
       message,
       preferences,
@@ -112,8 +113,8 @@ export class ChatSessionsService {
       modelResponse: text,
       preferences,
       exclude,
-      isResponseRecipe,
-      recipeData: isResponseRecipe
+      isResponseRecipe: isRecipe,
+      recipeData: isRecipe
         ? {
             ingredients,
             servings,
@@ -122,6 +123,7 @@ export class ChatSessionsService {
             carbs,
             fat,
             prepTime,
+            title: recipeName || title,
           }
         : undefined,
     });
@@ -144,14 +146,15 @@ export class ChatSessionsService {
         carbs: msg.Recipe?.carbs,
         fat: msg.Recipe?.fat,
         prepTime: msg.Recipe?.prepTimeMin,
+        title: msg.Recipe?.name,
       })),
-      ingredients: isResponseRecipe ? ingredients : undefined,
-      servings: isResponseRecipe ? servings : undefined,
-      calories: isResponseRecipe ? calories : undefined,
-      proteins: isResponseRecipe ? proteins : undefined,
-      carbs: isResponseRecipe ? carbs : undefined,
-      fat: isResponseRecipe ? fat : undefined,
-      prepTime: isResponseRecipe ? prepTime : undefined,
+      ingredients: isRecipe ? ingredients : undefined,
+      servings: isRecipe ? servings : undefined,
+      calories: isRecipe ? calories : undefined,
+      proteins: isRecipe ? proteins : undefined,
+      carbs: isRecipe ? carbs : undefined,
+      fat: isRecipe ? fat : undefined,
+      prepTime: isRecipe ? prepTime : undefined,
     };
   }
 
@@ -186,6 +189,7 @@ export class ChatSessionsService {
       carbs,
       fat,
       prepTime,
+      recipeName,
     } = await this.aiAssistantService.updateChat({
       messages: chat.messages.map((m) => ({
         role: m.role,
@@ -216,7 +220,7 @@ export class ChatSessionsService {
                 carbs,
                 fat,
                 prepTime,
-                title: chat.title,
+                title: recipeName || chat.title,
               }
             : undefined,
         },
