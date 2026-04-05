@@ -284,5 +284,26 @@
     "error_adding": "Échec de l'ajout de la recette",
     "error_removing": "Échec de la suppression de la recette",
     "error_planning": "Échec de la planification"
+  },
+  "onboarding": {
+    "skip": "Passer",
+    "next": "Suivant",
+    "get_started": "Commencer",
+    "slide1": {
+      "title": "L'intelligence à\nvotre table",
+      "description": "Découvrez des recettes sur mesure selon vos goûts, vos allergies et vos restes avec votre Chef IA."
+    },
+    "slide2": {
+      "title": "Organisez votre\nsemaine",
+      "description": "Planifiez vos repas en un clic et ne vous demandez plus « qu'est-ce qu'on mange ? » demain."
+    },
+    "slide3": {
+      "title": "Ne perdez plus de\ntemps",
+      "description": "Votre liste de courses est automatiquement générée à partir de votre planification hebdo."
+    },
+    "slide4": {
+      "title": "Prêt à cuisiner ?",
+      "description": "Commencez votre aventure culinaire avec MonAmiChef dès maintenant."
+    }
   }
 }

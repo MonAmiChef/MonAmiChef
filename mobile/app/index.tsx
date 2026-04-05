@@ -4,6 +4,7 @@ import { View, ActivityIndicator } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { useAuth } from '@/hooks/useAuth';
 import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Index() {
   const router = useRouter();
@@ -17,7 +18,16 @@ export default function Index() {
         if (!session) {
           await signInAnonymously();
         }
-        router.replace('/(main)');
+
+        const hasSeenOnboarding = await AsyncStorage.getItem(
+          'HAS_SEEN_ONBOARDING',
+        );
+
+        if (hasSeenOnboarding === 'true') {
+          router.replace('/(main)');
+        } else {
+          router.replace('/(auth)/onboarding');
+        }
       } catch (e) {
         Toast.show({
           type: 'error',

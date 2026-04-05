@@ -286,5 +286,26 @@
     "error_adding": "Failed to add recipe",
     "error_removing": "Failed to remove recipe",
     "error_planning": "Failed to plan meal"
+  },
+  "onboarding": {
+    "skip": "Skip",
+    "next": "Next",
+    "get_started": "Get Started",
+    "slide1": {
+      "title": "Intelligence at\nyour table",
+      "description": "Discover tailored recipes based on your tastes, allergies, and leftovers with your AI Chef."
+    },
+    "slide2": {
+      "title": "Organize your\nweek",
+      "description": "Plan your meals in one click and never wonder 'what's for dinner?' tomorrow."
+    },
+    "slide3": {
+      "title": "Stop wasting\ntime",
+      "description": "Your grocery list is automatically generated from your weekly planning."
+    },
+    "slide4": {
+      "title": "Ready to cook?",
+      "description": "Start your culinary adventure with MonAmiChef now."
+    }
   }
 }
