@@ -32,7 +32,7 @@ export class ChatSessionsRepository {
   }: {
     chatId: string;
     userId: string;
-  }): Promise<(ChatSession & { messages: Message[] }) | null> {
+  }): Promise<any | null> {
     return this.prismaService.chatSession.findUnique({
       where: {
         id: chatId,
@@ -42,6 +42,13 @@ export class ChatSessionsRepository {
         messages: {
           orderBy: {
             createdAt: 'asc',
+          },
+          include: {
+            Recipe: {
+              include: {
+                ingredients: true,
+              },
+            },
           },
         },
       },
@@ -56,6 +63,7 @@ export class ChatSessionsRepository {
     preferences,
     exclude,
     isResponseRecipe,
+    recipeData,
   }: {
     title: string;
     userId: string;
@@ -64,6 +72,15 @@ export class ChatSessionsRepository {
     preferences: PreferenceTag[];
     exclude: PreferenceTag[];
     isResponseRecipe: boolean;
+    recipeData?: {
+      ingredients: any[];
+      servings?: number;
+      calories?: number;
+      proteins?: number;
+      carbs?: number;
+      fat?: number;
+      prepTime?: number;
+    };
   }) {
     const now = new Date();
     return this.prismaService.chatSession.create({
@@ -85,6 +102,28 @@ export class ChatSessionsRepository {
               role: 'model',
               isRecipe: isResponseRecipe,
               createdAt: new Date(now.getTime() + 1),
+              Recipe:
+                isResponseRecipe && recipeData
+                  ? {
+                      create: {
+                        userId,
+                        name: title, // Use the chat title as recipe name by default
+                        calories: recipeData.calories,
+                        proteins: recipeData.proteins,
+                        carbs: recipeData.carbs,
+                        fat: recipeData.fat,
+                        prepTimeMin: recipeData.prepTime,
+                        ingredients: {
+                          create: recipeData.ingredients.map((ing) => ({
+                            name: ing.name,
+                            quantity: ing.quantity,
+                            unit: ing.unit,
+                            category: ing.category,
+                          })),
+                        },
+                      },
+                    }
+                  : undefined,
             },
           ],
         },
@@ -92,6 +131,7 @@ export class ChatSessionsRepository {
       include: {
         messages: {
           orderBy: { createdAt: 'asc' },
+          include: { Recipe: { include: { ingredients: true } } },
         },
       },
     });
@@ -99,36 +139,78 @@ export class ChatSessionsRepository {
 
   async updateChat({
     chatId,
+    userId,
     messages,
     preferences,
     exclude,
   }: {
     chatId: string;
-    messages: { content: string; role: MessageRole; isRecipe?: boolean }[];
+    userId: string;
+    messages: {
+      content: string;
+      role: MessageRole;
+      isRecipe?: boolean;
+      recipeData?: any;
+    }[];
     preferences: PreferenceTag[];
     exclude: PreferenceTag[];
-  }): Promise<{ messages: Message[] }> {
+  }): Promise<{ messages: any[] }> {
     const now = new Date();
-    const formatedMessages = messages.map((msg, index) => ({
-      chatId: chatId,
-      content: msg.content,
-      role: msg.role,
-      isRecipe: msg.isRecipe ?? false,
-      createdAt: new Date(now.getTime() + index),
-    }));
 
-    const [, result] = await this.prismaService.$transaction([
-      this.prismaService.chatSession.update({
+    const resultMessages: any[] = [];
+
+    await this.prismaService.$transaction(async (tx) => {
+      await tx.chatSession.update({
         where: { id: chatId },
         data: { preferences, exclude },
-      }),
-      this.prismaService.message.createManyAndReturn({
-        data: formatedMessages,
-      }),
-    ]);
+      });
+
+      for (let i = 0; i < messages.length; i++) {
+        const msg = messages[i];
+        const createdMsg = await tx.message.create({
+          data: {
+            chatId: chatId,
+            content: msg.content,
+            role: msg.role,
+            isRecipe: msg.isRecipe ?? false,
+            createdAt: new Date(now.getTime() + i),
+            Recipe:
+              msg.isRecipe && msg.recipeData
+                ? {
+                    create: {
+                      userId,
+                      name: msg.recipeData.title || 'Chefs Suggestion',
+                      calories: msg.recipeData.calories,
+                      proteins: msg.recipeData.proteins,
+                      carbs: msg.recipeData.carbs,
+                      fat: msg.recipeData.fat,
+                      prepTimeMin: msg.recipeData.prepTime,
+                      ingredients: {
+                        create: msg.recipeData.ingredients.map((ing: any) => ({
+                          name: ing.name,
+                          quantity: ing.quantity,
+                          unit: ing.unit,
+                          category: ing.category,
+                        })),
+                      },
+                    },
+                  }
+                : undefined,
+          },
+          include: {
+            Recipe: {
+              include: {
+                ingredients: true,
+              },
+            },
+          },
+        });
+        resultMessages.push(createdMsg);
+      }
+    });
 
     return {
-      messages: result as Message[],
+      messages: resultMessages,
     };
   }
 }

@@ -56,6 +56,11 @@ export const CreateChatWithTitleServiceResponseSchema = z.object({
   isRecipe: z.boolean(),
   ingredients: AiIngredientParseSchema.optional().default([]),
   servings: z.number().int().positive().optional(),
+  calories: z.number().optional(),
+  proteins: z.number().optional(),
+  carbs: z.number().optional(),
+  fat: z.number().optional(),
+  prepTime: z.number().optional(),
 });
 
 export type CreateChatWithTitleServiceResponse = z.output<
@@ -102,6 +107,11 @@ const ChatMessageSchema = z.object({
   isRecipe: z.boolean().default(false),
   content: z.string(),
   createdAt: z.coerce.string(),
+  calories: z.number().nullable().optional(),
+  proteins: z.number().nullable().optional(),
+  carbs: z.number().nullable().optional(),
+  fat: z.number().nullable().optional(),
+  prepTime: z.number().nullable().optional(),
 });
 
 const CreateChatSessionResponseSchema = z.object({
@@ -112,6 +122,11 @@ const CreateChatSessionResponseSchema = z.object({
   updatedAt: z.string(),
   ingredients: z.array(ChatIngredientSchema).optional(),
   servings: z.number().int().positive().optional(),
+  calories: z.number().nullable().optional(),
+  proteins: z.number().nullable().optional(),
+  carbs: z.number().nullable().optional(),
+  fat: z.number().nullable().optional(),
+  prepTime: z.number().nullable().optional(),
 });
 
 export const CreateChatSessionResponseJson = {
@@ -149,6 +164,14 @@ export const CreateChatSessionResponseJson = {
         required: ['name', 'quantity', 'unit', 'category'],
       },
     },
+    calories: { type: 'number', description: 'Total calories per serving' },
+    proteins: {
+      type: 'number',
+      description: 'Total proteins in grams per serving',
+    },
+    carbs: { type: 'number', description: 'Total carbs in grams per serving' },
+    fat: { type: 'number', description: 'Total fat in grams per serving' },
+    prepTime: { type: 'integer', description: 'Preparation time in minutes' },
   },
   required: ['title', 'text', 'isRecipe'],
 };
@@ -170,6 +193,11 @@ export const chatResponseSchema = z.object({
   imagePrompt: z.string().default(''),
   ingredients: AiIngredientParseSchema.optional().default([]),
   servings: z.number().int().positive().optional(),
+  calories: z.number().optional(),
+  proteins: z.number().optional(),
+  carbs: z.number().optional(),
+  fat: z.number().optional(),
+  prepTime: z.number().optional(),
 });
 
 export const updateChatResponseSchema = z.object({
@@ -178,6 +206,11 @@ export const updateChatResponseSchema = z.object({
   imagePrompt: z.string().default(''),
   ingredients: z.array(ChatIngredientSchema).optional().default([]),
   servings: z.number().int().positive().optional(),
+  calories: z.number().optional(),
+  proteins: z.number().optional(),
+  carbs: z.number().optional(),
+  fat: z.number().optional(),
+  prepTime: z.number().optional(),
 });
 
 export type UpdateChatResponse = z.output<typeof updateChatResponseSchema>;
@@ -216,6 +249,14 @@ export const UpdateChatSessionResponseJson = {
         required: ['name', 'quantity', 'unit', 'category'],
       },
     },
+    calories: { type: 'number', description: 'Total calories per serving' },
+    proteins: {
+      type: 'number',
+      description: 'Total proteins in grams per serving',
+    },
+    carbs: { type: 'number', description: 'Total carbs in grams per serving' },
+    fat: { type: 'number', description: 'Total fat in grams per serving' },
+    prepTime: { type: 'integer', description: 'Preparation time in minutes' },
   },
   required: ['text', 'isRecipe'],
 };
@@ -239,6 +280,11 @@ const UpdateChatSessionResponseSchema = z.object({
   updatedAt: z.string(),
   ingredients: z.array(ChatIngredientSchema).optional(),
   servings: z.number().int().positive().optional(),
+  calories: z.number().nullable().optional(),
+  proteins: z.number().nullable().optional(),
+  carbs: z.number().nullable().optional(),
+  fat: z.number().nullable().optional(),
+  prepTime: z.number().nullable().optional(),
 });
 
 export type UpdateChatSessionResponse = z.output<

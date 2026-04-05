@@ -58,6 +58,13 @@ export class ChatSessionsService {
         ...msg,
         role: msg.role.toLowerCase() as 'user' | 'model',
         createdAt: msg.createdAt?.toISOString() ?? new Date().toISOString(),
+        // Map linked recipe data if it exists
+        calories: msg.Recipe?.calories,
+        proteins: msg.Recipe?.proteins,
+        carbs: msg.Recipe?.carbs,
+        fat: msg.Recipe?.fat,
+        prepTime: msg.Recipe?.prepTimeMin,
+        title: msg.Recipe?.name,
       })),
       createdAt: chat.createdAt.toISOString(),
       updatedAt: chat.updatedAt?.toISOString() ?? chat.createdAt.toISOString(),
@@ -85,6 +92,11 @@ export class ChatSessionsService {
       isRecipe: isResponseRecipe,
       ingredients,
       servings,
+      calories,
+      proteins,
+      carbs,
+      fat,
+      prepTime,
     } = await this.aiAssistantService.createChatWithTitle({
       message,
       preferences,
@@ -101,6 +113,17 @@ export class ChatSessionsService {
       preferences,
       exclude,
       isResponseRecipe,
+      recipeData: isResponseRecipe
+        ? {
+            ingredients,
+            servings,
+            calories,
+            proteins,
+            carbs,
+            fat,
+            prepTime,
+          }
+        : undefined,
     });
 
     return {
@@ -116,9 +139,19 @@ export class ChatSessionsService {
         isRecipe: msg.isRecipe,
         role: msg.role.toLowerCase() as 'user' | 'model',
         createdAt: msg.createdAt?.toISOString() ?? new Date().toISOString(),
+        calories: msg.Recipe?.calories,
+        proteins: msg.Recipe?.proteins,
+        carbs: msg.Recipe?.carbs,
+        fat: msg.Recipe?.fat,
+        prepTime: msg.Recipe?.prepTimeMin,
       })),
       ingredients: isResponseRecipe ? ingredients : undefined,
       servings: isResponseRecipe ? servings : undefined,
+      calories: isResponseRecipe ? calories : undefined,
+      proteins: isResponseRecipe ? proteins : undefined,
+      carbs: isResponseRecipe ? carbs : undefined,
+      fat: isResponseRecipe ? fat : undefined,
+      prepTime: isResponseRecipe ? prepTime : undefined,
     };
   }
 
@@ -143,24 +176,50 @@ export class ChatSessionsService {
       throw new NotFoundException(`Chat ${chatId} non trouvé`);
     }
 
-    const { text, isRecipe, ingredients, servings } =
-      await this.aiAssistantService.updateChat({
-        messages: chat.messages.map((m) => ({
-          role: m.role,
-          content: m.content,
-          isRecipe: m.isRecipe,
-        })),
-        newMessage: message,
-        preferences,
-        exclude,
-        language,
-      });
+    const {
+      text,
+      isRecipe,
+      ingredients,
+      servings,
+      calories,
+      proteins,
+      carbs,
+      fat,
+      prepTime,
+    } = await this.aiAssistantService.updateChat({
+      messages: chat.messages.map((m) => ({
+        role: m.role,
+        content: m.content,
+        isRecipe: m.isRecipe,
+      })),
+      newMessage: message,
+      preferences,
+      exclude,
+      language,
+    });
 
     const result = await this.chatSessionsRepository.updateChat({
       chatId,
+      userId,
       messages: [
         { content: message, role: 'user', isRecipe: false },
-        { content: text, role: 'model', isRecipe },
+        {
+          content: text,
+          role: 'model',
+          isRecipe,
+          recipeData: isRecipe
+            ? {
+                ingredients,
+                servings,
+                calories,
+                proteins,
+                carbs,
+                fat,
+                prepTime,
+                title: chat.title,
+              }
+            : undefined,
+        },
       ],
       preferences,
       exclude,
@@ -173,11 +232,21 @@ export class ChatSessionsService {
         ...msg,
         createdAt: msg.createdAt?.toISOString() ?? new Date().toISOString(),
         role: msg.role.toLowerCase() as 'user' | 'model',
+        calories: msg.Recipe?.calories,
+        proteins: msg.Recipe?.proteins,
+        carbs: msg.Recipe?.carbs,
+        fat: msg.Recipe?.fat,
+        prepTime: msg.Recipe?.prepTimeMin,
       })),
       createdAt: chat?.createdAt ?? new Date().toISOString(),
       updatedAt: chat?.updatedAt ?? new Date().toISOString(),
       ingredients: isRecipe ? ingredients : undefined,
       servings: isRecipe ? servings : undefined,
+      calories: isRecipe ? calories : undefined,
+      proteins: isRecipe ? proteins : undefined,
+      carbs: isRecipe ? carbs : undefined,
+      fat: isRecipe ? fat : undefined,
+      prepTime: isRecipe ? prepTime : undefined,
     };
   }
 }

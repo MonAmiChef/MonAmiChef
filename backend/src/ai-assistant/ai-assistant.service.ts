@@ -237,6 +237,11 @@ export class AiAssistantService {
         imagePrompt: jsonResponse.imagePrompt ?? '',
         ingredients: jsonResponse.ingredients ?? [],
         servings: jsonResponse.servings,
+        calories: jsonResponse.calories,
+        proteins: jsonResponse.proteins,
+        carbs: jsonResponse.carbs,
+        fat: jsonResponse.fat,
+        prepTime: jsonResponse.prepTime,
       };
     } catch (e) {
       console.error('Erreur parsing JSON AI:', e);
@@ -255,6 +260,11 @@ export class AiAssistantService {
           imagePrompt: '',
           ingredients: [],
           servings: undefined,
+          calories: undefined,
+          proteins: undefined,
+          carbs: undefined,
+          fat: undefined,
+          prepTime: undefined,
         };
       } catch {
         return {
@@ -263,6 +273,11 @@ export class AiAssistantService {
           imagePrompt: '',
           ingredients: [],
           servings: undefined,
+          calories: undefined,
+          proteins: undefined,
+          carbs: undefined,
+          fat: undefined,
+          prepTime: undefined,
         };
       }
     }

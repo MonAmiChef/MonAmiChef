@@ -792,9 +792,11 @@ components:
           format: uuid
           pattern: >-
             ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         title:
           type: string
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         messages:
           type: array
@@ -817,6 +819,26 @@ components:
                 type: string
               createdAt:
                 type: string
+              calories:
+                anyOf:
+                  - type: number
+                  - type: 'null'
+              proteins:
+                anyOf:
+                  - type: number
+                  - type: 'null'
+              carbs:
+                anyOf:
+                  - type: number
+                  - type: 'null'
+              fat:
+                anyOf:
+                  - type: number
+                  - type: 'null'
+              prepTime:
+                anyOf:
+                  - type: number
+                  - type: 'null'
             required:
               - id
               - chatId
@@ -825,22 +847,27 @@ components:
               - content
               - createdAt
             additionalProperties: false
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         createdAt:
           type: string
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         updatedAt:
           type: string
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         preferences:
           type: array
           items:
             type: string
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         exclude:
           type: array
           items:
             type: string
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
       required:
         - id
@@ -1056,9 +1083,11 @@ components:
           format: uuid
           pattern: >-
             ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         title:
           type: string
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         messages:
           type: array
@@ -1081,6 +1110,26 @@ components:
                 type: string
               createdAt:
                 type: string
+              calories:
+                anyOf:
+                  - type: number
+                  - type: 'null'
+              proteins:
+                anyOf:
+                  - type: number
+                  - type: 'null'
+              carbs:
+                anyOf:
+                  - type: number
+                  - type: 'null'
+              fat:
+                anyOf:
+                  - type: number
+                  - type: 'null'
+              prepTime:
+                anyOf:
+                  - type: number
+                  - type: 'null'
             required:
               - id
               - chatId
@@ -1089,12 +1138,15 @@ components:
               - content
               - createdAt
             additionalProperties: false
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         createdAt:
           type: string
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         updatedAt:
           type: string
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         ingredients:
           type: array
@@ -1127,11 +1179,48 @@ components:
               - unit
               - category
             additionalProperties: false
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         servings:
           type: integer
           exclusiveMinimum: 0
           maximum: 9007199254740991
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-parent-additional-properties: false
+        calories:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        proteins:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        carbs:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        fat:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        prepTime:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
           x-nestjs_zod-parent-additional-properties: false
       required:
         - id
@@ -1271,9 +1360,11 @@ components:
           format: uuid
           pattern: >-
             ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         title:
           type: string
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         messages:
           type: array
@@ -1296,6 +1387,26 @@ components:
                 type: string
               createdAt:
                 type: string
+              calories:
+                anyOf:
+                  - type: number
+                  - type: 'null'
+              proteins:
+                anyOf:
+                  - type: number
+                  - type: 'null'
+              carbs:
+                anyOf:
+                  - type: number
+                  - type: 'null'
+              fat:
+                anyOf:
+                  - type: number
+                  - type: 'null'
+              prepTime:
+                anyOf:
+                  - type: number
+                  - type: 'null'
             required:
               - id
               - chatId
@@ -1304,12 +1415,15 @@ components:
               - content
               - createdAt
             additionalProperties: false
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         createdAt:
           type: string
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         updatedAt:
           type: string
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         ingredients:
           type: array
@@ -1342,11 +1456,48 @@ components:
               - unit
               - category
             additionalProperties: false
+          x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         servings:
           type: integer
           exclusiveMinimum: 0
           maximum: 9007199254740991
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-parent-additional-properties: false
+        calories:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        proteins:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        carbs:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        fat:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
+          x-nestjs_zod-parent-additional-properties: false
+        prepTime:
+          anyOf:
+            - type: number
+            - type: 'null'
+          x-nestjs_zod-has-null: true
+          x-nestjs_zod-empty-type: true
           x-nestjs_zod-parent-additional-properties: false
       required:
         - id
