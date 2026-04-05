@@ -35,19 +35,16 @@ export class GroceriesRepository {
   async getUserGroceries(userId: string, dateStr?: string) {
     console.log('[GroceriesRepo] Fetching groceries for user:', userId, 'with base date:', dateStr);
     
-    // Use the provided date or fall back to server's today
-    const tomorrowStr = new Date().toISOString().split('T')[0];
-    const baseDateStr = dateStr || tomorrowStr;
+    // Use the provided date or fall back to server's today (UTC)
+    const fallbackDateStr = new Date().toISOString().split('T')[0];
+    const baseDateStr = dateStr || fallbackDateStr;
     const today = new Date(baseDateStr + 'T00:00:00.000Z');
-    
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
     
     const endDate = new Date(today);
     endDate.setDate(today.getDate() + 10); // Be very inclusive (10 days)
 
     console.log('[GroceriesRepo] Window:', {
-      yesterday: yesterday.toISOString(),
+      startDate: today.toISOString(),
       endDate: endDate.toISOString(),
     });
 
@@ -76,7 +73,7 @@ export class GroceriesRepository {
       where: {
         userId,
         date: {
-          gte: yesterday,
+          gte: today,
           lte: endDate,
         },
       },
