@@ -11,6 +11,9 @@ export class SavedRecipesRepository {
       include: {
         recipe: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 
@@ -45,7 +48,10 @@ export class SavedRecipesRepository {
           userId,
         },
       },
-      data: { isFavorite },
+      data: {
+        isFavorite,
+        favoritedAt: isFavorite ? new Date() : null,
+      },
     });
   }
 }

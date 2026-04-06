@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -362,10 +362,28 @@ export default function RecipeList({
     data?.filter((item: { isFavorite: boolean }) => item.isFavorite).length ??
     0;
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  const displayData: typeof data = filterFavorites
-    ? (data?.filter((item: { isFavorite: boolean }) => item.isFavorite) ?? [])
-    : (data ?? []);
+  // Memoized and sorted data
+  const displayData = useMemo(() => {
+    if (!data) return [];
+
+    const filtered = filterFavorites
+      ? data.filter((item: any) => item.isFavorite)
+      : data;
+
+    return [...filtered].sort((a: any, b: any) => {
+      if (filterFavorites) {
+        // Order by favoritedAt, fallback to createdAt for existing favorites
+        const dateA = new Date(a.favoritedAt || a.createdAt).getTime();
+        const dateB = new Date(b.favoritedAt || b.createdAt).getTime();
+        return dateB - dateA;
+      } else {
+        // Order by createdAt (most recent first)
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return dateB - dateA;
+      }
+    });
+  }, [data, filterFavorites]);
 
   const { width } = useWindowDimensions();
 

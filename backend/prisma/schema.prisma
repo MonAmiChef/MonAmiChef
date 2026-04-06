@@ -59,6 +59,7 @@ model SavedRecipe {
   recipeId        String
   plannedFor      DateTime
   createdAt       DateTime @default(now())
+  favoritedAt     DateTime?
   userId          String   @db.Uuid
   isInGroceryList Boolean  @default(false)
   servings        Int      @default(1)

@@ -37,6 +37,7 @@ const SavedRecipeBaseSchema = z.object({
   userId: z.string(),
   plannedFor: z.coerce.string(),
   createdAt: z.coerce.string(),
+  favoritedAt: z.coerce.string().nullable().optional(),
   isInGroceryList: z.boolean(),
   isFavorite: z.boolean(),
   servings: z.number(),
