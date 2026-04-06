@@ -61,6 +61,13 @@ export const CreateChatWithTitleServiceResponseSchema = z.object({
   carbs: z.number().optional(),
   fat: z.number().optional(),
   prepTime: z.number().optional(),
+  description: z.string().optional(),
+  instructions: z.array(z.string()).optional().default([]),
+  difficulty: z.string().optional(),
+  isVegetarian: z.boolean().optional(),
+  isVegan: z.boolean().optional(),
+  isGlutenFree: z.boolean().optional(),
+  isDairyFree: z.boolean().optional(),
 });
 
 export type CreateChatWithTitleServiceResponse = z.output<
@@ -113,6 +120,13 @@ const ChatMessageSchema = z.object({
   fat: z.number().nullable().optional(),
   prepTime: z.number().nullable().optional(),
   title: z.string().nullable().optional(),
+  description: z.string().nullable().optional(),
+  instructions: z.array(z.string()).optional().default([]),
+  difficulty: z.string().nullable().optional(),
+  isVegetarian: z.boolean().optional(),
+  isVegan: z.boolean().optional(),
+  isGlutenFree: z.boolean().optional(),
+  isDairyFree: z.boolean().optional(),
 });
 
 const CreateChatSessionResponseSchema = z.object({
@@ -175,6 +189,21 @@ export const CreateChatSessionResponseJson = {
     fat: { type: 'number', description: 'Total fat in grams per serving' },
     prepTime: { type: 'integer', description: 'Preparation time in minutes' },
     recipeName: { type: 'string', description: 'A catchy name for the dish' },
+    description: { type: 'string', description: 'Short description of the dish' },
+    instructions: {
+      type: 'array',
+      items: { type: 'string' },
+      description: 'Step by step cooking instructions',
+    },
+    difficulty: {
+      type: 'string',
+      enum: ['easy', 'medium', 'hard'],
+      description: 'How difficult is the recipe',
+    },
+    isVegetarian: { type: 'boolean' },
+    isVegan: { type: 'boolean' },
+    isGlutenFree: { type: 'boolean' },
+    isDairyFree: { type: 'boolean' },
   },
   required: ['title', 'text', 'isRecipe'],
 };
@@ -202,6 +231,13 @@ export const chatResponseSchema = z.object({
   fat: z.number().optional(),
   prepTime: z.number().optional(),
   recipeName: z.string().optional(),
+  description: z.string().optional(),
+  instructions: z.array(z.string()).optional().default([]),
+  difficulty: z.string().optional(),
+  isVegetarian: z.boolean().optional(),
+  isVegan: z.boolean().optional(),
+  isGlutenFree: z.boolean().optional(),
+  isDairyFree: z.boolean().optional(),
 });
 
 export const updateChatResponseSchema = z.object({
@@ -216,6 +252,13 @@ export const updateChatResponseSchema = z.object({
   fat: z.number().optional(),
   prepTime: z.number().optional(),
   recipeName: z.string().optional(),
+  description: z.string().optional(),
+  instructions: z.array(z.string()).optional().default([]),
+  difficulty: z.string().optional(),
+  isVegetarian: z.boolean().optional(),
+  isVegan: z.boolean().optional(),
+  isGlutenFree: z.boolean().optional(),
+  isDairyFree: z.boolean().optional(),
 });
 
 export type UpdateChatResponse = z.output<typeof updateChatResponseSchema>;
@@ -263,6 +306,21 @@ export const UpdateChatSessionResponseJson = {
     fat: { type: 'number', description: 'Total fat in grams per serving' },
     prepTime: { type: 'integer', description: 'Preparation time in minutes' },
     recipeName: { type: 'string', description: 'A catchy name for the dish' },
+    description: { type: 'string', description: 'Short description of the dish' },
+    instructions: {
+      type: 'array',
+      items: { type: 'string' },
+      description: 'Step by step cooking instructions',
+    },
+    difficulty: {
+      type: 'string',
+      enum: ['easy', 'medium', 'hard'],
+      description: 'How difficult is the recipe',
+    },
+    isVegetarian: { type: 'boolean' },
+    isVegan: { type: 'boolean' },
+    isGlutenFree: { type: 'boolean' },
+    isDairyFree: { type: 'boolean' },
   },
   required: ['text', 'isRecipe'],
 };

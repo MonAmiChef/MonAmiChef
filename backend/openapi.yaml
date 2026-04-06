@@ -843,6 +843,27 @@ components:
                 anyOf:
                   - type: string
                   - type: 'null'
+              description:
+                anyOf:
+                  - type: string
+                  - type: 'null'
+              instructions:
+                default: []
+                type: array
+                items:
+                  type: string
+              difficulty:
+                anyOf:
+                  - type: string
+                  - type: 'null'
+              isVegetarian:
+                type: boolean
+              isVegan:
+                type: boolean
+              isGlutenFree:
+                type: boolean
+              isDairyFree:
+                type: boolean
             required:
               - id
               - chatId
@@ -850,6 +871,7 @@ components:
               - isRecipe
               - content
               - createdAt
+              - instructions
             additionalProperties: false
           x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
@@ -1138,6 +1160,27 @@ components:
                 anyOf:
                   - type: string
                   - type: 'null'
+              description:
+                anyOf:
+                  - type: string
+                  - type: 'null'
+              instructions:
+                default: []
+                type: array
+                items:
+                  type: string
+              difficulty:
+                anyOf:
+                  - type: string
+                  - type: 'null'
+              isVegetarian:
+                type: boolean
+              isVegan:
+                type: boolean
+              isGlutenFree:
+                type: boolean
+              isDairyFree:
+                type: boolean
             required:
               - id
               - chatId
@@ -1145,6 +1188,7 @@ components:
               - isRecipe
               - content
               - createdAt
+              - instructions
             additionalProperties: false
           x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
@@ -1423,6 +1467,27 @@ components:
                 anyOf:
                   - type: string
                   - type: 'null'
+              description:
+                anyOf:
+                  - type: string
+                  - type: 'null'
+              instructions:
+                default: []
+                type: array
+                items:
+                  type: string
+              difficulty:
+                anyOf:
+                  - type: string
+                  - type: 'null'
+              isVegetarian:
+                type: boolean
+              isVegan:
+                type: boolean
+              isGlutenFree:
+                type: boolean
+              isDairyFree:
+                type: boolean
             required:
               - id
               - chatId
@@ -1430,6 +1495,7 @@ components:
               - isRecipe
               - content
               - createdAt
+              - instructions
             additionalProperties: false
           x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false

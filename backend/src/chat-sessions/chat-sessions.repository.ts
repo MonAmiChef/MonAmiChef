@@ -81,6 +81,13 @@ export class ChatSessionsRepository {
       fat?: number;
       prepTime?: number;
       title?: string;
+      description?: string;
+      instructions?: string[];
+      difficulty?: string;
+      isVegetarian?: boolean;
+      isVegan?: boolean;
+      isGlutenFree?: boolean;
+      isDairyFree?: boolean;
     };
   }) {
     const now = new Date();
@@ -108,12 +115,19 @@ export class ChatSessionsRepository {
                   ? {
                       create: {
                         userId,
-                        name: recipeData.title || title, // Use custom title if provided, otherwise chat title
+                        name: recipeData.title || title,
                         calories: recipeData.calories,
                         proteins: recipeData.proteins,
                         carbs: recipeData.carbs,
                         fat: recipeData.fat,
                         prepTimeMin: recipeData.prepTime,
+                        description: recipeData.description,
+                        instructions: recipeData.instructions ?? [],
+                        difficulty: recipeData.difficulty,
+                        isVegetarian: recipeData.isVegetarian ?? false,
+                        isVegan: recipeData.isVegan ?? false,
+                        isGlutenFree: recipeData.isGlutenFree ?? false,
+                        isDairyFree: recipeData.isDairyFree ?? false,
                         ingredients: {
                           create: recipeData.ingredients.map((ing) => ({
                             name: ing.name,
@@ -160,6 +174,13 @@ export class ChatSessionsRepository {
         fat?: number;
         prepTime?: number;
         title?: string;
+        description?: string;
+        instructions?: string[];
+        difficulty?: string;
+        isVegetarian?: boolean;
+        isVegan?: boolean;
+        isGlutenFree?: boolean;
+        isDairyFree?: boolean;
       };
     }[];
     preferences: PreferenceTag[];
@@ -195,6 +216,13 @@ export class ChatSessionsRepository {
                       carbs: msg.recipeData.carbs,
                       fat: msg.recipeData.fat,
                       prepTimeMin: msg.recipeData.prepTime,
+                      description: msg.recipeData.description,
+                      instructions: msg.recipeData.instructions ?? [],
+                      difficulty: msg.recipeData.difficulty,
+                      isVegetarian: msg.recipeData.isVegetarian ?? false,
+                      isVegan: msg.recipeData.isVegan ?? false,
+                      isGlutenFree: msg.recipeData.isGlutenFree ?? false,
+                      isDairyFree: msg.recipeData.isDairyFree ?? false,
                       ingredients: {
                         create: msg.recipeData.ingredients.map((ing: any) => ({
                           name: ing.name,

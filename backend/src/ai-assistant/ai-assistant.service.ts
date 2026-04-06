@@ -160,9 +160,13 @@ export class AiAssistantService {
       },
     });
 
-    return CreateChatWithTitleServiceResponseSchema.parse(
-      JSON.parse(result.text ?? ''),
-    );
+    const rawJson = JSON.parse(result.text ?? '{}');
+    const validated = CreateChatWithTitleServiceResponseSchema.parse(rawJson);
+
+    return {
+      ...validated,
+      recipeName: rawJson.recipeName, // Handle extra field if returned
+    };
   }
 
   private sanitizeHistory(
@@ -242,6 +246,14 @@ export class AiAssistantService {
         carbs: jsonResponse.carbs,
         fat: jsonResponse.fat,
         prepTime: jsonResponse.prepTime,
+        recipeName: jsonResponse.recipeName,
+        description: jsonResponse.description,
+        instructions: jsonResponse.instructions ?? [],
+        difficulty: jsonResponse.difficulty,
+        isVegetarian: jsonResponse.isVegetarian,
+        isVegan: jsonResponse.isVegan,
+        isGlutenFree: jsonResponse.isGlutenFree,
+        isDairyFree: jsonResponse.isDairyFree,
       };
     } catch (e) {
       console.error('Erreur parsing JSON AI:', e);
@@ -265,6 +277,14 @@ export class AiAssistantService {
           carbs: undefined,
           fat: undefined,
           prepTime: undefined,
+          recipeName: undefined,
+          description: undefined,
+          instructions: [],
+          difficulty: undefined,
+          isVegetarian: undefined,
+          isVegan: undefined,
+          isGlutenFree: undefined,
+          isDairyFree: undefined,
         };
       } catch {
         return {
@@ -278,6 +298,14 @@ export class AiAssistantService {
           carbs: undefined,
           fat: undefined,
           prepTime: undefined,
+          recipeName: undefined,
+          description: undefined,
+          instructions: [],
+          difficulty: undefined,
+          isVegetarian: undefined,
+          isVegan: undefined,
+          isGlutenFree: undefined,
+          isDairyFree: undefined,
         };
       }
     }
