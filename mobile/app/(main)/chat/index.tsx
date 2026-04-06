@@ -173,7 +173,7 @@ export default function NewChat() {
             className="flex-1"
             accessible={false}
           >
-            <View className="flex-1">
+            <View className="flex-1 mt-32">
               {optimisticMessage ? (
                 <View className="flex-1 justify-start p-6">
                   <View className="bg-orange-500 self-end p-4 rounded-2xl rounded-tr-none mb-4 max-w-[80%]">

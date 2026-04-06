@@ -526,6 +526,14 @@ export interface components {
                 fat?: number | null;
                 prepTime?: number | null;
                 title?: string | null;
+                description?: string | null;
+                /** @default [] */
+                instructions: string[];
+                difficulty?: string | null;
+                isVegetarian?: boolean;
+                isVegan?: boolean;
+                isGlutenFree?: boolean;
+                isDairyFree?: boolean;
             }[];
             createdAt: string;
             updatedAt: string;
@@ -582,6 +590,14 @@ export interface components {
                 fat?: number | null;
                 prepTime?: number | null;
                 title?: string | null;
+                description?: string | null;
+                /** @default [] */
+                instructions: string[];
+                difficulty?: string | null;
+                isVegetarian?: boolean;
+                isVegan?: boolean;
+                isGlutenFree?: boolean;
+                isDairyFree?: boolean;
             }[];
             createdAt: string;
             updatedAt: string;
@@ -628,6 +644,14 @@ export interface components {
                 fat?: number | null;
                 prepTime?: number | null;
                 title?: string | null;
+                description?: string | null;
+                /** @default [] */
+                instructions: string[];
+                difficulty?: string | null;
+                isVegetarian?: boolean;
+                isVegan?: boolean;
+                isGlutenFree?: boolean;
+                isDairyFree?: boolean;
             }[];
             createdAt: string;
             updatedAt: string;

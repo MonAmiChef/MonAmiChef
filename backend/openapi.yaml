@@ -820,25 +820,20 @@ components:
               createdAt:
                 type: string
               calories:
-                anyOf:
-                  - type: number
-                  - type: 'null'
+                default: 0
+                type: number
               proteins:
-                anyOf:
-                  - type: number
-                  - type: 'null'
+                default: 0
+                type: number
               carbs:
-                anyOf:
-                  - type: number
-                  - type: 'null'
+                default: 0
+                type: number
               fat:
-                anyOf:
-                  - type: number
-                  - type: 'null'
+                default: 0
+                type: number
               prepTime:
-                anyOf:
-                  - type: number
-                  - type: 'null'
+                default: 0
+                type: number
               title:
                 anyOf:
                   - type: string
@@ -857,12 +852,16 @@ components:
                   - type: string
                   - type: 'null'
               isVegetarian:
+                default: false
                 type: boolean
               isVegan:
+                default: false
                 type: boolean
               isGlutenFree:
+                default: false
                 type: boolean
               isDairyFree:
+                default: false
                 type: boolean
             required:
               - id
@@ -871,7 +870,16 @@ components:
               - isRecipe
               - content
               - createdAt
+              - calories
+              - proteins
+              - carbs
+              - fat
+              - prepTime
               - instructions
+              - isVegetarian
+              - isVegan
+              - isGlutenFree
+              - isDairyFree
             additionalProperties: false
           x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
@@ -1137,25 +1145,20 @@ components:
               createdAt:
                 type: string
               calories:
-                anyOf:
-                  - type: number
-                  - type: 'null'
+                default: 0
+                type: number
               proteins:
-                anyOf:
-                  - type: number
-                  - type: 'null'
+                default: 0
+                type: number
               carbs:
-                anyOf:
-                  - type: number
-                  - type: 'null'
+                default: 0
+                type: number
               fat:
-                anyOf:
-                  - type: number
-                  - type: 'null'
+                default: 0
+                type: number
               prepTime:
-                anyOf:
-                  - type: number
-                  - type: 'null'
+                default: 0
+                type: number
               title:
                 anyOf:
                   - type: string
@@ -1174,12 +1177,16 @@ components:
                   - type: string
                   - type: 'null'
               isVegetarian:
+                default: false
                 type: boolean
               isVegan:
+                default: false
                 type: boolean
               isGlutenFree:
+                default: false
                 type: boolean
               isDairyFree:
+                default: false
                 type: boolean
             required:
               - id
@@ -1188,7 +1195,16 @@ components:
               - isRecipe
               - content
               - createdAt
+              - calories
+              - proteins
+              - carbs
+              - fat
+              - prepTime
               - instructions
+              - isVegetarian
+              - isVegan
+              - isGlutenFree
+              - isDairyFree
             additionalProperties: false
           x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
@@ -1240,42 +1256,33 @@ components:
           x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         calories:
-          anyOf:
-            - type: number
-            - type: 'null'
+          type: number
+          default: 0
           x-nestjs_zod-has-null: true
-          x-nestjs_zod-empty-type: true
           x-nestjs_zod-parent-additional-properties: false
         proteins:
-          anyOf:
-            - type: number
-            - type: 'null'
+          type: number
+          default: 0
           x-nestjs_zod-has-null: true
-          x-nestjs_zod-empty-type: true
           x-nestjs_zod-parent-additional-properties: false
         carbs:
-          anyOf:
-            - type: number
-            - type: 'null'
+          type: number
+          default: 0
           x-nestjs_zod-has-null: true
-          x-nestjs_zod-empty-type: true
           x-nestjs_zod-parent-additional-properties: false
         fat:
-          anyOf:
-            - type: number
-            - type: 'null'
+          type: number
+          default: 0
           x-nestjs_zod-has-null: true
-          x-nestjs_zod-empty-type: true
           x-nestjs_zod-parent-additional-properties: false
         prepTime:
-          anyOf:
-            - type: number
-            - type: 'null'
+          type: number
+          default: 0
           x-nestjs_zod-has-null: true
-          x-nestjs_zod-empty-type: true
           x-nestjs_zod-parent-additional-properties: false
         recipeName:
           type: string
+          default: ''
           x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
       required:
@@ -1284,6 +1291,12 @@ components:
         - messages
         - createdAt
         - updatedAt
+        - calories
+        - proteins
+        - carbs
+        - fat
+        - prepTime
+        - recipeName
     UpdateChatSessionRequestDto:
       type: object
       properties:
@@ -1444,25 +1457,20 @@ components:
               createdAt:
                 type: string
               calories:
-                anyOf:
-                  - type: number
-                  - type: 'null'
+                default: 0
+                type: number
               proteins:
-                anyOf:
-                  - type: number
-                  - type: 'null'
+                default: 0
+                type: number
               carbs:
-                anyOf:
-                  - type: number
-                  - type: 'null'
+                default: 0
+                type: number
               fat:
-                anyOf:
-                  - type: number
-                  - type: 'null'
+                default: 0
+                type: number
               prepTime:
-                anyOf:
-                  - type: number
-                  - type: 'null'
+                default: 0
+                type: number
               title:
                 anyOf:
                   - type: string
@@ -1481,12 +1489,16 @@ components:
                   - type: string
                   - type: 'null'
               isVegetarian:
+                default: false
                 type: boolean
               isVegan:
+                default: false
                 type: boolean
               isGlutenFree:
+                default: false
                 type: boolean
               isDairyFree:
+                default: false
                 type: boolean
             required:
               - id
@@ -1495,7 +1507,16 @@ components:
               - isRecipe
               - content
               - createdAt
+              - calories
+              - proteins
+              - carbs
+              - fat
+              - prepTime
               - instructions
+              - isVegetarian
+              - isVegan
+              - isGlutenFree
+              - isDairyFree
             additionalProperties: false
           x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
@@ -1547,39 +1568,29 @@ components:
           x-nestjs_zod-has-null: true
           x-nestjs_zod-parent-additional-properties: false
         calories:
-          anyOf:
-            - type: number
-            - type: 'null'
+          type: number
+          default: 0
           x-nestjs_zod-has-null: true
-          x-nestjs_zod-empty-type: true
           x-nestjs_zod-parent-additional-properties: false
         proteins:
-          anyOf:
-            - type: number
-            - type: 'null'
+          type: number
+          default: 0
           x-nestjs_zod-has-null: true
-          x-nestjs_zod-empty-type: true
           x-nestjs_zod-parent-additional-properties: false
         carbs:
-          anyOf:
-            - type: number
-            - type: 'null'
+          type: number
+          default: 0
           x-nestjs_zod-has-null: true
-          x-nestjs_zod-empty-type: true
           x-nestjs_zod-parent-additional-properties: false
         fat:
-          anyOf:
-            - type: number
-            - type: 'null'
+          type: number
+          default: 0
           x-nestjs_zod-has-null: true
-          x-nestjs_zod-empty-type: true
           x-nestjs_zod-parent-additional-properties: false
         prepTime:
-          anyOf:
-            - type: number
-            - type: 'null'
+          type: number
+          default: 0
           x-nestjs_zod-has-null: true
-          x-nestjs_zod-empty-type: true
           x-nestjs_zod-parent-additional-properties: false
       required:
         - id
@@ -1587,6 +1598,11 @@ components:
         - messages
         - createdAt
         - updatedAt
+        - calories
+        - proteins
+        - carbs
+        - fat
+        - prepTime
     RemoveFromSavedRecipesRequestDto:
       type: object
       properties:
