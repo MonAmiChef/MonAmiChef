@@ -21,6 +21,25 @@ export class MealPlanRepository {
     });
   }
 
+  async getMealPlanByDateRange(userId: string, startDate: Date, endDate: Date) {
+    return this.prismaService.mealPlanEntry.findMany({
+      where: {
+        userId,
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      include: {
+        recipe: true,
+      },
+      orderBy: [
+        { date: 'asc' },
+        { mealType: 'asc' },
+      ],
+    });
+  }
+
   async createEntry(
     userId: string,
     recipeId: string,

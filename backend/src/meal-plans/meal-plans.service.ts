@@ -6,9 +6,20 @@ import { MealType } from '@prisma/client';
 export class MealPlanService {
   constructor(private mealPlanRepository: MealPlanRepository) {}
 
+  private toDate(dateStr: string): Date {
+    return new Date(dateStr + 'T00:00:00.000Z');
+  }
+
   async getMealPlanByDate(userId: string, dateStr: string) {
-    const date = new Date(dateStr + 'T00:00:00.000Z');
-    return this.mealPlanRepository.getMealPlanByDate(userId, date);
+    return this.mealPlanRepository.getMealPlanByDate(userId, this.toDate(dateStr));
+  }
+
+  async getMealPlanInRange(userId: string, startStr: string, endStr: string) {
+    return this.mealPlanRepository.getMealPlanByDateRange(
+      userId,
+      this.toDate(startStr),
+      this.toDate(endStr),
+    );
   }
 
   async createEntries(

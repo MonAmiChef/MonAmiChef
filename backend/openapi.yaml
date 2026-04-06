@@ -355,6 +355,16 @@ paths:
           in: query
           schema:
             type: string
+        - name: startDate
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: endDate
+          required: true
+          in: query
+          schema:
+            type: string
       responses:
         '200':
           description: ''

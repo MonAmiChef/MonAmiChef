@@ -28,10 +28,16 @@ export class MealPlanController {
   @Get()
   async getMealPlan(
     @Req() req: AuthenticatedRequest,
-    @Query('date') date: string,
+    @Query('date') date?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
   ) {
-    console.log('[MealPlanController] GET /meal-plans for user:', req.user.id, 'with date:', date);
-    return this.mealPlanService.getMealPlanByDate(req.user.id, date);
+    if (startDate && endDate) {
+      console.log('[MealPlanController] GET /meal-plans range:', { startDate, endDate });
+      return this.mealPlanService.getMealPlanInRange(req.user.id, startDate, endDate);
+    }
+    console.log('[MealPlanController] GET /meal-plans for date:', date);
+    return this.mealPlanService.getMealPlanByDate(req.user.id, date || new Date().toISOString().split('T')[0]);
   }
 
   @Post()
