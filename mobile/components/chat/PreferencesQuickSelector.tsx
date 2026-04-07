@@ -136,7 +136,7 @@ export const PreferencesQuickSelector = ({
 
         {/* Right Gradient Fade */}
         <LinearGradient
-          colors={['transparent', 'rgba(255, 253, 251, 0.95)']}
+          colors={['rgba(255, 253, 251, 0)', 'rgba(255, 253, 251, 0.95)']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={{

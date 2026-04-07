@@ -520,20 +520,29 @@ export interface components {
                 isRecipe: boolean;
                 content: string;
                 createdAt: string;
-                calories?: number | null;
-                proteins?: number | null;
-                carbs?: number | null;
-                fat?: number | null;
-                prepTime?: number | null;
+                /** @default 0 */
+                calories: number;
+                /** @default 0 */
+                proteins: number;
+                /** @default 0 */
+                carbs: number;
+                /** @default 0 */
+                fat: number;
+                /** @default 0 */
+                prepTime: number;
                 title?: string | null;
                 description?: string | null;
                 /** @default [] */
                 instructions: string[];
                 difficulty?: string | null;
-                isVegetarian?: boolean;
-                isVegan?: boolean;
-                isGlutenFree?: boolean;
-                isDairyFree?: boolean;
+                /** @default false */
+                isVegetarian: boolean;
+                /** @default false */
+                isVegan: boolean;
+                /** @default false */
+                isGlutenFree: boolean;
+                /** @default false */
+                isDairyFree: boolean;
             }[];
             createdAt: string;
             updatedAt: string;
@@ -584,20 +593,29 @@ export interface components {
                 isRecipe: boolean;
                 content: string;
                 createdAt: string;
-                calories?: number | null;
-                proteins?: number | null;
-                carbs?: number | null;
-                fat?: number | null;
-                prepTime?: number | null;
+                /** @default 0 */
+                calories: number;
+                /** @default 0 */
+                proteins: number;
+                /** @default 0 */
+                carbs: number;
+                /** @default 0 */
+                fat: number;
+                /** @default 0 */
+                prepTime: number;
                 title?: string | null;
                 description?: string | null;
                 /** @default [] */
                 instructions: string[];
                 difficulty?: string | null;
-                isVegetarian?: boolean;
-                isVegan?: boolean;
-                isGlutenFree?: boolean;
-                isDairyFree?: boolean;
+                /** @default false */
+                isVegetarian: boolean;
+                /** @default false */
+                isVegan: boolean;
+                /** @default false */
+                isGlutenFree: boolean;
+                /** @default false */
+                isDairyFree: boolean;
             }[];
             createdAt: string;
             updatedAt: string;
@@ -609,12 +627,18 @@ export interface components {
                 category: "FRUITS" | "VEGETABLES" | "MEAT" | "FISH" | "DAIRY" | "PANTRY" | "BAKERY" | "FROZEN" | "DRINKS" | "OTHER";
             }[];
             servings?: number;
-            calories?: number | null;
-            proteins?: number | null;
-            carbs?: number | null;
-            fat?: number | null;
-            prepTime?: number | null;
-            recipeName?: string;
+            /** @default 0 */
+            calories: number;
+            /** @default 0 */
+            proteins: number;
+            /** @default 0 */
+            carbs: number;
+            /** @default 0 */
+            fat: number;
+            /** @default 0 */
+            prepTime: number;
+            /** @default  */
+            recipeName: string;
         };
         UpdateChatSessionRequestDto: {
             message: string;
@@ -638,20 +662,29 @@ export interface components {
                 isRecipe: boolean;
                 content: string;
                 createdAt: string;
-                calories?: number | null;
-                proteins?: number | null;
-                carbs?: number | null;
-                fat?: number | null;
-                prepTime?: number | null;
+                /** @default 0 */
+                calories: number;
+                /** @default 0 */
+                proteins: number;
+                /** @default 0 */
+                carbs: number;
+                /** @default 0 */
+                fat: number;
+                /** @default 0 */
+                prepTime: number;
                 title?: string | null;
                 description?: string | null;
                 /** @default [] */
                 instructions: string[];
                 difficulty?: string | null;
-                isVegetarian?: boolean;
-                isVegan?: boolean;
-                isGlutenFree?: boolean;
-                isDairyFree?: boolean;
+                /** @default false */
+                isVegetarian: boolean;
+                /** @default false */
+                isVegan: boolean;
+                /** @default false */
+                isGlutenFree: boolean;
+                /** @default false */
+                isDairyFree: boolean;
             }[];
             createdAt: string;
             updatedAt: string;
@@ -663,11 +696,16 @@ export interface components {
                 category: "FRUITS" | "VEGETABLES" | "MEAT" | "FISH" | "DAIRY" | "PANTRY" | "BAKERY" | "FROZEN" | "DRINKS" | "OTHER";
             }[];
             servings?: number;
-            calories?: number | null;
-            proteins?: number | null;
-            carbs?: number | null;
-            fat?: number | null;
-            prepTime?: number | null;
+            /** @default 0 */
+            calories: number;
+            /** @default 0 */
+            proteins: number;
+            /** @default 0 */
+            carbs: number;
+            /** @default 0 */
+            fat: number;
+            /** @default 0 */
+            prepTime: number;
         };
         RemoveFromSavedRecipesRequestDto: {
             recipeId: string;

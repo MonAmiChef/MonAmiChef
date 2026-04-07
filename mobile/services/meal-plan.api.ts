@@ -42,18 +42,24 @@ export interface CreateMealPlanEntryInput {
 export const mealPlanApi = {
   getMealPlan: async (
     session: Session,
-    date: string,
+    params: { date?: string; startDate?: string; endDate?: string },
   ): Promise<MealPlanEntry[]> => {
-    const response = await fetch(
-      `${API_URL}/meal-plans?date=${date}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
-        },
+    const { date, startDate, endDate } = params;
+    let url = `${API_URL}/meal-plans`;
+
+    if (startDate && endDate) {
+      url += `?startDate=${startDate}&endDate=${endDate}`;
+    } else if (date) {
+      url += `?date=${date}`;
+    }
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
       },
-    );
+    });
 
     if (!response.ok) throw new Error('Failed to fetch meal plan');
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return

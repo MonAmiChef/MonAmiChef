@@ -119,7 +119,7 @@ export default function MealPlanScreen() {
     queryKey: ['meal-plan', dateStr],
     queryFn: () => {
       console.log('[MealPlanQuery] Fetching for:', dateStr);
-      return mealPlanApi.getMealPlan(session!, dateStr);
+      return mealPlanApi.getMealPlan(session!, { date: dateStr });
     },
     enabled: !!session,
   });

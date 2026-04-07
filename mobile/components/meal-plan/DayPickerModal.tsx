@@ -17,7 +17,7 @@ import { User, Check } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { MealType } from '@/services/meal-plan.api';
 
-interface DaySlotSelection {
+export interface DaySlotSelection {
   date: string; // YYYY-MM-DD
   mealType: MealType;
   servings: number;
@@ -28,6 +28,8 @@ interface DayPickerModalProps {
   onClose: () => void;
   recipeName: string;
   onConfirm: (selections: DaySlotSelection[]) => void;
+  initialSelections?: Record<string, number>;
+  allPlans?: Record<string, string>;
 }
 
 const MEAL_TYPES: MealType[] = ['BREAKFAST', 'LUNCH', 'DINNER'];
@@ -61,12 +63,21 @@ function getNext7Days(): { label: string; shortDay: string; date: string; isToda
 export default function DayPickerModal({
   isOpen,
   onClose,
-  recipeName,
+  recipeName: currentRecipeName,
   onConfirm,
+  initialSelections = {},
+  allPlans = {},
 }: DayPickerModalProps) {
   const { t } = useTranslation();
   // Map: "YYYY-MM-DD::MEAL_TYPE" -> servings
-  const [selections, setSelections] = useState<Record<string, number>>({});
+  const [selections, setSelections] = useState<Record<string, number>>(initialSelections);
+
+  // Synchronize internal state when modal opens or initialSelections change
+  React.useEffect(() => {
+    if (isOpen) {
+      setSelections(initialSelections);
+    }
+  }, [isOpen, initialSelections]);
 
   const days = getNext7Days();
 
@@ -123,7 +134,7 @@ export default function DayPickerModal({
               numberOfLines={1}
               className="text-slate-400 text-xs mt-1 font-inter-medium"
             >
-              {recipeName}
+              {currentRecipeName}
             </Text>
           </View>
           <ModalCloseButton>
@@ -131,7 +142,11 @@ export default function DayPickerModal({
           </ModalCloseButton>
         </ModalHeader>
         <ModalBody>
-          <ScrollView showsVerticalScrollIndicator={false}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+            overScrollMode="never"
+          >
             {days.map((day) => {
               const dayHasSelections = MEAL_TYPES.some(
                 (mt) => `${day.date}::${mt}` in selections,
@@ -188,6 +203,7 @@ export default function DayPickerModal({
                       const key = `${day.date}::${mealType}`;
                       const isSelected = key in selections;
                       const servings = selections[key] ?? 1;
+                      const existingPlanName = allPlans[key];
 
                       return (
                         <View
@@ -200,8 +216,7 @@ export default function DayPickerModal({
                             paddingHorizontal: 4,
                           }}
                         >
-                          <Pressable
-                            onPress={() => toggleSlot(day.date, mealType)}
+                          <View
                             style={{
                               flexDirection: 'row',
                               alignItems: 'center',
@@ -209,33 +224,49 @@ export default function DayPickerModal({
                               flex: 1,
                             }}
                           >
-                            {/* Checkbox */}
-                            <View
+                            <Pressable
+                              onPress={() => toggleSlot(day.date, mealType)}
                               style={{
-                                width: 22,
-                                height: 22,
-                                borderRadius: 6,
-                                borderWidth: 2,
-                                borderColor: isSelected
-                                  ? '#f97316'
-                                  : '#cbd5e1',
-                                backgroundColor: isSelected
-                                  ? '#f97316'
-                                  : 'transparent',
+                                flexDirection: 'row',
                                 alignItems: 'center',
-                                justifyContent: 'center',
+                                gap: 10,
                               }}
                             >
-                              {isSelected && (
-                                <Check size={14} color="#ffffff" />
-                              )}
-                            </View>
-                            <Text
-                              className={`text-sm ${isSelected ? 'font-inter-semibold text-slate-800' : 'font-inter-medium text-slate-500'}`}
-                            >
-                              {t(`meal_plan.${mealType.toLowerCase()}`)}
-                            </Text>
-                          </Pressable>
+                              {/* Checkbox */}
+                              <View
+                                style={{
+                                  width: 22,
+                                  height: 22,
+                                  borderRadius: 6,
+                                  borderWidth: 2,
+                                  borderColor: isSelected
+                                    ? '#f97316'
+                                    : '#cbd5e1',
+                                  backgroundColor: isSelected
+                                    ? '#f97316'
+                                    : 'transparent',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                {isSelected && (
+                                  <Check size={14} color="#ffffff" />
+                                )}
+                              </View>
+                              <View>
+                                <Text
+                                  className={`text-sm ${isSelected ? 'font-inter-semibold text-slate-800' : 'font-inter-medium text-slate-500'}`}
+                                >
+                                  {t(`meal_plan.${mealType.toLowerCase()}`)}
+                                </Text>
+                                {existingPlanName && !isSelected && (
+                                  <Text className="text-[10px] text-slate-400 font-inter italic" numberOfLines={1}>
+                                    {existingPlanName}
+                                  </Text>
+                                )}
+                              </View>
+                            </Pressable>
+                          </View>
 
                           {/* Servings stepper */}
                           {isSelected && (

@@ -4,10 +4,11 @@ import React, { useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
-import { ActivityIndicator, Pressable, ScrollView } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, {
   useSharedValue,
   withSpring,
+  withTiming,
   useAnimatedStyle,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,81 +16,112 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { recipeApi } from '@/services/recipe.api';
 import { useAuth } from '@/hooks/useAuth';
 import {
-  ChevronDownIcon,
-  ChevronUpIcon,
+  ChevronLeft,
   Ellipsis,
   Heart,
   Shapes,
   Timer,
-  User,
+  Users,
+  Beef,
+  Flame,
+  Wheat,
+  Droplet,
+  Leaf,
+  Check,
+  Plus,
+  Minus,
 } from 'lucide-react-native';
 import { savedRecipesApi } from '@/services/saved-recipes.api';
-import { groceriesApi } from '@/services/groceries.api';
 import Toast from 'react-native-toast-message';
-import { Divider } from '@/components/ui/divider';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionHeader,
-  AccordionTrigger,
-  AccordionTitleText,
-  AccordionIcon,
-  AccordionContent,
-  AccordionContentText,
-} from '@/components/ui/accordion';
 import SavedRecipesOptionsSheet from '@/components/saved-recipes/SavedRecipesOptionsSheet';
 import { useTranslation } from 'react-i18next';
 import Drawer from 'expo-router/drawer';
+import { BlurView } from 'expo-blur';
+import { Image } from 'expo-image';
+import RecipeBG from '@/assets/images/recipe_bg.png';
+import { ProgressiveBlurHeader } from '@/components/ui/ProgressiveBlurHeader';
+
+const GlassCard = ({ children, className = "", style = {} }: { children: React.ReactNode, className?: string, style?: any }) => (
+  <View
+    className={`overflow-hidden rounded-[32px] border border-white/50 ${className}`}
+    style={[{
+      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.1,
+      shadowRadius: 10,
+      elevation: 0,
+    }, style]}
+  >
+    <BlurView intensity={40} tint="light" style={StyleSheet.absoluteFill} />
+    <View className="p-6">{children}</View>
+  </View>
+);
 
 const SpecItem = ({
   icon,
   value,
-  suffix,
+  label,
 }: {
   icon: React.ReactNode;
   value: string;
-  suffix?: string;
+  label: string;
 }) => {
   return (
-    <Box className="flex flex-1 gap-2 items-center justify-center">
-      {icon}
-      <Text className="text-lg font-inter-medium text-wrap text-center">
-        {value} {suffix}
+    <Box className="flex-1 items-center justify-center py-2">
+      <Box className="mb-1">{icon}</Box>
+      <Text className="text-lg font-krub-bold text-slate-800">
+        {value}
+      </Text>
+      <Text className="text-xs font-krub-medium text-slate-500 uppercase tracking-wider">
+        {label}
       </Text>
     </Box>
   );
 };
 
-const MacroItem = ({
+const MacroIconItem = ({
+  icon,
   value,
   label,
-  suffix,
+  color,
+  suffix = "",
 }: {
+  icon: React.ReactNode;
   value: number;
   label: string;
+  color: string;
   suffix?: string;
-}) => {
-  return (
-    <Box className="flex flex-row align-middle justify-between">
-      <Text className="text-lg text-slate-500 font-inter-normal">{label}</Text>
-      <Box className="flex-1 mx-2 border-b border-slate-300 border-dashed mb-1" />
-      <Text className="text-lg text-orange-600 font-inter-medium">
-        {value}
-        {suffix}
-      </Text>
+}) => (
+  <Box className="flex-1 items-center">
+    <Box className={`p-2.5 rounded-2xl mb-2 items-center justify-center ${color}`}>
+      {icon}
     </Box>
-  );
-};
+    <Text className="text-lg font-krub-bold text-slate-800">
+      {Math.round(value)}{suffix}
+    </Text>
+    <Text className="text-[10px] font-krub-semibold text-slate-400 uppercase tracking-widest">
+      {label}
+    </Text>
+  </Box>
+);
 
 export default function RecipeDetailPage() {
   const {
     id,
-    savedServings: savedServingsParam,
+    servings: servingsParam,
     isFavorite: isFavoriteParam,
   } = useLocalSearchParams();
   const [servings, setServings] = useState(
-    savedServingsParam ? Number(savedServingsParam) : 1,
+    servingsParam ? Number(servingsParam) : 1,
   );
+
+  // Sync state if navigation params change
+  React.useEffect(() => {
+    if (servingsParam) {
+      setServings(Number(servingsParam));
+    }
+  }, [servingsParam]);
   const [isFavorite, setIsFavorite] = useState(isFavoriteParam === '1');
   const favoriteScale = useSharedValue(1);
   const favoriteAnimatedStyle = useAnimatedStyle(() => ({
@@ -113,7 +145,17 @@ export default function RecipeDetailPage() {
     retry: 1,
   });
 
-  const isAlreadyInGroceries = false; // logic removed
+  const progressStyle = useAnimatedStyle(() => {
+    const total = data?.instructions?.length || 1;
+    const current = completedSteps.length;
+    const percentage = (current / total) * 100;
+    
+    return {
+      width: withTiming(`${percentage}%`, {
+        duration: 300,
+      }),
+    };
+  }, [completedSteps.length, data?.instructions?.length]);
 
   const removeFromPlanMutation = useMutation({
     mutationFn: (recipeId: string) =>
@@ -142,8 +184,6 @@ export default function RecipeDetailPage() {
     setShowSheet(false);
     router.back();
   };
-
-
 
   const updateFavoriteMutation = useMutation({
     mutationFn: (newState: boolean) =>
@@ -184,7 +224,7 @@ export default function RecipeDetailPage() {
 
   if (error || !data) {
     return (
-      <Box className="flex-1 justify-center items-center p-6">
+      <Box className="flex-1 justify-center items-center p-6 bg-[#fffdfb]">
         <Text className="text-red-500 font-inter-bold text-center">
           {t('recipe_details.fail_loading')}
         </Text>
@@ -199,295 +239,307 @@ export default function RecipeDetailPage() {
   }
 
   return (
-    <SafeAreaView edges={['bottom']} className="flex-1 bg-[#fffdfb]">
-      <Drawer.Screen options={{ headerTitle: ' ' }} />
-      <Box className="p-4 flex-1 bg-transparent">
+    <View className="flex-1 bg-white">
+      <Drawer.Screen options={{ 
+        headerShown: false, // We'll build our own header
+      }} />
+      
+      {/* Background Image */}
+      <View style={StyleSheet.absoluteFill}>
+        <Image 
+          source={RecipeBG} 
+          style={StyleSheet.absoluteFill}
+          contentFit="cover"
+          transition={500}
+        />
+        <BlurView intensity={20} tint="light" style={StyleSheet.absoluteFill} />
+        {/* Dark overlay for contrast */}
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.1)' }]} />
+      </View>
+
+      <Box style={StyleSheet.absoluteFill} pointerEvents="none">
+        <ProgressiveBlurHeader />
+      </Box>
+
+      <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
+        {/* Custom Header */}
+        <Box className="px-6 py-4 flex-row items-center justify-between">
+          <Pressable 
+            onPress={() => router.back()}
+            className="w-10 h-10 rounded-full bg-white/60 items-center justify-center border border-white/40"
+          >
+            <ChevronLeft size={24} color="#1e293b" />
+          </Pressable>
+          
+          <Box className="flex-row gap-3">
+            {servingsParam && (
+              <Pressable
+                onPress={() => {
+                  favoriteScale.value = withSpring(isFavorite ? 1 : 1.25, {
+                    damping: 12,
+                    stiffness: 200,
+                  });
+                  updateFavoriteMutation.mutate(!isFavorite);
+                }}
+                className={`w-10 h-10 rounded-full items-center justify-center border ${isFavorite ? 'bg-red-500/80 border-red-400' : 'bg-white/60 border-white/40'}`}
+              >
+                <Animated.View style={favoriteAnimatedStyle}>
+                  <Heart
+                    size={20}
+                    color={isFavorite ? '#ffffff' : '#475569'}
+                    fill={isFavorite ? '#ffffff' : 'none'}
+                  />
+                </Animated.View>
+              </Pressable>
+            )}
+            <Pressable
+              onPress={() => setShowSheet(true)}
+              className="w-10 h-10 rounded-full bg-white/60 items-center justify-center border border-white/40"
+            >
+              <Ellipsis size={20} color="#475569" />
+            </Pressable>
+          </Box>
+        </Box>
+
         <ScrollView
-          contentContainerStyle={{ gap: 24 }}
+          className="flex-1"
+          contentContainerStyle={{ paddingBottom: 40, paddingHorizontal: 20 }}
           showsVerticalScrollIndicator={false}
         >
-          <Box className="flex gap-4">
-            <Box className="flex flex-row items-center justify-between gap-4">
-              <Text className="flex-1 text-2xl font-inter-bold text-slate-900">
-                {data.name}
-              </Text>
-
-              <Box className="flex flex-row items-center gap-2">
-                {savedServingsParam && (
-                  <Pressable
-                    onPress={() => {
-                      favoriteScale.value = withSpring(isFavorite ? 1 : 1.2, {
-                        damping: 300,
-                      });
-                      updateFavoriteMutation.mutate(!isFavorite);
-                    }}
-                    className={`p-2.5 rounded-full border-2 ${isFavorite ? 'border-red-500 bg-red-50' : 'border-slate-100'}`}
-                  >
-                    <Animated.View style={favoriteAnimatedStyle}>
-                      <Heart
-                        strokeWidth={2.5}
-                        size={18}
-                        color={isFavorite ? '#ef4444' : '#cbd5e1'}
-                        fill={isFavorite ? '#ef4444' : 'none'}
-                      />
-                    </Animated.View>
-                  </Pressable>
-                )}
-                <Pressable
-                  onPress={() => setShowSheet(true)}
-                  className="p-2.5 active:bg-slate-100 rounded-full border-2 border-slate-100"
-                >
-                  <Ellipsis size={20} color="#64748b" />
-                </Pressable>
-              </Box>
-            </Box>
-            <Text className="text-md font-inter-medium text-slate-500">
-              {data.description}
+          {/* Title and Description */}
+          <Box className="mt-8 mb-10 px-2">
+            <Text 
+              className="text-4xl font-krub-bold text-slate-900 leading-tight"
+              style={{ 
+                textShadowColor: 'rgba(0, 0, 0, 0.3)', 
+                textShadowOffset: { width: 0, height: 1 }, 
+                textShadowRadius: 4 
+              }}
+            >
+              {data.name}
             </Text>
+            {data.description && (
+              <Text className="text-lg font-inter-medium text-slate-700 mt-5 leading-relaxed">
+                {data.description}
+              </Text>
+            )}
           </Box>
 
-          <Divider />
-
-          {/* Body */}
-          <Accordion
-            size="md"
-            defaultValue={['specs', 'ingredients', 'steps']}
-            variant="unfilled"
-            type="multiple"
-            style={{ gap: 16 }}
-            isCollapsible={true}
-            isDisabled={false}
-          >
-            {/* Macros */}
-            <AccordionItem value="macros">
-              <AccordionHeader className="p-0">
-                <AccordionTrigger className="px-0 py-2 gap-2">
-                  {({ isExpanded }: { isExpanded: boolean }) => {
-                    return (
-                      <>
-                        {isExpanded ? (
-                          <AccordionIcon as={ChevronUpIcon} />
-                        ) : (
-                          <AccordionIcon as={ChevronDownIcon} />
-                        )}
-                        <AccordionTitleText>
-                          <Box className="flex flex-row items-center gap-2">
-                            <Text className="text-xl font-inter-semibold">
-                              {t('recipe_details.macros')}
-                            </Text>
-                            <Text className="text-md font-inter-light-italic text-slate-400">
-                              ({t('experimental')})
-                            </Text>
-                          </Box>
-                        </AccordionTitleText>
-                      </>
-                    );
-                  }}
-                </AccordionTrigger>
-              </AccordionHeader>
-              <AccordionContent>
-                <Box className="mt-4">
-                  <AccordionContentText>
-                    <Box className="flex flex-1 w-full gap-4">
-                      <MacroItem value={data.calories ?? 0} label="Calories" />
-                      <MacroItem
-                        value={data.proteins ?? 0}
-                        suffix="g"
-                        label="Proteins"
-                      />
-                      <MacroItem value={data.carbs ?? 0} suffix="g" label="Carbs" />
-                      <MacroItem value={data.fat ?? 0} suffix="g" label="Fat" />
-                      <MacroItem
-                        value={data.fibers ?? 0}
-                        suffix="g"
-                        label="Fibers"
-                      />
-                    </Box>
-                  </AccordionContentText>
+          {/* Quick Stats Bar */}
+          <GlassCard className="mb-6 py-2 px-1">
+            <Box className="flex-row items-center">
+              <SpecItem
+                value={String(data.prepTimeMin ?? 0)}
+                label="MINS"
+                icon={<Timer size={22} color="#f97316" />}
+              />
+              <Box className="h-10 w-[1px] bg-slate-300/30" />
+              <SpecItem
+                value={data.difficulty ?? 'Easy'}
+                label="LEVEL"
+                icon={<Shapes size={22} color="#f97316" />}
+              />
+              <Box className="h-10 w-[1px] bg-slate-300/30" />
+              {/* Interactive Servings Stepper */}
+              <Box className="flex-1 items-center justify-center py-2">
+                <Box className="mb-2">
+                  <Users size={22} color="#f97316" />
                 </Box>
-              </AccordionContent>
-            </AccordionItem>
-
-            {/* Specifications */}
-            <AccordionItem value="specs">
-              <AccordionHeader className="p-0">
-                <AccordionTrigger className="px-0 py-2 gap-2">
-                  {({ isExpanded }: { isExpanded: boolean }) => {
-                    return (
-                      <>
-                        {isExpanded ? (
-                          <AccordionIcon as={ChevronUpIcon} />
-                        ) : (
-                          <AccordionIcon as={ChevronDownIcon} />
-                        )}
-                        <AccordionTitleText>
-                          <Box className="flex flex-row items-center gap-2">
-                            <Text className="text-xl font-inter-semibold">
-                              {t('recipe_details.about')}
-                            </Text>
-                          </Box>
-                        </AccordionTitleText>
-                      </>
-                    );
-                  }}
-                </AccordionTrigger>
-              </AccordionHeader>
-              <AccordionContent>
-                <Box className="mt-4">
-                  <AccordionContentText>
-                    <Box className="flex flex-row flex-1 w-full">
-                      <SpecItem
-                        value={String(data.prepTimeMin ?? 0)}
-                        suffix="minutes"
-                        icon={<Timer size={36} color="#ff6900" />}
-                      />
-                      <SpecItem
-                        value={data.difficulty ?? ''}
-                        icon={<Shapes size={36} color="#ff6900" />}
-                      />
-                    </Box>
-                  </AccordionContentText>
+                <Box className="flex-row items-center bg-slate-100/50 rounded-full px-2 py-1 border border-slate-200/30">
+                  <Pressable 
+                    onPress={() => setServings(Math.max(1, servings - 1))}
+                    className="w-8 h-8 items-center justify-center rounded-full bg-white shadow-sm"
+                  >
+                    <Minus size={14} color="#f97316" strokeWidth={3} />
+                  </Pressable>
+                  
+                  <Text className="mx-4 text-xl font-krub-bold text-slate-800 min-w-[20px] text-center">
+                    {servings}
+                  </Text>
+                  
+                  <Pressable 
+                    onPress={() => setServings(servings + 1)}
+                    className="w-8 h-8 items-center justify-center rounded-full bg-white shadow-sm"
+                  >
+                    <Plus size={14} color="#f97316" strokeWidth={3} />
+                  </Pressable>
                 </Box>
-              </AccordionContent>
-            </AccordionItem>
+                <Text className="text-[10px] font-krub-medium text-slate-500 uppercase tracking-[0.15em] mt-1.5">
+                  {t('recipe_details.people')}
+                </Text>
+              </Box>
+            </Box>
+          </GlassCard>
 
-            {/* Ingrédients */}
-            <AccordionItem value="ingredients">
-              <AccordionHeader className="p-0">
-                <AccordionTrigger className="px-0 py-2 gap-2">
-                  {({ isExpanded }: { isExpanded: boolean }) => {
-                    return (
-                      <>
-                        {isExpanded ? (
-                          <AccordionIcon as={ChevronUpIcon} />
-                        ) : (
-                          <AccordionIcon as={ChevronDownIcon} />
-                        )}
-                        <AccordionTitleText>
-                          <Box className="flex flex-row items-center gap-2">
-                            <Text className="text-xl font-inter-semibold">
-                              {t('recipe_details.ingredients')}
-                            </Text>
-                          </Box>
-                        </AccordionTitleText>
-                      </>
-                    );
-                  }}
-                </AccordionTrigger>
-              </AccordionHeader>
-              <AccordionContent>
-                <Box className="mt-4">
-                  <AccordionContentText>
-                    <Pressable className="flex flex-1 w-full">
-                      {data.ingredients.map((ing: any, index: number) => {
-                        const isIngredientCompleted = completedIngredients.some(
-                          (s) => s === index,
-                        );
-                        return (
-                          <Pressable
-                            onPress={() => handleToggleIngredients(index)}
-                            className="my-2"
-                            key={index}
-                          >
-                            <Box className="flex-row items-center justify-between py-3">
-                              <Text
-                                className={`flex-1 text-lg text-slate-500 font-inter-normal leading-6 mr-4 ${isIngredientCompleted && 'line-through text-green-600'}`}
-                              >
-                                {ing.name}
-                              </Text>
+          <Box className="mb-8">
+            <Box className="flex-row items-center mb-4 px-2">
+              <Flame size={20} color="#f97316" fill="#f97316" />
+              <Text className="text-xl font-krub-bold text-slate-900 ml-2">
+                {t('recipe_details.macros')}
+              </Text>
+            </Box>
+            
+            <GlassCard>
+              <Box className="flex-row justify-between">
+                <MacroIconItem 
+                  icon={<Flame size={20} color="#ffffff" />}
+                  value={data.calories ?? 0}
+                  label="Cals"
+                  color="bg-red-500"
+                />
+                <MacroIconItem 
+                  icon={<Beef size={20} color="#ffffff" />}
+                  value={data.proteins ?? 0}
+                  suffix="g"
+                  label="Prot"
+                  color="bg-blue-500"
+                />
+                <MacroIconItem 
+                  icon={<Wheat size={20} color="#ffffff" />}
+                  value={data.carbs ?? 0}
+                  suffix="g"
+                  label="Carbs"
+                  color="bg-amber-500"
+                />
+                <MacroIconItem 
+                  icon={<Droplet size={20} color="#ffffff" />}
+                  value={data.fat ?? 0}
+                  suffix="g"
+                  label="Fats"
+                  color="bg-emerald-500"
+                />
+                <MacroIconItem 
+                  icon={<Leaf size={20} color="#ffffff" />}
+                  value={data.fibers ?? 0}
+                  suffix="g"
+                  label="Fiber"
+                  color="bg-purple-500"
+                />
+              </Box>
+            </GlassCard>
+          </Box>
 
-                              <Text
-                                className={`text-lg text-orange-600 font-inter-medium shrink-0 ${isIngredientCompleted && 'text-green-500'}`}
-                              >
-                                {parseFloat(
-                                  (ing.quantity * servings).toFixed(2),
-                                )}{' '}
-                                {ing.unit}
-                              </Text>
-                            </Box>
+          {/* Ingredients Section */}
+          <Box className="mb-8">
+            <Box className="flex-row items-center mb-4 px-2">
+              <Box className="w-8 h-8 rounded-lg bg-orange-100 items-center justify-center">
+                <Text className="text-orange-600 text-lg font-krub-bold">🍴</Text>
+              </Box>
+              <Text className="text-xl font-krub-bold text-slate-900 ml-3">
+                {t('recipe_details.ingredients')}
+              </Text>
+            </Box>
 
-                            {index < data.ingredients.length - 1 && (
-                              <Divider className="bg-slate-100" />
-                            )}
-                          </Pressable>
-                        );
-                      })}
+            <GlassCard>
+              <Box className="gap-1">
+                {data.ingredients.map((ing: any, index: number) => {
+                  const isIngredientCompleted = completedIngredients.includes(index);
+                  return (
+                    <Pressable
+                      key={index}
+                      onPress={() => handleToggleIngredients(index)}
+                      className={`flex-row items-center justify-between py-3.5 px-1 ${index < data.ingredients.length - 1 ? 'border-b border-slate-200/20' : ''}`}
+                    >
+                      <Box className="flex-1 flex-row items-center">
+                        <Box className={`w-6 h-6 rounded-lg border-2 mr-4 items-center justify-center ${isIngredientCompleted ? 'bg-green-500 border-green-500' : 'border-slate-300'}`}>
+                          {isIngredientCompleted && (
+                            <Check size={14} color="#ffffff" strokeWidth={4} />
+                          )}
+                        </Box>
+                        <Text
+                          className={`text-lg font-inter-medium leading-tight ${isIngredientCompleted ? 'line-through text-slate-400' : 'text-slate-700'}`}
+                        >
+                          {ing.name}
+                        </Text>
+                      </Box>
+                      <Text
+                        className={`text-lg font-inter-bold ml-2 ${isIngredientCompleted ? 'text-green-500' : 'text-orange-600'}`}
+                      >
+                        {parseFloat((ing.quantity * servings).toFixed(2))} {ing.unit}
+                      </Text>
                     </Pressable>
-                  </AccordionContentText>
-                </Box>
-              </AccordionContent>
-            </AccordionItem>
+                  );
+                })}
+              </Box>
+            </GlassCard>
+          </Box>
 
-            {/* Instructions */}
-            <AccordionItem value="steps">
-              <AccordionHeader className="p-0">
-                <AccordionTrigger className="px-0 py-2 gap-2">
-                  {({ isExpanded }: { isExpanded: boolean }) => {
-                    return (
-                      <>
-                        {isExpanded ? (
-                          <AccordionIcon as={ChevronUpIcon} />
-                        ) : (
-                          <AccordionIcon as={ChevronDownIcon} />
-                        )}
-                        <AccordionTitleText>
-                          <Box className="flex flex-row items-center gap-2">
-                            <Text className="text-xl font-inter-semibold">
-                              {t('recipe_details.steps')}
-                            </Text>
-                          </Box>
-                        </AccordionTitleText>
-                      </>
-                    );
-                  }}
-                </AccordionTrigger>
-              </AccordionHeader>
-              <AccordionContent>
-                <Box className="mt-4">
-                  <AccordionContentText>
-                    <Box className="flex flex-1 w-full gap-1.5">
-                      {data.instructions.map((step: any, index: number) => {
-                        const isStepCompleted = completedSteps.some(
-                          (s) => s === index,
-                        );
-
-                        return (
-                          <Box className="flex" key={index}>
-                            <Pressable
-                              onPress={() => {
-                                handleToggleStep(index);
-                              }}
-                              className="flex-row gap-4 items-center justify-between py-1.5"
-                            >
-                              <Box
-                                className={`bg-orange-500 justify-center items-center h-6 w-6 rounded-full ${isStepCompleted && 'bg-green-500'}`}
-                              >
-                                <Text className="text-md font-inter-semibold text-white">
-                                  {index + 1}
-                                </Text>
-                              </Box>
-                              <Text
-                                className={`flex-1 text-lg text-slate-500 font-inter-normal leading-6 mr-4 ${isStepCompleted && 'line-through text-green-600'}`}
-                              >
-                                {step}
-                              </Text>
-                            </Pressable>
-                          </Box>
-                        );
-                      })}
-                    </Box>
-                  </AccordionContentText>
+          {/* Instructions Section */}
+          <Box className="mb-8">
+            <Box className="flex-row items-center justify-between mb-4 px-2">
+              <Box className="flex-row items-center">
+                <Box className="w-8 h-8 rounded-lg bg-orange-100 items-center justify-center">
+                  <Text className="text-orange-600 text-lg font-krub-bold">📝</Text>
                 </Box>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+                <Text className="text-xl font-krub-bold text-slate-900 ml-3">
+                  {t('recipe_details.steps')}
+                </Text>
+              </Box>
+              
+              <Box className="bg-green-100/50 px-3 py-1 rounded-full border border-green-200">
+                <Text className="text-[10px] font-krub-bold text-green-700 uppercase tracking-widest">
+                  {completedSteps.length} / {data.instructions.length}
+                </Text>
+              </Box>
+            </Box>
+
+            {/* Step Progress Bar */}
+            <Box className="h-2 w-full bg-slate-200/30 rounded-full mb-6 overflow-hidden border border-white/40">
+              <Animated.View
+                style={[
+                  { height: '100%', backgroundColor: '#22c55e' },
+                  progressStyle,
+                ]}
+              />
+            </Box>
+
+            <Box className="gap-4">
+              {data.instructions.map((step: any, index: number) => {
+                const isStepCompleted = completedSteps.includes(index);
+                return (
+                  <Pressable
+                    key={index}
+                    onPress={() => handleToggleStep(index)}
+                  >
+                    <GlassCard className={isStepCompleted ? 'opacity-70 bg-green-50/20' : ''}>
+                      <Box className="flex-row items-center">
+                        <Box
+                          className={`h-8 w-8 rounded-full items-center justify-center mr-4 ${isStepCompleted ? 'bg-green-500' : 'bg-orange-500 shadow-sm'}`}
+                        >
+                          <Text className="text-sm font-krub-bold text-white">
+                            {index + 1}
+                          </Text>
+                        </Box>
+                        <Text
+                          className={`flex-1 text-lg leading-relaxed font-inter-medium ${isStepCompleted ? 'line-through text-slate-500' : 'text-slate-800'}`}
+                        >
+                          {step}
+                        </Text>
+                        
+                        {/* Ghost Icon Indicator */}
+                        <Box className="ml-2">
+                          <Check 
+                            size={20} 
+                            color={isStepCompleted ? '#22c55e' : '#cbd5e1'} 
+                            strokeWidth={isStepCompleted ? 3 : 1.5}
+                            style={{ opacity: isStepCompleted ? 1 : 0.3 }}
+                          />
+                        </Box>
+                      </Box>
+                    </GlassCard>
+                  </Pressable>
+                );
+              })}
+            </Box>
+          </Box>
         </ScrollView>
-      </Box>
+      </SafeAreaView>
+
       <SavedRecipesOptionsSheet
         isOpen={showSheet}
         onClose={() => setShowSheet(false)}
         handleDelete={handleDelete}
-                      />
-    </SafeAreaView>
+      />
+    </View>
   );
 }

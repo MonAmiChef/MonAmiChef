@@ -89,7 +89,9 @@
     "about": "À propos",
     "ingredients": "Ingrédients",
     "steps": "Étapes de préparation",
-    "macros": "Apports par portion"
+    "macros": "Apports par portion",
+    "tap_to_complete": "Appuyez pour cocher",
+    "people": "Personnes"
   },
   "remove_modal": {
     "title": "Retirer la recette",

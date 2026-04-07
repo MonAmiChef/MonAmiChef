@@ -173,7 +173,7 @@ export default function NewChat() {
             className="flex-1"
             accessible={false}
           >
-            <View className="flex-1 mt-32">
+            <View className="flex-1 mt-12">
               {optimisticMessage ? (
                 <View className="flex-1 justify-start p-6">
                   <View className="bg-orange-500 self-end p-4 rounded-2xl rounded-tr-none mb-4 max-w-[80%]">
@@ -192,7 +192,7 @@ export default function NewChat() {
                   </View>
                 </View>
               ) : (
-                <View className="flex flex-1 align-middle self-center justify-center items-center mb-8">
+                <View className="flex flex-1 align-middle self-center justify-center items-center mb-8 pb-32">
                   <Image
                     source={Logo}
                     contentFit="contain"

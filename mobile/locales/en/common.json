@@ -90,7 +90,9 @@
     "about": "About",
     "ingredients": "Ingredients",
     "steps": "Cooking steps",
-    "macros": "Macros per serving"
+    "macros": "Macros per serving",
+    "tap_to_complete": "Tap to check",
+    "people": "People"
   },
   "remove_modal": {
     "title": "Remove recipe",

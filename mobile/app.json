@@ -14,14 +14,17 @@
       "backgroundColor": "#fffdfb"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.lenny00.MonAmiChef",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "notification": {
         "icon": "./assets/images/monamichef_bg_less-modified.png",
         "color": "#f97316"
       },
-
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
@@ -39,7 +42,14 @@
       "expo-router",
       "expo-web-browser",
       "expo-font",
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/monamichef_bg_less-modified.png",
+          "color": "#f97316"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

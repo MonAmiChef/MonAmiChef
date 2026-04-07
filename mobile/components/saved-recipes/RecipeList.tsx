@@ -27,6 +27,7 @@ import {
   Notebook,
   User,
   CalendarPlus,
+  CalendarCheck,
 } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
 import * as Haptics from 'expo-haptics';
@@ -90,6 +91,7 @@ interface RecipeCardProps {
   onFavoritePress: () => void;
   onPlanPress: () => void;
   onMenuPress: () => void;
+  isPlanned?: boolean;
   t: (key: string) => string;
 }
 
@@ -101,6 +103,7 @@ function RecipeCard({
   onFavoritePress,
   onPlanPress,
   onMenuPress,
+  isPlanned = false,
   t,
 }: RecipeCardProps) {
   const r = item.recipe;
@@ -231,7 +234,11 @@ function RecipeCard({
               }}
               className="p-2 active:bg-indigo-50 rounded-full"
             >
-              <CalendarPlus size={20} color="#6366f1" />
+              {isPlanned ? (
+                <CalendarCheck size={20} color="#f97316" />
+              ) : (
+                <CalendarPlus size={20} color="#6366f1" />
+              )}
             </Pressable>
             <Pressable
               onPress={(e) => {
@@ -270,9 +277,45 @@ export default function RecipeList({
     queryFn: () => savedRecipesApi.getSavedRecipes(session!),
     enabled: !!session,
   });
+
+  // Range for meal plan (today + 7 days)
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
+  const nextWeekStr = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    return d.toISOString().split('T')[0];
+  }, []);
+
+  const { data: mealPlanRange, refetch: refetchRange } = useQuery({
+    queryKey: ['meal-plan', 'range', todayStr, nextWeekStr],
+    queryFn: () => mealPlanApi.getMealPlan(session!, { startDate: todayStr, endDate: nextWeekStr }),
+    enabled: !!session,
+  });
   const [showSheet, setShowSheet] = useState(false);
   const [showDayPicker, setShowDayPicker] = useState(false);
   const queryClient = useQueryClient();
+
+  const initialSelections = useMemo(() => {
+    if (!selectedRecipe || !mealPlanRange) return {};
+    const result: Record<string, number> = {};
+    mealPlanRange
+      .filter((entry) => entry.recipeId === selectedRecipe.id)
+      .forEach((entry) => {
+        result[`${entry.date.split('T')[0]}::${entry.mealType}`] =
+          entry.servings;
+      });
+    return result;
+  }, [selectedRecipe, mealPlanRange]);
+
+  const allPlans = useMemo(() => {
+    if (!mealPlanRange) return {};
+    const result: Record<string, string> = {};
+    mealPlanRange.forEach((entry) => {
+      result[`${entry.date.split('T')[0]}::${entry.mealType}`] =
+        entry.recipe.name;
+    });
+    return result;
+  }, [mealPlanRange]);
 
   const removeFromSavedMutation = useMutation({
     mutationFn: (recipeId: string) =>
@@ -324,11 +367,20 @@ export default function RecipeList({
   });
 
   const planMealMutation = useMutation({
-    mutationFn: (entries: CreateMealPlanEntryInput[]) =>
-      mealPlanApi.createEntries(session!, entries),
+    mutationFn: async (params: { entries: CreateMealPlanEntryInput[]; toDeleteIds: string[] }) => {
+      // 1. Delete removed ones
+      if (params.toDeleteIds.length > 0) {
+        await Promise.all(params.toDeleteIds.map(id => mealPlanApi.deleteEntry(session!, id)));
+      }
+      // 2. Create/Update ones
+      if (params.entries.length > 0) {
+        await mealPlanApi.createEntries(session!, params.entries);
+      }
+    },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['meal-plan'] });
       await queryClient.invalidateQueries({ queryKey: ['groceries'] });
+      await refetchRange();
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Toast.show({
         text1: t('toast.success'),
@@ -503,14 +555,17 @@ export default function RecipeList({
           renderItem={({ item }) => {
             const servings = item.servings ?? 1;
             const isFavorite = item.isFavorite as boolean;
+            const isPlanned = mealPlanRange?.some(entry => entry.recipeId === item.recipeId);
+
             return (
               <RecipeCard
                 item={item}
                 servings={servings}
                 isFavorite={isFavorite}
+                isPlanned={isPlanned}
                 onPress={() => {
                   router.push(
-                    `/recipe-details/${item.recipeId}?savedServings=${servings}&isFavorite=${item.isFavorite ? '1' : '0'}`,
+                    `/recipe-details/${item.recipeId}?servings=1&isFavorite=${item.isFavorite ? '1' : '0'}`,
                   );
                 }}
                 onFavoritePress={() => {
@@ -551,15 +606,26 @@ export default function RecipeList({
           isOpen={showDayPicker}
           onClose={() => setShowDayPicker(false)}
           recipeName={capitalizeFull(selectedRecipe?.name ?? '')}
+          initialSelections={initialSelections}
+          allPlans={allPlans}
           onConfirm={(selections) => {
             if (!selectedRecipe) return;
+            
             const entries: CreateMealPlanEntryInput[] = selections.map((s) => ({
               recipeId: selectedRecipe.id,
               date: s.date,
               mealType: s.mealType,
               servings: s.servings,
             }));
-            planMealMutation.mutate(entries);
+
+            // Find what to delete
+            const currentEntriesForRecipe = mealPlanRange?.filter(e => e.recipeId === selectedRecipe.id) || [];
+            const newKeys = selections.map(s => `${s.date}::${s.mealType}`);
+            const toDeleteIds = currentEntriesForRecipe
+              .filter(e => !newKeys.includes(`${e.date.split('T')[0]}::${e.mealType}`))
+              .map(e => e.id);
+
+            planMealMutation.mutate({ entries, toDeleteIds });
           }}
         />
       </Box>

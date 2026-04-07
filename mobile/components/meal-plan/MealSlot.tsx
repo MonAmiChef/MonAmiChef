@@ -148,7 +148,7 @@ export default function MealSlot({
       <Pressable
         onPress={() =>
           router.push(
-            `/recipe-details/${entry.recipeId}?savedServings=${entry.servings}&isFavorite=0`,
+            `/recipe-details/${entry.recipeId}?servings=${entry.servings}&isFavorite=0`,
           )
         }
         className="active:bg-slate-50"
